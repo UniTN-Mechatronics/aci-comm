@@ -1,7 +1,7 @@
 # Compiling
 CC=gcc -O3
 CXX=g++ -O3
-INCPATH=-I/usr/include/ ../aci_c
+INCPATH=-I/usr/include/ ../asctec
 CFLAGS=-c -Wall -ansi -std=c99 
 CXXFLAGS=-Wall -std=c++11 
 
@@ -11,7 +11,7 @@ OBJECTC=acic.o
 LIBS=-lm -lpthread
 
 # Source & Target
-CSOURCES=aci_c/asctecCommIntf.c 
+CSOURCES=asctec/asctecCommIntf.c 
 CXXSOURCES=main.cpp engine.cpp bus.cpp packet.cpp 
 
 all: aci_engine
