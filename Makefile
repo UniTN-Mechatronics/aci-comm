@@ -4,7 +4,7 @@ CXX=g++ -O3
 INCPATH=-Iinclude -Iasctec
 SRCPATH=src/
 SRCPATHASCTEC=asctec/
-CFLAGS=-c -Wall -ansi -std=c99 
+CFLAGS=-c -ansi -std=c99 
 CXXFLAGS=-Wall -std=c++11 
 
 OBJECTC=acic.o

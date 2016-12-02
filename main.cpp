@@ -1,8 +1,9 @@
 #include "engine.hpp"
 #include "test.hpp"
 
+
 int 
 main() {
-	t();
+	testcase();
 	return 0;
 }
