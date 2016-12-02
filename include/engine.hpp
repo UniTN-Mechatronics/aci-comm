@@ -39,13 +39,13 @@ namespace acc
     class Engine
     {
     public:
-        Bus *bus; // TODO: port to unique_pointer
-        Packet *packet = NULL; // TODO: port to unique_pointer
+        Bus *bus; // TODO: replace to unique_pointer
+        Packet *packet = NULL; // TODO: replace to unique_pointer
 
         /**
         *   Singleton constructor
         */
-        static Engine& init(Bus *bus_);
+        static Engine& init(Bus *bus_);     
 
         /**
         *   Deleted copy constructor and
@@ -86,19 +86,17 @@ namespace acc
         *   Private destructor.
         */
         ~Engine() { stop(); }
-
+        
         /**
         *   The thread where the 
         *   aci_callback lives.
         */
         std::thread _aci_thread;
-
         /**
         *   Flag used both as Engine state
         *   and as flag for thread loop exit.
         */
         std::atomic<bool> _aci_thread_run;
-
         /**
         *   Not used yet.
         */

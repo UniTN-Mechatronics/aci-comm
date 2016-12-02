@@ -33,9 +33,10 @@ namespace acc
         Bus() { name = __func__; };
         virtual ~Bus() {};
 
+        int _port_state;
     protected:
         std::string name;
-        int _port_state;
+        
         virtual void open() = 0;
         virtual void close() = 0;
     };

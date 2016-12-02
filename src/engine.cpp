@@ -2,21 +2,13 @@
 #include "commons.hpp"
 
 void versions(struct ACI_INFO);
-void transmit(void* byte, unsigned short cnt);
-
+                                            
 /**
 *   [TEMP]
 */
 int *global_port_ptr = NULL;
 
-/*
-*       _    ____ ___ 
-*      / \  |  _ \_ _|
-*     / _ \ | |_) | | 
-*    / ___ \|  __/| | 
-*   /_/   \_\_|  |___|
-*   
-*/
+
 acc::Engine& 
 acc::Engine::init(Bus *bus_) {
     static acc::Engine instance(bus_);
@@ -31,7 +23,15 @@ acc::Engine::start() {
         bus->open();
         global_port_ptr = &bus->_port_state;
         aciInit();
-        aciSetSendDataCallback(&transmit);
+
+        auto lb = [](void* byte, unsigned short cnt) -> void {
+            unsigned char *tbyte = (unsigned char *)byte;
+            for (int i = 0; i < cnt; i++) {
+                ::write(*global_port_ptr, &tbyte[i], 1);
+            }
+        };
+        aciSetSendDataCallback(lb);
+        
         aciInfoPacketReceivedCallback(&versions);
         aciSetEngineRate(100, 10);
         _launch_aci_thread();
@@ -47,7 +47,6 @@ acc::Engine::stop() {
     _aci_thread_run = false;
     _aci_thread.join();
 }
-
 
 
 /*
@@ -66,7 +65,6 @@ acc::Engine::_launch_aci_thread() {
 
 void 
 acc::Engine::_aci_thread_runner() {
-    std::cout << "Thread launch" << std::endl;
     int result = 0;
     unsigned char data = 0;
     while (_aci_thread_run) {
@@ -80,13 +78,10 @@ acc::Engine::_aci_thread_runner() {
     }
 }
 
-void 
-transmit(void* byte, unsigned short cnt) {
-    unsigned char *tbyte = (unsigned char *)byte;
-    for (int i = 0; i < cnt; i++) {
-        write(*global_port_ptr, &tbyte[i], 1);
-    }
-}
+
+
+
+
 
 void versions(struct ACI_INFO aciInfo) {
     printf("******************** Versions *******************\n");
