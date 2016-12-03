@@ -2,14 +2,19 @@
 #define _ACI_COMM_BUS_HPP_
 #ifdef __cplusplus
 
+#include <tuple>
 #include <termios.h>
 #include <unistd.h> 
 #include <fcntl.h>  
- #include <string>
+#include <string>
 
 #define ACICOMM_TTY_INFO 1
 #if ACICOMM_TTY_INFO == 1
     #include <iostream>
+#endif
+
+#ifndef _ACI_COMM_COMMONS_HPP_
+    #include "commons.hpp"
 #endif
 
 namespace acc 
@@ -19,8 +24,8 @@ namespace acc
     *   Here in order to define
     *   Bus friend class.
     */ 
+    template<class BUS>
     class Engine;
-
 
     /**
     *   Pure abstract class.
@@ -28,8 +33,6 @@ namespace acc
     class Bus
     {
     public:
-        friend class Engine;
-
         Bus() {};
         virtual ~Bus() {};
 
@@ -49,9 +52,12 @@ namespace acc
     class SerialBus: public Bus
     {
     public:
-        SerialBus(std::string port) : _port(port) {
+        template<class BUS> friend class Engine;
+
+        SerialBus(std::tuple<std::string, int> args) {
             name = __func__;
-            _port_state = -1;
+            _port = std::get<0>(args);
+            _port_state = std::get<1>(args);
         };
         ~SerialBus() { close(); };
 
@@ -59,7 +65,10 @@ namespace acc
         *   Deleted copy constructor and
         *   copy operator.
         */
-        SerialBus(SerialBus const&) = delete;
+        SerialBus(SerialBus const& sb) {
+            name = __func__;
+            // TODO;
+        };
         void operator=(SerialBus const&) = delete;
 
         void 

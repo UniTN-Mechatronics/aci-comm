@@ -5,6 +5,7 @@
 #include <thread>
 #include <atomic>
 #include <iostream>
+#include <tuple>
 #include <assert.h>
 
 #ifndef _ACI_COMM_BUS_HPP_
@@ -16,7 +17,11 @@
 #ifndef _SEMAPHORE_HPP_
     #include "semaphore.hpp"
 #endif
+#ifndef _ACI_COMM_COMMONS_HPP_
+    #include "commons.hpp"
+#endif
 
+void versions(struct ACI_INFO);
 
 namespace acc 
 {
@@ -35,16 +40,18 @@ namespace acc
     *
     *    This class is NOT thread safe:
     *    you must use it from only ONE thread.
-    */      
+    */   
+    template<class BUS>   
     class Engine
     {
     public:
-        
-        /**
-        *   Singleton constructors.
-        */
-        static Engine& init(Bus *bus_);   
-        static Engine& init(Bus *bus_, Packet *packet_);     
+
+        template<class... BUS_ARGS>
+        static Engine& init(BUS_ARGS... args_) {
+            auto argst = std::tuple<BUS_ARGS...>(args_...);
+            static Engine<BUS> engine(std::move(BUS(argst)));
+            return engine;
+        }
 
         /**
         *   Deleted copy constructor and
@@ -53,7 +60,7 @@ namespace acc
         Engine(Engine const&) = delete;
         void operator=(Engine const&) = delete;
 
-        Bus* 
+        Bus
         bus() {
             return _bus;
         }
@@ -73,14 +80,10 @@ namespace acc
         *   * the port confs cannot be applied
         *   * the packet is not setted
         */
-        void start() noexcept(false);
+        void start();
 
-        /**
-        *   Join the aci_thread to
-        *   the main thread.
-        */
         void stop();
-        
+
         void 
         read() {
             assert("Function not implemented yet!");
@@ -95,8 +98,8 @@ namespace acc
         /**
         *   Private constructor.
         */
-        Engine(Bus *bus_) 
-            : _bus(bus_), 
+        Engine(BUS&& bus_) : 
+            _bus(bus_), 
             _aci_thread_run(false),
             _aci_thread_sem(1) {};
 
@@ -105,7 +108,7 @@ namespace acc
         */
         ~Engine() { stop(); }
 
-        Bus *_bus; 
+        BUS _bus;
         Packet *packet = NULL; 
 
         /**
@@ -123,14 +126,7 @@ namespace acc
         */
         Semaphore _aci_thread_sem;
 
-        /**
-        *   Setup the thread.
-        */
         void _launch_aci_thread();
-
-        /**
-        *   Thread main loop method.
-        */
         void _aci_thread_runner();
     };
 

@@ -6,8 +6,8 @@ class Semaphore
 {
 public:
     Semaphore(int value) : _value(value) {};
-    Semaphore(const Semaphore &S) : _mutex(), _cv() {};
-    Semaphore& operator=(Semaphore S) {return *this;}
+    Semaphore(const Semaphore &S) = delete;
+    Semaphore& operator=(Semaphore S) = delete;
     ~Semaphore() {};
 
     void

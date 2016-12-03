@@ -3,14 +3,14 @@
 
 void 
 testcase() {
+    using namespace acc;
+    
     try {
-        using namespace acc;
+        
         std::string port = "/dev/tty.usbserial-A504DRSI";
 
-        // Create singleton instance of Engine,
-        // and set SerialBus and Packet.
-        Engine* ae = &Engine::init(new SerialBus(port), new Packet);
-        
+        auto ae = &Engine<SerialBus>::init(port, -1);
+        ae->set_packet(new Packet);
         ae->start();
 
         // If we don't sleep, the function returns

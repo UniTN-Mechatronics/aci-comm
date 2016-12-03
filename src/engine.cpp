@@ -1,9 +1,5 @@
 #include "engine.hpp"
-#include "commons.hpp"
 
-void versions(struct ACI_INFO);
-
-                                            
 /**
 *   Anonymous namespace for 
 *   global variables, is the 
@@ -21,28 +17,14 @@ namespace
     */
     int *bus_port;   
 }
-
-
-acc::Engine& 
-acc::Engine::init(Bus *bus_) {
-    static acc::Engine engine(bus_);
-    return engine;
-}
-
-acc::Engine& 
-acc::Engine::init(Bus *bus_, Packet *packet_) {
-    static acc::Engine engine(bus_);
-    engine.set_packet(packet_);
-    return engine;
-}
-
-void 
-acc::Engine::start() {
+                               
+template<class BUS> void 
+acc::Engine<BUS>::start() {
     if (_aci_thread_run) return;
     if (packet == NULL) throw std::runtime_error("packet is NOT set");
     try {
-        _bus->open();
-        bus_port = &_bus->_port_state;
+        _bus.open();
+        bus_port = &_bus._port_state;
         aciInit();
         auto lb = [](void* byte, unsigned short cnt) -> void {
             unsigned char *tbyte = (unsigned char *)byte;
@@ -58,47 +40,33 @@ acc::Engine::start() {
     }
 }
 
-void 
-acc::Engine::stop() {
+template<class BUS> void 
+acc::Engine<BUS>::stop() {
     if (!_aci_thread_run) return;
     _aci_thread_run = false;
     _aci_thread.join();
 }
 
-
-/*
-*    ____       _            _       
-*   |  _ \ _ __(_)_   ____ _| |_ ___ 
-*   | |_) | '__| \ \ / / _` | __/ _ \
-*   |  __/| |  | |\ V / (_| | ||  __/
-*   |_|   |_|  |_| \_/ \__,_|\__\___|
-*                                    
-*/
-void 
-acc::Engine::_launch_aci_thread() {
+template<class BUS> void 
+acc::Engine<BUS>::_launch_aci_thread() {
     _aci_thread_run = true;
-    _aci_thread = std::thread(&acc::Engine::_aci_thread_runner, this);
+    _aci_thread = std::thread(&acc::Engine<BUS>::_aci_thread_runner, this);
 }
-
-void 
-acc::Engine::_aci_thread_runner() {
+        
+template<class BUS> void 
+acc::Engine<BUS>::_aci_thread_runner() {
     int result = 0;
     unsigned char data = 0;
     while (_aci_thread_run) {
-        result = ::read(_bus->_port_state, &data, 1);
+        result = ::read(_bus._port_state, &data, 1);
         while (result!=-1) {
             aciReceiveHandler(data);
-            result = ::read(_bus->_port_state, &data, 1);
+            result = ::read(_bus._port_state, &data, 1);
         }
         aciEngine();
         usleep(10000);
     }
 }
-
-
-
-
-
 
 void versions(struct ACI_INFO aciInfo) {
     printf("******************** Versions *******************\n");
@@ -111,3 +79,18 @@ void versions(struct ACI_INFO aciInfo) {
     printf("* MAX_VAR_PACKETS\t%d\t=\t\%d\t*\n",aciInfo.maxVarPackets,MAX_VAR_PACKETS);
     printf("*************************************************\n");
 }
+
+
+/**
+*   Explicit template instantiation.
+*   MUST be kept at the end of this file,
+*   don't move!
+*/
+#include "explicits_templates.hpp"
+
+
+
+
+
+
+
