@@ -48,7 +48,7 @@ namespace acc
 
         template<class... BUS_ARGS>
         static Engine& init(BUS_ARGS... args_) {
-            auto argst = std::tuple<BUS_ARGS...>(args_...);
+            std::tuple<BUS_ARGS...> argst(args_...);
             static Engine<BUS> engine(std::move(BUS(argst)));
             return engine;
         }
@@ -60,9 +60,9 @@ namespace acc
         Engine(Engine const&) = delete;
         void operator=(Engine const&) = delete;
 
-        Bus
+        Bus*
         bus() {
-            return _bus;
+            return &_bus;
         }
         
         void 

@@ -54,22 +54,34 @@ namespace acc
     public:
         template<class BUS> friend class Engine;
 
+        /**
+        *   Constructor. 
+        */
         SerialBus(std::tuple<std::string, int> args) {
             name = __func__;
             _port = std::get<0>(args);
             _port_state = std::get<1>(args);
         };
-        ~SerialBus() { close(); };
-
         /**
-        *   Deleted copy constructor and
-        *   copy operator.
+        *   Copy Constructor.
         */
-        SerialBus(SerialBus const& sb) {
-            name = __func__;
-            // TODO;
-        };
+        SerialBus(const SerialBus& SB) {
+            name = SB.name;
+            _port = SB._port;
+            _port_state = SB._port_state;
+            _open = SB._open;
+            _port_settings = SB._port_settings;
+            _baud = SB._baud;
+        }
+        /**
+        *   Deleted copy operator.
+        */
         void operator=(SerialBus const&) = delete;
+        /**
+        *   Destructor, close the port if
+        *   open.
+        */
+        ~SerialBus() { close(); };
 
         void 
         set_baud(int baud) {
