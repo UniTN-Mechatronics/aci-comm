@@ -2,17 +2,38 @@
 #include "commons.hpp"
 
 void versions(struct ACI_INFO);
+
                                             
 /**
-*   [TEMP]
+*   Anonymous namespace for 
+*   global variables, is the 
+*   same as declaring static
+*   variables.
 */
-int *global_port_ptr = NULL;
+namespace  
+{
+    /**
+    *   Pointer to the bus 
+    *   port state. Used by 
+    *   the *transmit* lambda.
+    *   Pointing at the Bus member
+    *   variable.
+    */
+    int *bus_port;   
+}
 
 
 acc::Engine& 
 acc::Engine::init(Bus *bus_) {
-    static acc::Engine instance(bus_);
-    return instance;
+    static acc::Engine engine(bus_);
+    return engine;
+}
+
+acc::Engine& 
+acc::Engine::init(Bus *bus_, Packet *packet_) {
+    static acc::Engine engine(bus_);
+    engine.set_packet(packet_);
+    return engine;
 }
 
 void 
@@ -20,18 +41,14 @@ acc::Engine::start() {
     if (_aci_thread_run) return;
     if (packet == NULL) throw std::runtime_error("packet is NOT set");
     try {
-        bus->open();
-        global_port_ptr = &bus->_port_state;
+        _bus->open();
+        bus_port = &_bus->_port_state;
         aciInit();
-
         auto lb = [](void* byte, unsigned short cnt) -> void {
             unsigned char *tbyte = (unsigned char *)byte;
-            for (int i = 0; i < cnt; i++) {
-                ::write(*global_port_ptr, &tbyte[i], 1);
-            }
+            for (int i = 0; i < cnt; i++) ::write(*bus_port, &tbyte[i], 1);
         };
         aciSetSendDataCallback(lb);
-        
         aciInfoPacketReceivedCallback(&versions);
         aciSetEngineRate(100, 10);
         _launch_aci_thread();
@@ -68,10 +85,10 @@ acc::Engine::_aci_thread_runner() {
     int result = 0;
     unsigned char data = 0;
     while (_aci_thread_run) {
-        result = ::read(bus->_port_state, &data, 1);
+        result = ::read(_bus->_port_state, &data, 1);
         while (result!=-1) {
             aciReceiveHandler(data);
-            result = ::read(bus->_port_state, &data, 1);
+            result = ::read(_bus->_port_state, &data, 1);
         }
         aciEngine();
         usleep(10000);

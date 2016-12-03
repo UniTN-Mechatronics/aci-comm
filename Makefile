@@ -1,6 +1,6 @@
 # Compiling
-CC=gcc -O3
-CXX=g++ -O3
+CC=gcc -O1
+CXX=g++ -O1
 INCPATH=-Iinclude -Iasctec
 SRCPATH=src/
 SRCPATHASCTEC=asctec/

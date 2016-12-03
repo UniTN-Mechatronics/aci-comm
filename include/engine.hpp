@@ -39,13 +39,12 @@ namespace acc
     class Engine
     {
     public:
-        Bus *bus; // TODO: replace to unique_pointer
-        Packet *packet = NULL; // TODO: replace to unique_pointer
-
+        
         /**
-        *   Singleton constructor
+        *   Singleton constructors.
         */
-        static Engine& init(Bus *bus_);     
+        static Engine& init(Bus *bus_);   
+        static Engine& init(Bus *bus_, Packet *packet_);     
 
         /**
         *   Deleted copy constructor and
@@ -53,12 +52,28 @@ namespace acc
         */
         Engine(Engine const&) = delete;
         void operator=(Engine const&) = delete;
+
+        Bus* 
+        bus() {
+            return _bus;
+        }
         
+        void 
+        set_packet(Packet *pck) {
+            packet = pck;
+        }
+
         /**
         *   Start port setup,
-        *   start threads ecc..
+        *   start aci_thread,
+        *   load the packet workload.
+        *
+        *   Throws when:
+        *   * bus cannot be opened
+        *   * the port confs cannot be applied
+        *   * the packet is not setted
         */
-        void start();
+        void start() noexcept(false);
 
         /**
         *   Join the aci_thread to
@@ -66,10 +81,13 @@ namespace acc
         */
         void stop();
         
-        void read() {
+        void 
+        read() {
             assert("Function not implemented yet!");
         }
-        void write() {
+
+        void 
+        write() {
             assert("Function not implemented yet!");
         }
 
@@ -78,7 +96,7 @@ namespace acc
         *   Private constructor.
         */
         Engine(Bus *bus_) 
-            : bus(bus_), 
+            : _bus(bus_), 
             _aci_thread_run(false),
             _aci_thread_sem(1) {};
 
@@ -86,7 +104,10 @@ namespace acc
         *   Private destructor.
         */
         ~Engine() { stop(); }
-        
+
+        Bus *_bus; 
+        Packet *packet = NULL; 
+
         /**
         *   The thread where the 
         *   aci_callback lives.
@@ -112,7 +133,6 @@ namespace acc
         */
         void _aci_thread_runner();
     };
-
 
 }; // End namespace
 
