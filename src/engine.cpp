@@ -23,14 +23,13 @@ acc::Engine<BUS>::start() {
     if (_aci_thread_run) return;
     if (packet == NULL) throw std::runtime_error("packet is NOT set");
     try {
-        _bus.open();
+        _bus.open(); // Can throw.
         bus_port = &_bus._port_state;
         aciInit();
-        auto lb = [](void* byte, unsigned short cnt) -> void {
+        aciSetSendDataCallback([](void* byte, unsigned short cnt) -> void {
             unsigned char *tbyte = (unsigned char *)byte;
             for (int i = 0; i < cnt; i++) ::write(*bus_port, &tbyte[i], 1);
-        };
-        aciSetSendDataCallback(lb);
+        });
         aciInfoPacketReceivedCallback(&versions);
         aciSetEngineRate(100, 10);
         _launch_aci_thread();
@@ -50,7 +49,7 @@ acc::Engine<BUS>::stop() {
 template<class BUS> void 
 acc::Engine<BUS>::_launch_aci_thread() {
     _aci_thread_run = true;
-    _aci_thread = std::thread(&acc::Engine<BUS>::_aci_thread_runner, this);
+     std::thread _aci_thread(&acc::Engine<BUS>::_aci_thread_runner, this);
 }
         
 template<class BUS> void 

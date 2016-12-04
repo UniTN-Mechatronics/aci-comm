@@ -8,17 +8,17 @@
 *
 *   Explicit template instantiation.
 *   Needed in order to keep the Engine
-*   implementation in the .cpp file,
+*   implementation in the source file,
 *   so we can use the anonymous namespace
-*   in the .cpp.
+*   in the source.
 */
 template class acc::Engine<acc::SerialBus>;
 
 
-/** 
-*	So if we will develop an acc::I2CBus, we 
-*	will need to uncomment the following:
-*/
+
+//	So if we will develop an acc::I2CBus, we 
+//	will need to uncomment the following:
+//
 // template class acc::Engine<acc::I2CBus>;
 
 

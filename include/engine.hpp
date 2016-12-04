@@ -46,12 +46,36 @@ namespace acc
     {
     public:
 
+        /**
+        *   Singleton instace creator.
+        *   Takes an arbitrary number
+        *   of arguments, than wrap the args
+        *   in a std::tuple, and call the private
+        *   constructor with the BUS(argst).
+        */
         template<class... BUS_ARGS>
         static Engine& init(BUS_ARGS... args_) {
             std::tuple<BUS_ARGS...> argst(args_...);
             static Engine<BUS> engine(std::move(BUS(argst)));
             return engine;
         }
+
+    private:
+
+        /**
+        *   Private constructor.
+        */
+        Engine(BUS&& bus_) : 
+            _bus(bus_), 
+            _aci_thread_run(false),
+            _aci_thread_sem(1) {};
+
+        /**
+        *   Private destructor.
+        */
+        ~Engine() { stop(); }
+
+    public:
 
         /**
         *   Deleted copy constructor and
@@ -60,11 +84,18 @@ namespace acc
         Engine(Engine const&) = delete;
         void operator=(Engine const&) = delete;
 
-        Bus*
+        /**
+        *   Returns the pointer to
+        *   the BUS instance.
+        */
+        BUS*
         bus() {
             return &_bus;
         }
-        
+
+        /**
+        *   Under develop.
+        */
         void 
         set_packet(Packet *pck) {
             packet = pck;
@@ -82,6 +113,10 @@ namespace acc
         */
         void start();
 
+        /**
+        *   Join the aci_thread to the
+        *   main thread.
+        */
         void stop();
 
         void 
@@ -95,19 +130,6 @@ namespace acc
         }
 
     private:
-        /**
-        *   Private constructor.
-        */
-        Engine(BUS&& bus_) : 
-            _bus(bus_), 
-            _aci_thread_run(false),
-            _aci_thread_sem(1) {};
-
-        /**
-        *   Private destructor.
-        */
-        ~Engine() { stop(); }
-
         BUS _bus;
         Packet *packet = NULL; 
 

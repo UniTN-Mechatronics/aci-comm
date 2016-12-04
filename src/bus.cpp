@@ -1,7 +1,6 @@
 #include "bus.hpp"
 
 
-
 void 
 acc::SerialBus::open() {
     #if ACICOMM_TTY_INFO == 1
@@ -29,10 +28,10 @@ acc::SerialBus::_setup_port() {
     tcgetattr(_port_state, &_port_settings);
     cfsetispeed(&_port_settings, _baud);    
     cfsetospeed(&_port_settings, _baud);    
-    _port_settings.c_cflag = _baud | CS8 | CREAD | CLOCAL;
-    _port_settings.c_iflag = IGNPAR;
-    _port_settings.c_oflag = 0;
-    _port_settings.c_lflag = 0;
+    _port_settings.c_cflag = _baud || def_port_settings.c_cflag;
+    _port_settings.c_iflag = def_port_settings.c_iflag;
+    _port_settings.c_oflag = def_port_settings.c_oflag;
+    _port_settings.c_lflag = def_port_settings.c_lflag;
     if(tcsetattr(_port_state, TCSANOW, &_port_settings) != 0) {
         throw std::runtime_error("cannot apply settings to port");
     }

@@ -7,12 +7,13 @@ SRCPATHASCTEC=asctec/
 CFLAGS=-c -ansi -std=c99 
 CXXFLAGS=-Wall -std=c++11 
 
+# Aci C object
 OBJECTC=acic.o
 
 # Linking
 LIBS=-lm -lpthread
 
-# Source & Target
+# Source
 CSOURCES=$(SRCPATHASCTEC)asctecCommIntf.c 
 CXXSOURCES=main.cpp $(SRCPATH)engine.cpp $(SRCPATH)bus.cpp $(SRCPATH)packet.cpp 
 
@@ -22,7 +23,6 @@ aci_engine:
 	$(MKDIR)
 	$(CC) $(CSOURCES) $(CFLAGS) -o $(OBJECTC)
 	$(CXX) $(CXXFLAGS) $(INCPATH) $(CXXSOURCES) $(OBJECTC) $(LIBS) -o aci_engine
-
 
 .PHONY: clean
 

@@ -10,9 +10,13 @@ testcase() {
 
         // Create an Engine with a SerialBus.
         // The init arguments are the SerialBus
-        // args. *ae* is pointer to the singleton
+        // args. *ae* is a pointer to the singleton
         // instance of Engine.
-        auto ae = &Engine<SerialBus>::init(port, -1);
+        auto ae = &Engine<SerialBus>::init(port, SerialBus::def_baud());
+
+        // How to access to the bus [Example, not needed].
+        ae->bus()->def_port_settings.c_oflag = 0;
+
         // Set a workload packet.
         ae->set_packet(new Packet);
         // Start the transmission.
