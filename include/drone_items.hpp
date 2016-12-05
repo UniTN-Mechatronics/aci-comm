@@ -47,6 +47,16 @@ namespace acc
             return &_value;
         }
 
+        bool
+        can_be_read() {
+            return _rw == DIP::READ;
+        }
+
+        bool
+        can_be_written() {
+            return _rw == DIP::WRITE;
+        }
+
         int pck;
 
     protected:

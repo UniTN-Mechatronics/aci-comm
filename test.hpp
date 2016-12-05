@@ -19,13 +19,14 @@ testcase() {
         //ae->bus()->settings.baud = B57600;
 
         ae->add_read({"angle_pitch"}); 
-        ae->add_read({"angle_roll"}, 1);
-
+        ae->add_read({"angle_roll", "angle_yaw"}, 1);
         ae->start();
+
         int i = 0;
         while(i < 1000) {
             std::cout << "Angle_pitch: " <<  ae->read("angle_pitch") << std::endl;
             std::cout << "Angle_roll: " <<  ae->read("angle_roll") << std::endl;
+            std::cout << "Angle_yaw: " <<  ae->read("angle_yaw") << std::endl;
             usleep(10000);
             ++i;
         }

@@ -19,7 +19,7 @@ namespace
     /**
     *   Pointer to the bus 
     *   port state. Used by 
-    *   the *transmit* lambda.
+    *   the *transmit* callback.
     *   Pointing at the Bus member
     *   variable.
     */
@@ -43,7 +43,9 @@ namespace
 template<class BUS> void 
 acc::Engine<BUS>::start() {
     if (_aci_thread_run) return;
-    if (_requsted_vars.empty()) throw std::runtime_error("no reads set!");
+    if (_requsted_vars.empty() && _requsted_cmds.empty()) {
+        throw std::runtime_error("Neither reads or writes are set!");
+    }
     try {
         _bus.open(); // Can throw.
         _bus_port = &_bus._port_state;
@@ -115,9 +117,8 @@ acc::Engine<BUS>::add_read(std::initializer_list<std::string> reads, int pck) {
     std::map<std::string, DroneItem>::iterator it;
     for (auto &r : reads) {
         it = _map_var_cmd.find(r);
-        if (it == _map_var_cmd.end()) {
-            throw std::runtime_error("This entry read key not exist: " + r);
-        }
+        if (it == _map_var_cmd.end()) throw std::runtime_error("This entry read key not exist: " + r);
+        if (!it->second.can_be_read()) throw std::runtime_error("This entry read cannot be read: " + r);
         _requsted_vars.insert(std::make_pair(r, it->second));
         std::map<std::string, DroneItem>::iterator it2;
         it2 = _map_var_cmd.find(r);
@@ -126,7 +127,7 @@ acc::Engine<BUS>::add_read(std::initializer_list<std::string> reads, int pck) {
 }
 
 template<class BUS> int 
-acc::Engine<BUS>::read(std::string key_read) {
+acc::Engine<BUS>::read(std::string key_read, bool pretty_print) {
     std::cout << "Start read" << std::endl;
     for (std::map<std::string, DroneItem>::iterator it=_requsted_vars.begin(); 
         it!=_requsted_vars.end(); ++it) 
@@ -140,6 +141,7 @@ acc::Engine<BUS>::read(std::string key_read) {
 
 template<class BUS> void 
 acc::Engine<BUS>::_set_reads() {
+    assert("Function is not active");
     std::cout << "set reads" << std::endl;
     for (std::map<std::string, DroneItem>::iterator it=_requsted_vars.begin(); 
         it!=_requsted_vars.end(); ++it) 
@@ -194,7 +196,7 @@ c_api_reads_callback() {
         aciAddContentToVarPacket(it->second.pck, it->second.num_id(), it->second.value_ptr()); 
     }
     std::sort(pkc_idx.begin(), pkc_idx.end());
-    pkc_idx.erase(std::unique(pkc_idx.begin(), pkc_idx.end() ), pkc_idx.end());
+    pkc_idx.erase(std::unique(pkc_idx.begin(), pkc_idx.end()), pkc_idx.end());
     for (auto &i : pkc_idx) {
         aciSetVarPacketTransmissionRate(i,10);
         aciVarPacketUpdateTransmissionRates();

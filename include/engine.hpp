@@ -118,7 +118,11 @@ namespace acc
         */
         void stop();
 
-        int read(std::string key_read);  
+        int 
+        read(std::string key_read, bool pretty_print = false);
+
+        std::vector<int> 
+        read(std::initializer_list<std::string> reads, bool pretty_print = false);  
 
         void write();
 
