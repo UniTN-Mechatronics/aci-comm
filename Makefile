@@ -20,7 +20,6 @@ CXXSOURCES=main.cpp $(SRCPATH)engine.cpp $(SRCPATH)bus.cpp $(SRCPATH)packet.cpp
 all: aci_engine
 
 aci_engine: 
-	$(MKDIR)
 	$(CC) $(CSOURCES) $(CFLAGS) -o $(OBJECTC)
 	$(CXX) $(CXXFLAGS) $(INCPATH) $(CXXSOURCES) $(OBJECTC) $(LIBS) -o aci_engine
 

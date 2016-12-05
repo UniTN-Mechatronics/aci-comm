@@ -53,14 +53,15 @@ namespace acc
     {
     public:
         template<class BUS> friend class Engine;
+        typedef std::tuple<std::string, int> Args;
 
         /**
         *   Constructor. 
         */
-        SerialBus(std::tuple<std::string, int> args) {
+        SerialBus(Args args) {
             name = __func__;
             _port = std::get<0>(args);
-            _baud = std::get<1>(args);
+            settings.baud = std::get<1>(args);
             _port_state = -1;
         };
         /**
@@ -72,7 +73,7 @@ namespace acc
             _port_state = SB._port_state;
             _open = SB._open;
             _port_settings = SB._port_settings;
-            _baud = SB._baud;
+            settings = SB.settings;
         }
         /**
         *   Deleted copy operator.
@@ -84,23 +85,14 @@ namespace acc
         */
         ~SerialBus() { close(); };
 
-        void 
-        set_baud(int baud) {
-            _baud = baud;
-        }
-
         struct PortSettings
         {
-            int c_cflag = B57600 | CS8 | CREAD | CLOCAL;
+            int baud    = B57600;
+            int c_cflag = baud | CS8 | CREAD | CLOCAL;
             int c_iflag = IGNPAR;
             int c_oflag = 0;
             int c_lflag = 0;
-        } def_port_settings;
-
-        static int
-        def_baud() {
-            return B57600;
-        }
+        } settings;
 
     protected:
         /**
@@ -113,7 +105,6 @@ namespace acc
     private:
         std::string _port;
         termios _port_settings;
-        int _baud = B57600;
         bool _open = false;
 
         void _setup_port();

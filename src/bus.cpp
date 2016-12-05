@@ -26,12 +26,12 @@ acc::SerialBus::close() {
 void 
 acc::SerialBus::_setup_port() {
     tcgetattr(_port_state, &_port_settings);
-    cfsetispeed(&_port_settings, _baud);    
-    cfsetospeed(&_port_settings, _baud);    
-    _port_settings.c_cflag = _baud || def_port_settings.c_cflag;
-    _port_settings.c_iflag = def_port_settings.c_iflag;
-    _port_settings.c_oflag = def_port_settings.c_oflag;
-    _port_settings.c_lflag = def_port_settings.c_lflag;
+    cfsetispeed(&_port_settings, settings.baud);    
+    cfsetospeed(&_port_settings, settings.baud);    
+    _port_settings.c_cflag = settings.c_cflag;
+    _port_settings.c_iflag = settings.c_iflag;
+    _port_settings.c_oflag = settings.c_oflag;
+    _port_settings.c_lflag = settings.c_lflag;
     if(tcsetattr(_port_state, TCSANOW, &_port_settings) != 0) {
         throw std::runtime_error("cannot apply settings to port");
     }

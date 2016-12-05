@@ -3,9 +3,8 @@
 #ifdef __cplusplus
 
 extern "C" {
-	#include "asctecCommIntf.h"
+    #include "asctecCommIntf.h"
 }
-
 
 #endif // __cplusplus
 #endif // _ACI_COMM_COMMONS_HPP_

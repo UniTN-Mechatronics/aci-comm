@@ -30,7 +30,8 @@ acc::Engine<BUS>::start() {
             unsigned char *tbyte = (unsigned char *)byte;
             for (int i = 0; i < cnt; i++) ::write(*bus_port, &tbyte[i], 1);
         });
-        aciInfoPacketReceivedCallback(&versions);
+        packet->func(); 
+        //aciInfoPacketReceivedCallback(&versions);
         aciSetEngineRate(100, 10);
         _launch_aci_thread();
         aciCheckVerConf();
@@ -49,7 +50,7 @@ acc::Engine<BUS>::stop() {
 template<class BUS> void 
 acc::Engine<BUS>::_launch_aci_thread() {
     _aci_thread_run = true;
-     std::thread _aci_thread(&acc::Engine<BUS>::_aci_thread_runner, this);
+    _aci_thread = std::thread(&acc::Engine<BUS>::_aci_thread_runner, this);
 }
         
 template<class BUS> void 
@@ -58,7 +59,7 @@ acc::Engine<BUS>::_aci_thread_runner() {
     unsigned char data = 0;
     while (_aci_thread_run) {
         result = ::read(_bus._port_state, &data, 1);
-        while (result!=-1) {
+        while (result != -1) {
             aciReceiveHandler(data);
             result = ::read(_bus._port_state, &data, 1);
         }

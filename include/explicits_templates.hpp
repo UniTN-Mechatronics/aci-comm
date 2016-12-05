@@ -3,8 +3,8 @@
 #ifdef __cplusplus
 
 /**
-*	Include this file at the end of 
-*	the *engine.cpp* file.
+*   Include this file at the end of 
+*   the *engine.cpp* file.
 *
 *   Explicit template instantiation.
 *   Needed in order to keep the Engine
@@ -16,8 +16,8 @@ template class acc::Engine<acc::SerialBus>;
 
 
 
-//	So if we will develop an acc::I2CBus, we 
-//	will need to uncomment the following:
+//  So if we will develop an acc::I2CBus, we 
+//  will need to uncomment the following:
 //
 // template class acc::Engine<acc::I2CBus>;
 
