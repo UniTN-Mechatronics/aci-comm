@@ -18,7 +18,8 @@ testcase() {
         // How to access to the bus [Example, not needed].
         //ae->bus()->settings.baud = B57600;
 
-        ae->add_read({"angle_pitch", "angle_roll"});
+        ae->add_read({"angle_pitch"}); 
+        ae->add_read({"angle_roll"}, 1);
 
         ae->start();
         int i = 0;

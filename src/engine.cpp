@@ -1,5 +1,12 @@
 #include "engine.hpp"
 
+/**
+*   C API Callbacks
+*/
+void c_api_transmit_callback(void*, unsigned short);
+void c_api_versions_callback(struct ACI_INFO);
+void c_api_reads_callback(void);
+void c_api_writes_callback(void);
 
 /**
 *   Anonymous namespace for 
@@ -16,59 +23,48 @@ namespace
     *   Pointing at the Bus member
     *   variable.
     */
-    int *bus_port;   
-    int version_callback = 0;
-    int reads_callback = 0;
+    int *_bus_port;   
+    int _version_callback = 0;
+    int _reads_callback = 0;
     std::map<std::string, acc::DroneItem> _requsted_vars;
+    std::map<std::string, acc::DroneItem&> _requsted_cmds;
 }
 
-                               
+
+/*
+*    _____             _            _____                     
+*   | ____|_ __   __ _(_)_ __   ___|  ___|   _ _ __   ___ ___ 
+*   |  _| | '_ \ / _` | | '_ \ / _ \ |_ | | | | '_ \ / __/ __|
+*   | |___| | | | (_| | | | | |  __/  _|| |_| | | | | (__\__ \
+*   |_____|_| |_|\__, |_|_| |_|\___|_|   \__,_|_| |_|\___|___/
+*                |___/                                        
+*
+*/                            
 template<class BUS> void 
 acc::Engine<BUS>::start() {
     if (_aci_thread_run) return;
     if (_requsted_vars.empty()) throw std::runtime_error("no reads set!");
     try {
         _bus.open(); // Can throw.
-        bus_port = &_bus._port_state;
-        version_callback = 0;
-        reads_callback = 0;
+        _bus_port = &_bus._port_state;
         aciInit();
-        aciSetSendDataCallback([](void* byte, unsigned short cnt) -> void {
-            unsigned char *tbyte = (unsigned char *)byte;
-            for (int i = 0; i < cnt; i++) {
-                ::write(*bus_port, &tbyte[i], 1);
-            }
-        });
-        
-        // Version 
-        aciInfoPacketReceivedCallback(&versions);
-
-        // Read
-        aciSetVarListUpdateFinishedCallback(&varListUpdateFinished);
-        
-        // Write
-        //aciSetCmdListUpdateFinishedCallback(&cmdListUpdateFinished);
+        aciSetSendDataCallback(&c_api_transmit_callback);
+        aciInfoPacketReceivedCallback(&c_api_versions_callback); // Version 
+        aciSetVarListUpdateFinishedCallback(&c_api_reads_callback); // Read
+        //aciSetCmdListUpdateFinishedCallback(&cmdListUpdateFinished); // Write
 
         aciSetEngineRate(100, 10);
         _launch_aci_thread();
         
-        // Version
-        aciCheckVerConf();
-        while(!version_callback) usleep(1000);
+        aciCheckVerConf(); // Version
+        while(!_version_callback) usleep(1000);
         
-        // Read
-        aciGetDeviceVariablesList();
-        while(!reads_callback) usleep(1000);
+        aciGetDeviceVariablesList(); // Read
+        while(!_reads_callback) usleep(1000);
+        
+        /*ciGetDeviceCommandsList(); // Write
+        while(!writes_callback) usleep(1000);*/
 
-        usleep(1000);
-        // Write
-        //ciGetDeviceCommandsList();
-
-        //while(!reads_callback) {};
-        //_set_reads();
-
-        //aciGetVarPacketRateFromDevice();
-        //aciSendParamLoad();
     } catch (std::runtime_error e) {
         throw e;
     }
@@ -79,6 +75,10 @@ acc::Engine<BUS>::stop() {
     if (!_aci_thread_run) return;
     _aci_thread_run = false;
     _aci_thread.join();
+    _requsted_vars.clear();
+    _requsted_cmds.clear();
+    _version_callback = 0;
+    _reads_callback = 0;
 }
 
 template<class BUS> void 
@@ -111,7 +111,7 @@ acc::Engine<BUS>::_aci_thread_runner() {
 }
 
 template<class BUS> void 
-acc::Engine<BUS>::add_read(std::initializer_list<std::string> reads) {
+acc::Engine<BUS>::add_read(std::initializer_list<std::string> reads, int pck) {
     std::map<std::string, DroneItem>::iterator it;
     for (auto &r : reads) {
         it = _map_var_cmd.find(r);
@@ -119,6 +119,9 @@ acc::Engine<BUS>::add_read(std::initializer_list<std::string> reads) {
             throw std::runtime_error("This entry read key not exist: " + r);
         }
         _requsted_vars.insert(std::make_pair(r, it->second));
+        std::map<std::string, DroneItem>::iterator it2;
+        it2 = _map_var_cmd.find(r);
+        it2->second.pck = pck;
     }
 }
 
@@ -148,7 +151,26 @@ acc::Engine<BUS>::_set_reads() {
     aciSendVariablePacketConfiguration(0);
 }
 
-void versions(struct ACI_INFO aciInfo) {
+
+/*
+*     ____      _ _ _                _                   ____ 
+*    / ___|__ _| | | |__   __ _  ___| | _____           / ___|
+*   | |   / _` | | | '_ \ / _` |/ __| |/ / __|  _____  | |    
+*   | |__| (_| | | | |_) | (_| | (__|   <\__ \ |_____| | |___ 
+*    \____\__,_|_|_|_.__/ \__,_|\___|_|\_\___/          \____|
+*                                                                                                                                                                                                       
+*/
+void 
+c_api_transmit_callback(void* byte, unsigned short cnt)
+{
+    unsigned char *tbyte = (unsigned char *)byte;
+    for (int i = 0; i < cnt; i++) {
+        ::write(*_bus_port, &tbyte[i], 1);
+    }
+}
+
+void 
+c_api_versions_callback(struct ACI_INFO aciInfo) {
     printf("******************** Versions *******************\n");
     printf("* Type\t\t\tDevice\t\tRemote\t*\n");
     printf("* Major version\t\t%d\t=\t\%d\t*\n", aciInfo.verMajor,ACI_VER_MAJOR);
@@ -158,32 +180,31 @@ void versions(struct ACI_INFO aciInfo) {
     printf("* MAX_UNIT_LENGTH\t%d\t=\t\%d\t*\n", aciInfo.maxUnitLength,MAX_UNIT_LENGTH);
     printf("* MAX_VAR_PACKETS\t%d\t=\t\%d\t*\n", aciInfo.maxVarPackets,MAX_VAR_PACKETS);
     printf("*************************************************\n");
-    version_callback = 1;
+    _version_callback = 1;
 }
 
 void 
-varListUpdateFinished() {
+c_api_reads_callback() {
     printf("variables updated\n");
+    std::vector<int> pkc_idx;
     for (std::map<std::string, acc::DroneItem>::iterator it=_requsted_vars.begin(); 
         it!=_requsted_vars.end(); ++it) 
     {
-        aciAddContentToVarPacket(0, it->second.num_id(), it->second.value_ptr()); 
+        pkc_idx.push_back(it->second.pck);
+        aciAddContentToVarPacket(it->second.pck, it->second.num_id(), it->second.value_ptr()); 
     }
-    aciSetVarPacketTransmissionRate(0,10);
-    aciVarPacketUpdateTransmissionRates();
-    aciSendVariablePacketConfiguration(0);
-    reads_callback = 1;
-    
-    //printf("reads_callback: %d\n", reads_callback);
-    //aciAddContentToVarPacket(0,0x0203, &acc_x);
-    //aciSetVarPacketTransmissionRate(0,10);
-    //aciVarPacketUpdateTransmissionRates();
-    //aciSendVariablePacketConfiguration(0);
-    //var_getted=1;
+    std::sort(pkc_idx.begin(), pkc_idx.end());
+    pkc_idx.erase(std::unique(pkc_idx.begin(), pkc_idx.end() ), pkc_idx.end());
+    for (auto &i : pkc_idx) {
+        aciSetVarPacketTransmissionRate(i,10);
+        aciVarPacketUpdateTransmissionRates();
+        aciSendVariablePacketConfiguration(i);
+    }
+    _reads_callback = 1;
 }
 
 void 
-cmdListUpdateFinished() {
+c_api_writes_callback() {
     printf("command list getted!\n");
     /*aciAddContentToCmdPacket(0, 0x0500, &motor1);
     aciAddContentToCmdPacket(0, 0x0501, &motor2);
@@ -206,7 +227,15 @@ cmdListUpdateFinished() {
     cmd_ready=1;*/
 }
 
-
+/*
+*    _____         _____                _ 
+*   | ____|_  ____|_   _| __ ___  _ __ | |
+*   |  _| \ \/ / __|| || '_ ` _ \| '_ \| |
+*   | |___ >  < (__ | || | | | | | |_) | |
+*   |_____/_/\_\___||_||_| |_| |_| .__/|_|
+*                                |_|      
+*   
+*/
 /**
 *   Explicit template instantiation.
 *   MUST be kept at the end of this file,
@@ -215,7 +244,8 @@ cmdListUpdateFinished() {
 #include "explicits_templates.hpp"
 
 
-
+//aciGetVarPacketRateFromDevice();
+//aciSendParamLoad();
 
 
 

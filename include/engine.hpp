@@ -7,6 +7,7 @@
 #include <iostream>
 #include <tuple>
 #include <map>
+#include <vector>
 #include <assert.h>
 
 #ifndef _ACI_COMM_BUS_HPP_
@@ -24,10 +25,6 @@
 #ifndef _ACI_DRONE_ITEMS_HPP_
     #include "drone_items.hpp"
 #endif
-
-void versions(struct ACI_INFO);
-void varListUpdateFinished(void);
-void cmdListUpdateFinished(void);
 
 namespace acc 
 {
@@ -101,7 +98,7 @@ namespace acc
             return &_bus;
         }
 
-        void add_read(std::initializer_list<std::string> reads);
+        void add_read(std::initializer_list<std::string> reads, int pck = 0);
   
         /**
         *   Start port setup,
@@ -146,8 +143,6 @@ namespace acc
         *   The dictionary
         */
         std::map<std::string, DroneItem> _map_var_cmd;
-
-        std::map<std::string, DroneItem&> _requsted_cmds;
 
         void _alloc_map_var_cmd();
         void _launch_aci_thread();
