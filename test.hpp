@@ -4,7 +4,8 @@
 void 
 testcase() {
     using namespace acc;
-    
+    Engine<SerialBus>* ae;
+
     try {
         std::string port = "/dev/tty.usbserial-A504DRSI";
 
@@ -12,35 +13,42 @@ testcase() {
         // The init arguments are the SerialBus
         // args. *ae* is a pointer to the singleton
         // instance of Engine.
-        auto ae = &Engine<SerialBus>::init(port, B57600);
+        ae = &Engine<SerialBus>::init(port, B57600);
 
         // How to access to the bus [Example, not needed].
-        ae->bus()->settings.baud = B57600;
+        //ae->bus()->settings.baud = B57600;
 
-        // Set a workload packet.
-        ae->set_packet(new Packet([]() {
-            aciInfoPacketReceivedCallback([](struct ACI_INFO aciInfo) -> void {
-                printf("******************** Versions *******************\n");
-                printf("* Type\t\t\tDevice\t\tRemote\t*\n");
-                printf("* Major version\t\t%d\t=\t\%d\t*\n",aciInfo.verMajor,ACI_VER_MAJOR);
-                printf("* Minor version\t\t%d\t=\t\%d\t*\n",aciInfo.verMinor,ACI_VER_MINOR);
-                printf("* MAX_DESC_LENGTH\t%d\t=\t\%d\t*\n",aciInfo.maxDescLength,MAX_DESC_LENGTH);
-                printf("* MAX_NAME_LENGTH\t%d\t=\t\%d\t*\n",aciInfo.maxNameLength,MAX_NAME_LENGTH);
-                printf("* MAX_UNIT_LENGTH\t%d\t=\t\%d\t*\n",aciInfo.maxUnitLength,MAX_UNIT_LENGTH);
-                printf("* MAX_VAR_PACKETS\t%d\t=\t\%d\t*\n",aciInfo.maxVarPackets,MAX_VAR_PACKETS);
-                printf("*************************************************\n");
-            });
-        }));
-        // Start the transmission.
+        ae->add_read({"angle_pitch", "angle_roll"});
+
         ae->start();
-
-        // If we don't sleep, the function returns
-        // without waiting the callbacks. [TEMP] 
-        sleep(4);
-
+        int i = 0;
+        while(i < 1000) {
+            std::cout << "Angle_pitch: " <<  ae->read("angle_pitch") << std::endl;
+            std::cout << "Angle_roll: " <<  ae->read("angle_roll") << std::endl;
+            usleep(10000);
+            ++i;
+        }
     } catch (std::runtime_error e) {
         std::cout << "Exception: " << e.what() << std::endl;
+        ae->stop();
     } catch (...) {
         std::cout << "!!! Unexpected error !!!" << std::endl;
+        ae->stop();
     }
 }
+
+     /*ae->add_read(1, "angle_pitch", "angle_roll", "angle_yaw");
+        ae->add_def_read(angles);
+        ae->add_write(0, "pitch");
+        ae->add_def_write(0, thurst);
+        // Start the transmission. // Add return only when all is setted
+        ae->start();
+        sleep(2); // Remove
+        auto value_pitch = ae->read("angle_pitch");
+        auto values_angle = ae->read(angles.name);
+        ae->write_now("pitch", 0.678);
+        ae->write(thurst, [0,1,0,1]);
+        ae->apply(); // apply the write only commands
+        */
+        // If we don't sleep, the function returns
+        // without waiting the callbacks. [TEMP] 

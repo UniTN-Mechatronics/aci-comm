@@ -25,7 +25,9 @@ acc::SerialBus::close() {
 
 void 
 acc::SerialBus::_setup_port() {
-    tcgetattr(_port_state, &_port_settings);
+    if (tcgetattr(_port_state, &_port_settings) != 0) {
+        throw std::runtime_error(name + " cannot get params!");
+    }
     cfsetispeed(&_port_settings, settings.baud);    
     cfsetospeed(&_port_settings, settings.baud);    
     _port_settings.c_cflag = settings.c_cflag;

@@ -6,6 +6,7 @@
 #include <atomic>
 #include <iostream>
 #include <tuple>
+#include <map>
 #include <assert.h>
 
 #ifndef _ACI_COMM_BUS_HPP_
@@ -20,8 +21,13 @@
 #ifndef _ACI_COMM_COMMONS_HPP_
     #include "commons.hpp"
 #endif
+#ifndef _ACI_DRONE_ITEMS_HPP_
+    #include "drone_items.hpp"
+#endif
 
 void versions(struct ACI_INFO);
+void varListUpdateFinished(void);
+void cmdListUpdateFinished(void);
 
 namespace acc 
 {
@@ -68,7 +74,9 @@ namespace acc
         Engine(BUS&& bus_) : 
             _bus(bus_), 
             _aci_thread_run(false),
-            _aci_thread_sem(1) {};
+            _aci_thread_sem(1) {
+            _alloc_map_var_cmd();
+        };
 
         /**
         *   Private destructor.
@@ -93,14 +101,8 @@ namespace acc
             return &_bus;
         }
 
-        /**
-        *   Under develop.
-        */
-        void 
-        set_packet(Packet *pck) {
-            packet = pck;
-        }
-
+        void add_read(std::initializer_list<std::string> reads);
+  
         /**
         *   Start port setup,
         *   start aci_thread,
@@ -119,19 +121,12 @@ namespace acc
         */
         void stop();
 
-        void 
-        read() {
-            assert("Function not implemented yet!");
-        }
+        int read(std::string key_read);  
 
-        void 
-        write() {
-            assert("Function not implemented yet!");
-        }
+        void write();
 
     private:
         BUS _bus;
-        Packet *packet = NULL; 
 
         /**
         *   The thread where the 
@@ -147,9 +142,19 @@ namespace acc
         *   Not used yet.
         */
         Semaphore _aci_thread_sem;
+        /**
+        *   The dictionary
+        */
+        std::map<std::string, DroneItem> _map_var_cmd;
 
+        std::map<std::string, DroneItem&> _requsted_cmds;
+
+        void _alloc_map_var_cmd();
         void _launch_aci_thread();
         void _aci_thread_runner();
+
+        void _set_reads();
+
     };
 
 }; // End namespace
