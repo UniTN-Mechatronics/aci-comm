@@ -41,11 +41,16 @@ namespace
 *
 */                            
 template<class BUS> void 
-acc::Engine<BUS>::start() {
-    if (_aci_thread_run) return;
-    if (_requsted_vars.empty() && _requsted_cmds.empty()) {
+acc::Engine<BUS>::start(int ep1, int ep2) {
+    if (_aci_thread_run) 
+        throw std::runtime_error("Engine is already started!");
+
+    if (ep1 < 0 || ep2 < 0) 
+        throw std::runtime_error("Ep1 and Ep2 must be positive integers!");
+    
+    if (_requsted_vars.empty() && _requsted_cmds.empty()) 
         throw std::runtime_error("Neither reads or writes are set!");
-    }
+
     try {
         _bus.open(); // Can throw.
         _bus_port = &_bus._port_state;
@@ -55,7 +60,7 @@ acc::Engine<BUS>::start() {
         aciSetVarListUpdateFinishedCallback(&c_api_reads_callback); // Read
         //aciSetCmdListUpdateFinishedCallback(&cmdListUpdateFinished); // Write
 
-        aciSetEngineRate(100, 10);
+        aciSetEngineRate(ep1, ep2);
         _launch_aci_thread();
         
         aciCheckVerConf(); // Version
@@ -81,13 +86,6 @@ acc::Engine<BUS>::stop() {
     _requsted_cmds.clear();
     _version_callback = 0;
     _reads_callback = 0;
-}
-
-template<class BUS> void 
-acc::Engine<BUS>::_alloc_map_var_cmd() {
-    _map_var_cmd.insert(std::make_pair("angle_pitch", DroneItem("angle_pitch",  0x0300)));
-    _map_var_cmd.insert(std::make_pair("angle_roll",  DroneItem("angle_roll",   0x0301)));
-    _map_var_cmd.insert(std::make_pair("angle_yaw",   DroneItem("angle_yaw",    0x0302)));
 }
 
 template<class BUS> void 
@@ -128,7 +126,6 @@ acc::Engine<BUS>::add_read(std::initializer_list<std::string> reads, int pck) {
 
 template<class BUS> int 
 acc::Engine<BUS>::read(std::string key_read, bool pretty_print) {
-    std::cout << "Start read" << std::endl;
     for (std::map<std::string, DroneItem>::iterator it=_requsted_vars.begin(); 
         it!=_requsted_vars.end(); ++it) 
     {
@@ -142,7 +139,6 @@ acc::Engine<BUS>::read(std::string key_read, bool pretty_print) {
 template<class BUS> void 
 acc::Engine<BUS>::_set_reads() {
     assert("Function is not active");
-    std::cout << "set reads" << std::endl;
     for (std::map<std::string, DroneItem>::iterator it=_requsted_vars.begin(); 
         it!=_requsted_vars.end(); ++it) 
     {
@@ -187,7 +183,6 @@ c_api_versions_callback(struct ACI_INFO aciInfo) {
 
 void 
 c_api_reads_callback() {
-    printf("variables updated\n");
     std::vector<int> pkc_idx;
     for (std::map<std::string, acc::DroneItem>::iterator it=_requsted_vars.begin(); 
         it!=_requsted_vars.end(); ++it) 
@@ -207,7 +202,6 @@ c_api_reads_callback() {
 
 void 
 c_api_writes_callback() {
-    printf("command list getted!\n");
     /*aciAddContentToCmdPacket(0, 0x0500, &motor1);
     aciAddContentToCmdPacket(0, 0x0501, &motor2);
     aciAddContentToCmdPacket(0, 0x0502, &motor3);

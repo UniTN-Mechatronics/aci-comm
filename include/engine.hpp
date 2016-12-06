@@ -22,8 +22,8 @@
 #ifndef _ACI_COMM_COMMONS_HPP_
     #include "commons.hpp"
 #endif
-#ifndef _ACI_DRONE_ITEMS_HPP_
-    #include "drone_items.hpp"
+#ifndef _ACI_COMM_MAP_VAR_CMD_HPP_
+    #include "map_var_cmd.hpp"
 #endif
 
 namespace acc 
@@ -72,7 +72,9 @@ namespace acc
             _bus(bus_), 
             _aci_thread_run(false),
             _aci_thread_sem(1) {
-            _alloc_map_var_cmd();
+                auto ptr = &MapVarCmd::init();
+                _map_var_cmd = ptr->get_map();
+            //_alloc_map_var_cmd();
         };
 
         /**
@@ -93,10 +95,7 @@ namespace acc
         *   Returns the pointer to
         *   the BUS instance.
         */
-        BUS*
-        bus() {
-            return &_bus;
-        }
+        BUS* bus() { return &_bus; }
 
         void add_read(std::initializer_list<std::string> reads, int pck = 0);
   
@@ -110,7 +109,7 @@ namespace acc
         *   * the port confs cannot be applied
         *   * the packet is not setted
         */
-        void start();
+        void start(int ep1 = 100, int ep2 = 10);
 
         /**
         *   Join the aci_thread to the
@@ -144,11 +143,10 @@ namespace acc
         */
         Semaphore _aci_thread_sem;
         /**
-        *   The dictionary
+        *   The dictionary.
         */
         std::map<std::string, DroneItem> _map_var_cmd;
 
-        void _alloc_map_var_cmd();
         void _launch_aci_thread();
         void _aci_thread_runner();
 

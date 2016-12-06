@@ -1,5 +1,5 @@
-#ifndef _ACI_DRONE_ITEMS_HPP_   
-#define _ACI_DRONE_ITEMS_HPP_   
+#ifndef _ACI_COMM_DRONE_ITEMS_HPP_   
+#define _ACI_COMM_DRONE_ITEMS_HPP_   
 #ifdef __cplusplus
 
 #include <map>
@@ -71,4 +71,4 @@ namespace acc
 
 
 #endif // __cplusplus
-#endif // _ACI_DRONE_ITEMS_HPP_ 
+#endif // _ACI_COMM_DRONE_ITEMS_HPP_ 
