@@ -29,6 +29,7 @@ namespace acc
             _num_id = SB._num_id;
             _rw = SB._rw;
             _value = SB._value;
+            pck = SB.pck;
         };
         virtual ~DroneItem() {};
 
@@ -47,6 +48,11 @@ namespace acc
             return &_value;
         }
 
+        void
+        set_value(int value) {
+            _value = value;
+        }
+
         bool
         can_be_read() {
             return _rw == DIP::READ;
@@ -57,7 +63,7 @@ namespace acc
             return _rw == DIP::WRITE;
         }
 
-        int pck;
+        int pck = 0;
 
     protected:
         std::string _id;

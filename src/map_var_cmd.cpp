@@ -81,7 +81,6 @@ acc::MapVarCmd::_alloc_map_var() {
     INSERT_VAR("RC_channel_5",          0x0605);
     INSERT_VAR("RC_channel_6",          0x0606);
     INSERT_VAR("RC_channel_7",          0x0607);
-
 }
 
 /**
@@ -90,22 +89,22 @@ acc::MapVarCmd::_alloc_map_var() {
 */
 inline void 
 acc::MapVarCmd::_alloc_map_cmd() {
-    INSERT_CMD("DIMC_motor_1",                 0x0500)
-    INSERT_CMD("DIMC_motor_2",                 0x0501)
-    INSERT_CMD("DIMC_motor_3",                 0x0502)
-    INSERT_CMD("DIMC_motor_4",                 0x0503)
-    INSERT_CMD("DIMC_motor_5",                 0x0504)
-    INSERT_CMD("DIMC_motor_6",                 0x0505)
-    INSERT_CMD("DMC_pitch",                    0x0506)
-    INSERT_CMD("DMC_roll",                     0x0507)
-    INSERT_CMD("DMC_yaw",                      0x0508)
-    INSERT_CMD("DMC_thrust",                   0x0509)
-    INSERT_CMD("CTRL_pitch",                   0x050A)
-    INSERT_CMD("CTRL_roll",                    0x050B)
-    INSERT_CMD("CTRL_yaw",                     0x050C)
-    INSERT_CMD("CTRL_thrust",                  0x050D)
-    INSERT_CMD("CTRL_ctrl",                    0x050E)
-    INSERT_CMD("ctrl_mode",                    0x0600)
-    INSERT_CMD("ctrl_enabled",                 0x0601)
-    INSERT_CMD("disable_motor_onoff_by_stick", 0x0602)
+    INSERT_CMD("DIMC_motor_1",                 0x0500);
+    INSERT_CMD("DIMC_motor_2",                 0x0501);
+    INSERT_CMD("DIMC_motor_3",                 0x0502);
+    INSERT_CMD("DIMC_motor_4",                 0x0503);
+    INSERT_CMD("DIMC_motor_5",                 0x0504);
+    INSERT_CMD("DIMC_motor_6",                 0x0505);
+    INSERT_CMD("DMC_pitch",                    0x0506);
+    INSERT_CMD("DMC_roll",                     0x0507);
+    INSERT_CMD("DMC_yaw",                      0x0508);
+    INSERT_CMD("DMC_thrust",                   0x0509);
+    INSERT_CMD("CTRL_pitch",                   0x050A);
+    INSERT_CMD("CTRL_roll",                    0x050B);
+    INSERT_CMD("CTRL_yaw",                     0x050C);
+    INSERT_CMD("CTRL_thrust",                  0x050D);
+    INSERT_CMD("CTRL_ctrl",                    0x050E);
+    INSERT_CMD("ctrl_mode",                    0x0600);
+    INSERT_CMD("ctrl_enabled",                 0x0601);
+    INSERT_CMD("disable_motor_onoff_by_stick", 0x0602);
 }

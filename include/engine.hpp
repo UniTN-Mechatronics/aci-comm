@@ -74,7 +74,6 @@ namespace acc
             _aci_thread_sem(1) {
                 auto ptr = &MapVarCmd::init();
                 _map_var_cmd = ptr->get_map();
-            //_alloc_map_var_cmd();
         };
 
         /**
@@ -103,10 +102,11 @@ namespace acc
         template<class... Args> void 
         add_read(int pck, std::string key_read, Args... args) {
             add_read(pck, key_read);
-            // TODO: Check args empty
             add_read(pck, args...);
         }
   
+        void add_write(int pck, std::string write);
+
         /**
         *   Start port setup,
         *   start aci_thread,
@@ -141,7 +141,7 @@ namespace acc
         std::vector<int> 
         read(std::initializer_list<std::string> reads, bool pretty_print = false);  
 
-        void write();
+        void write(std::string key_write, int value);
 
     private:
         BUS _bus;
@@ -168,9 +168,7 @@ namespace acc
         void _launch_aci_thread();
         void _aci_thread_runner();
 
-        void _set_reads();
-
-    };
+    }; // End Engine<BUS>
 
 }; // End namespace
 

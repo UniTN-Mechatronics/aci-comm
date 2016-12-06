@@ -26,8 +26,10 @@ namespace
     int *_bus_port;   
     int _version_callback = 0;
     int _reads_callback = 0;
+    int _writes_callback = 0;
+    int _reads_update_val = 10;
     std::map<std::string, acc::DroneItem> _requsted_vars;
-    std::map<std::string, acc::DroneItem&> _requsted_cmds;
+    std::map<std::string, acc::DroneItem> _requsted_cmds;
 }
 
 
@@ -57,20 +59,32 @@ acc::Engine<BUS>::start(int ep1, int ep2) {
         aciInit();
         aciSetSendDataCallback(&c_api_transmit_callback);
         aciInfoPacketReceivedCallback(&c_api_versions_callback); // Version 
-        aciSetVarListUpdateFinishedCallback(&c_api_reads_callback); // Read
-        //aciSetCmdListUpdateFinishedCallback(&cmdListUpdateFinished); // Write
-
+        
+        if (!_requsted_vars.empty()) 
+            aciSetVarListUpdateFinishedCallback(&c_api_reads_callback); // Read
+        
+        if (!_requsted_cmds.empty()) 
+            aciSetCmdListUpdateFinishedCallback(&c_api_writes_callback); // Write
+        
+        // Set engine and start thread.
         aciSetEngineRate(ep1, ep2);
         _launch_aci_thread();
         
-        aciCheckVerConf(); // Version
+        // Version
+        aciCheckVerConf(); 
         while(!_version_callback) usleep(1000);
         
-        aciGetDeviceVariablesList(); // Read
-        while(!_reads_callback) usleep(1000);
+        // Read
+        if (!_requsted_vars.empty()) {
+            aciGetDeviceVariablesList(); 
+            while(!_reads_callback) usleep(1000);
+        }
         
-        /*ciGetDeviceCommandsList(); // Write
-        while(!writes_callback) usleep(1000);*/
+        // Write
+        if (!_requsted_cmds.empty()) {
+            aciGetDeviceCommandsList(); 
+            while(!_writes_callback) usleep(1000);
+        }
 
     } catch (std::runtime_error e) {
         throw e;
@@ -79,13 +93,16 @@ acc::Engine<BUS>::start(int ep1, int ep2) {
 
 template<class BUS> void 
 acc::Engine<BUS>::stop() {
-    if (!_aci_thread_run) return;
+    if (!_aci_thread_run) 
+        return;
+
     _aci_thread_run = false;
     _aci_thread.join();
     _requsted_vars.clear();
     _requsted_cmds.clear();
     _version_callback = 0;
-    _reads_callback = 0;
+    _reads_callback   = 0;
+    _writes_callback  = 0;
 }
 
 template<class BUS> void 
@@ -112,30 +129,31 @@ acc::Engine<BUS>::_aci_thread_runner() {
 
 template<class BUS> void 
 acc::Engine<BUS>::add_read(int pck, std::string read) {
-    std::cout << "added: " << read << " pck: " << pck << std::endl;
     std::map<std::string, DroneItem>::iterator it;
     it = _map_var_cmd.find(read);
     if (it == _map_var_cmd.end()) throw std::runtime_error("This entry read key not exist: " + read);
     if (!it->second.can_be_read()) throw std::runtime_error("This entry read cannot be read: " + read);
     _requsted_vars.insert(std::make_pair(read, it->second));
     std::map<std::string, DroneItem>::iterator it2;
-    it2 = _map_var_cmd.find(read);
+    it2 = _requsted_vars.find(read);
     it2->second.pck = pck;
 }
 
-
 template<class BUS> void 
 acc::Engine<BUS>::add_read(std::initializer_list<std::string> reads, int pck) {
+    for (auto &r : reads) add_read(pck, r);
+}
+
+template<class BUS> void 
+acc::Engine<BUS>::add_write(int pck, std::string write) {
     std::map<std::string, DroneItem>::iterator it;
-    for (auto &r : reads) {
-        it = _map_var_cmd.find(r);
-        if (it == _map_var_cmd.end()) throw std::runtime_error("This entry read key not exist: " + r);
-        if (!it->second.can_be_read()) throw std::runtime_error("This entry read cannot be read: " + r);
-        _requsted_vars.insert(std::make_pair(r, it->second));
-        std::map<std::string, DroneItem>::iterator it2;
-        it2 = _map_var_cmd.find(r);
-        it2->second.pck = pck;
-    }
+    it = _map_var_cmd.find(write);
+    if (it == _map_var_cmd.end()) throw std::runtime_error("This entry write key not exist: " + write);
+    if (!it->second.can_be_written()) throw std::runtime_error("This entry write cannot be written: " + write);
+    _requsted_cmds.insert(std::make_pair(write, it->second));
+    std::map<std::string, DroneItem>::iterator it2;
+    it2 = _requsted_cmds.find(write);
+    it2->second.pck = pck;
 }
 
 template<class BUS> int 
@@ -151,16 +169,17 @@ acc::Engine<BUS>::read(std::string key_read) {
 }  
 
 template<class BUS> void 
-acc::Engine<BUS>::_set_reads() {
-    assert("Function is not active");
-    for (std::map<std::string, DroneItem>::iterator it=_requsted_vars.begin(); 
-        it!=_requsted_vars.end(); ++it) 
+acc::Engine<BUS>::write(std::string key_write, int value) {
+    for (std::map<std::string, DroneItem>::iterator it=_requsted_cmds.begin(); 
+        it!=_requsted_cmds.end(); ++it) 
     {
-        aciAddContentToVarPacket(0, it->second.num_id() , it->second.value_ptr()); 
+        if (it->first == key_write) {
+            it->second.set_value(value);
+            aciUpdateCmdPacket(2);
+            return;
+        }
     }
-    aciSetVarPacketTransmissionRate(0, 10);
-    aciVarPacketUpdateTransmissionRates();
-    aciSendVariablePacketConfiguration(0);
+    throw std::runtime_error("This entry write key not exist: " + key_write);
 }
 
 
@@ -207,7 +226,7 @@ c_api_reads_callback() {
     std::sort(pkc_idx.begin(), pkc_idx.end());
     pkc_idx.erase(std::unique(pkc_idx.begin(), pkc_idx.end()), pkc_idx.end());
     for (auto &i : pkc_idx) {
-        aciSetVarPacketTransmissionRate(i,10);
+        aciSetVarPacketTransmissionRate(i, _reads_update_val);
         aciVarPacketUpdateTransmissionRates();
         aciSendVariablePacketConfiguration(i);
     }
@@ -216,6 +235,20 @@ c_api_reads_callback() {
 
 void 
 c_api_writes_callback() {
+    std::vector<int> pkc_idx;
+    for (std::map<std::string, acc::DroneItem>::iterator it=_requsted_cmds.begin(); 
+        it!=_requsted_cmds.end(); ++it) 
+    {
+        pkc_idx.push_back(it->second.pck);
+        aciAddContentToCmdPacket(it->second.pck, it->second.num_id(), it->second.value_ptr());
+    }
+    std::sort(pkc_idx.begin(), pkc_idx.end());
+    pkc_idx.erase(std::unique(pkc_idx.begin(), pkc_idx.end()), pkc_idx.end());
+    for (auto &i : pkc_idx) {
+        aciSendCommandPacketConfiguration(i, 1);
+        aciUpdateCmdPacket(i);
+    }
+    _writes_callback = 1;
     /*aciAddContentToCmdPacket(0, 0x0500, &motor1);
     aciAddContentToCmdPacket(0, 0x0501, &motor2);
     aciAddContentToCmdPacket(0, 0x0502, &motor3);
