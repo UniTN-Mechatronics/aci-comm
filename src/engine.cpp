@@ -7,6 +7,7 @@ void c_api_transmit_callback(void*, unsigned short);
 void c_api_versions_callback(struct ACI_INFO);
 void c_api_reads_callback(void);
 void c_api_writes_callback(void);
+void paramListUpdateFinished(void);
 
 /**
 *   Anonymous namespace for 
@@ -58,21 +59,23 @@ acc::Engine<BUS>::start(int ep1, int ep2) {
         _bus_port = &_bus._port_state;
         aciInit();
         aciSetSendDataCallback(&c_api_transmit_callback);
-        aciInfoPacketReceivedCallback(&c_api_versions_callback); // Version 
+        //aciInfoPacketReceivedCallback(&c_api_versions_callback); // Version 
         
-        if (!_requsted_vars.empty()) 
-            aciSetVarListUpdateFinishedCallback(&c_api_reads_callback); // Read
+        //if (!_requsted_vars.empty()) 
+        aciSetVarListUpdateFinishedCallback(&c_api_reads_callback); // Read
         
-        if (!_requsted_cmds.empty()) 
-            aciSetCmdListUpdateFinishedCallback(&c_api_writes_callback); // Write
+        //if (!_requsted_cmds.empty()) 
+        aciSetCmdListUpdateFinishedCallback(&c_api_writes_callback); // Write
         
+        aciSetParamListUpdateFinishedCallback(&paramListUpdateFinished);
+
         // Set engine and start thread.
         aciSetEngineRate(ep1, ep2);
         _launch_aci_thread();
         
         // Version
-        aciCheckVerConf(); 
-        while(!_version_callback) usleep(1000);
+        //aciCheckVerConf(); 
+        //while(!_version_callback) usleep(1000);
         
         // Read
         if (!_requsted_vars.empty()) {
@@ -175,7 +178,7 @@ acc::Engine<BUS>::write(std::string key_write, int value) {
     {
         if (it->first == key_write) {
             it->second.set_value(value);
-            aciUpdateCmdPacket(2);
+            aciUpdateCmdPacket(it->second.pck);
             return;
         }
     }
@@ -269,6 +272,9 @@ c_api_writes_callback() {
     aciUpdateCmdPacket(1);
     cmd_ready=1;*/
 }
+
+void 
+paramListUpdateFinished() {}
 
 /*
 *    _____         _____                _ 
