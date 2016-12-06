@@ -98,6 +98,14 @@ namespace acc
         BUS* bus() { return &_bus; }
 
         void add_read(std::initializer_list<std::string> reads, int pck = 0);
+        void add_read(int pck, std::string read);
+        
+        template<class... Args> void 
+        add_read(int pck, std::string key_read, Args... args) {
+            add_read(pck, key_read);
+            // TODO: Check args empty
+            add_read(pck, args...);
+        }
   
         /**
         *   Start port setup,
@@ -117,8 +125,18 @@ namespace acc
         */
         void stop();
 
-        int 
-        read(std::string key_read, bool pretty_print = false);
+        int read(std::string key_read);
+
+        template<class... Args> std::vector<int> 
+        read(std::string key_read, Args... args) {
+            std::vector<int> read_results;
+            read_results.push_back(read(key_read));
+            auto vec = read(args...);
+            //read_results.push_back();
+            return read_results;
+            //read(key_read);
+            //read(args...);
+        }
 
         std::vector<int> 
         read(std::initializer_list<std::string> reads, bool pretty_print = false);  

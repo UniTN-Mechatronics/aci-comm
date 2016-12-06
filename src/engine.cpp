@@ -111,6 +111,20 @@ acc::Engine<BUS>::_aci_thread_runner() {
 }
 
 template<class BUS> void 
+acc::Engine<BUS>::add_read(int pck, std::string read) {
+    std::cout << "added: " << read << " pck: " << pck << std::endl;
+    std::map<std::string, DroneItem>::iterator it;
+    it = _map_var_cmd.find(read);
+    if (it == _map_var_cmd.end()) throw std::runtime_error("This entry read key not exist: " + read);
+    if (!it->second.can_be_read()) throw std::runtime_error("This entry read cannot be read: " + read);
+    _requsted_vars.insert(std::make_pair(read, it->second));
+    std::map<std::string, DroneItem>::iterator it2;
+    it2 = _map_var_cmd.find(read);
+    it2->second.pck = pck;
+}
+
+
+template<class BUS> void 
 acc::Engine<BUS>::add_read(std::initializer_list<std::string> reads, int pck) {
     std::map<std::string, DroneItem>::iterator it;
     for (auto &r : reads) {
@@ -125,7 +139,7 @@ acc::Engine<BUS>::add_read(std::initializer_list<std::string> reads, int pck) {
 }
 
 template<class BUS> int 
-acc::Engine<BUS>::read(std::string key_read, bool pretty_print) {
+acc::Engine<BUS>::read(std::string key_read) {
     for (std::map<std::string, DroneItem>::iterator it=_requsted_vars.begin(); 
         it!=_requsted_vars.end(); ++it) 
     {

@@ -15,15 +15,22 @@ testcase() {
         // instance of Engine.
         ae = &Engine<SerialBus>::init(port, B57600);
 
-        // How to access to the bus [Example, not needed].
-        //ae->bus()->settings.baud = B57600;
-
-        ae->add_read({"angle_pitch"}); 
-        ae->add_read({"angle_roll", "angle_yaw"}, 1);
+        // Add variables to read.
+        ae->add_read(0, "angle_pitch"); // To packet 0
+        ae->add_read(1, "Label", "angle_roll", "angle_yaw"); // To packet 1
+        
+        // Start the engine.
+        // Returns when the variables and
+        // commands callbacks are executed.
+        // Default engine params: 100, 10
         ae->start();
 
         int i = 0;
         while(i < 1000) {
+            /*auto vec_results = ae->read("angle_pitch", "angle_roll", "angle_yaw");
+            for (auto &r : vec_results)
+                std::cout << r << std::endl;*/
+
             std::cout << "Angle_pitch: " <<  ae->read("angle_pitch") << std::endl;
             std::cout << "Angle_roll: " <<  ae->read("angle_roll") << std::endl;
             std::cout << "Angle_yaw: " <<  ae->read("angle_yaw") << std::endl;
