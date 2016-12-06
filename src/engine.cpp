@@ -1,13 +1,13 @@
 #include "engine.hpp"
 
-/**
+/*
 *   C API Callbacks
 */
-void c_api_transmit_callback(void*, unsigned short);
-void c_api_versions_callback(struct ACI_INFO);
-void c_api_reads_callback(void);
-void c_api_writes_callback(void);
-void paramListUpdateFinished(void);
+static void c_api_transmit_callback(void*, unsigned short);
+static void c_api_versions_callback(struct ACI_INFO);
+static void c_api_reads_callback(void);
+static void c_api_writes_callback(void);
+static void c_api_params_callback(void);
 
 /**
 *   Anonymous namespace for 
@@ -55,27 +55,24 @@ acc::Engine<BUS>::start(int ep1, int ep2) {
         throw std::runtime_error("Neither reads or writes are set!");
 
     try {
-        _bus.open(); // Can throw.
+        _bus.open(); 
         _bus_port = &_bus._port_state;
         aciInit();
-        aciSetSendDataCallback(&c_api_transmit_callback);
-        //aciInfoPacketReceivedCallback(&c_api_versions_callback); // Version 
-        
-        //if (!_requsted_vars.empty()) 
-        aciSetVarListUpdateFinishedCallback(&c_api_reads_callback); // Read
-        
-        //if (!_requsted_cmds.empty()) 
-        aciSetCmdListUpdateFinishedCallback(&c_api_writes_callback); // Write
-        
-        aciSetParamListUpdateFinishedCallback(&paramListUpdateFinished);
+
+        // Callbacks
+        aciSetSendDataCallback(&c_api_transmit_callback);              // Transmit
+        aciInfoPacketReceivedCallback(&c_api_versions_callback);       // Version 
+        aciSetVarListUpdateFinishedCallback(&c_api_reads_callback);    // Read
+        aciSetCmdListUpdateFinishedCallback(&c_api_writes_callback);   // Write
+        aciSetParamListUpdateFinishedCallback(&c_api_params_callback); // Params
 
         // Set engine and start thread.
         aciSetEngineRate(ep1, ep2);
         _launch_aci_thread();
         
         // Version
-        //aciCheckVerConf(); 
-        //while(!_version_callback) usleep(1000);
+        aciCheckVerConf(); 
+        while(!_version_callback) usleep(1000);
         
         // Read
         if (!_requsted_vars.empty()) {
@@ -133,8 +130,8 @@ acc::Engine<BUS>::_aci_thread_runner() {
 template<class BUS> void 
 acc::Engine<BUS>::add_read(int pck, std::string read) {
     std::map<std::string, DroneItem>::iterator it;
-    it = _map_var_cmd.find(read);
-    if (it == _map_var_cmd.end()) throw std::runtime_error("This entry read key not exist: " + read);
+    it = _map_var.find(read);
+    if (it == _map_var.end()) throw std::runtime_error("This entry read key not exist: " + read);
     if (!it->second.can_be_read()) throw std::runtime_error("This entry read cannot be read: " + read);
     _requsted_vars.insert(std::make_pair(read, it->second));
     std::map<std::string, DroneItem>::iterator it2;
@@ -143,15 +140,10 @@ acc::Engine<BUS>::add_read(int pck, std::string read) {
 }
 
 template<class BUS> void 
-acc::Engine<BUS>::add_read(std::initializer_list<std::string> reads, int pck) {
-    for (auto &r : reads) add_read(pck, r);
-}
-
-template<class BUS> void 
 acc::Engine<BUS>::add_write(int pck, std::string write) {
     std::map<std::string, DroneItem>::iterator it;
-    it = _map_var_cmd.find(write);
-    if (it == _map_var_cmd.end()) throw std::runtime_error("This entry write key not exist: " + write);
+    it = _map_cmd.find(write);
+    if (it == _map_cmd.end()) throw std::runtime_error("This entry write key not exist: " + write);
     if (!it->second.can_be_written()) throw std::runtime_error("This entry write cannot be written: " + write);
     _requsted_cmds.insert(std::make_pair(write, it->second));
     std::map<std::string, DroneItem>::iterator it2;
@@ -172,12 +164,12 @@ acc::Engine<BUS>::read(std::string key_read) {
 }  
 
 template<class BUS> void 
-acc::Engine<BUS>::write(std::string key_write, int value) {
+acc::Engine<BUS>::write(std::string key_write, int value_write) {
     for (std::map<std::string, DroneItem>::iterator it=_requsted_cmds.begin(); 
         it!=_requsted_cmds.end(); ++it) 
     {
         if (it->first == key_write) {
-            it->second.set_value(value);
+            it->second.set_value(value_write);
             aciUpdateCmdPacket(it->second.pck);
             return;
         }
@@ -194,7 +186,7 @@ acc::Engine<BUS>::write(std::string key_write, int value) {
 *    \____\__,_|_|_|_.__/ \__,_|\___|_|\_\___/          \____|
 *                                                                                                                                                                                                       
 */
-void 
+static void 
 c_api_transmit_callback(void* byte, unsigned short cnt)
 {
     unsigned char *tbyte = (unsigned char *)byte;
@@ -203,7 +195,7 @@ c_api_transmit_callback(void* byte, unsigned short cnt)
     }
 }
 
-void 
+static void 
 c_api_versions_callback(struct ACI_INFO aciInfo) {
     printf("******************** Versions *******************\n");
     printf("* Type\t\t\tDevice\t\tRemote\t*\n");
@@ -217,7 +209,7 @@ c_api_versions_callback(struct ACI_INFO aciInfo) {
     _version_callback = 1;
 }
 
-void 
+static void 
 c_api_reads_callback() {
     std::vector<int> pkc_idx;
     for (std::map<std::string, acc::DroneItem>::iterator it=_requsted_vars.begin(); 
@@ -236,7 +228,7 @@ c_api_reads_callback() {
     _reads_callback = 1;
 }
 
-void 
+static void 
 c_api_writes_callback() {
     std::vector<int> pkc_idx;
     for (std::map<std::string, acc::DroneItem>::iterator it=_requsted_cmds.begin(); 
@@ -252,29 +244,10 @@ c_api_writes_callback() {
         aciUpdateCmdPacket(i);
     }
     _writes_callback = 1;
-    /*aciAddContentToCmdPacket(0, 0x0500, &motor1);
-    aciAddContentToCmdPacket(0, 0x0501, &motor2);
-    aciAddContentToCmdPacket(0, 0x0502, &motor3);
-    aciAddContentToCmdPacket(0, 0x0503, &motor4);
-    aciAddContentToCmdPacket(1, 0x0600, &ctrl_mode);
-    aciAddContentToCmdPacket(1, 0x0601, &ctrl_enabled);
-    aciAddContentToCmdPacket(1, 0x0602, &disable_motor_onoff_by_stick);
-    aciSendCommandPacketConfiguration(0, 0);
-    aciSendCommandPacketConfiguration(1, 1);
-    motor1 = 0;
-    motor2 = 0;
-    motor3 = 0;
-    motor4 = 0;
-    ctrl_mode=0;
-    ctrl_enabled=1;
-    disable_motor_onoff_by_stick = 1;
-    aciUpdateCmdPacket(0);
-    aciUpdateCmdPacket(1);
-    cmd_ready=1;*/
 }
 
-void 
-paramListUpdateFinished() {}
+static void 
+c_api_params_callback() {}
 
 /*
 *    _____         _____                _ 

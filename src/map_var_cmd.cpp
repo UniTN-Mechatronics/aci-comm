@@ -7,25 +7,22 @@
 *   |_|   \__,_|_| |_|_| |_|\__, |____/ \__|\__,_|_| |_|  
 *                           |___/                         
 */
+
+
 /**
 *   Macros in order to insert
 *   var and cmd to the map.
 */
-#define INSERT_VAR(id, num_id) _map_var_cmd.insert(std::make_pair(id, acc::DroneItem(id,  num_id)))
-#define INSERT_CMD(id, num_id) _map_var_cmd.insert(std::make_pair(id, acc::DroneItem(id,  num_id, DIP::WRITE)))
+#define INSERT_VAR(id, num_id) _map_var.insert(std::make_pair(id, acc::DroneItem(id,  num_id)))
+#define INSERT_CMD(id, num_id) _map_cmd.insert(std::make_pair(id, acc::DroneItem(id,  num_id, DIP::WRITE)))
 
-void 
-acc::MapVarCmd::_alloc_map_var_cmd() {
-    _alloc_map_var();
-    _alloc_map_cmd();
-}
 
 /**
 *   Variables.
 *   INSERT NEW VARIABLES HERE.
 */
-inline void 
-acc::MapVarCmd::_alloc_map_var() {
+void 
+acc::MapVarCmd::_alloc_map_var(std::map<std::string, DroneItem>& _map_var) {
     // 0x00xx: General system informations
     INSERT_VAR("UAV_status",            0x0001);
     INSERT_VAR("flight_time",           0x0002);
@@ -87,8 +84,8 @@ acc::MapVarCmd::_alloc_map_var() {
 *   Commands.
 *   INSERT NEW COMMANDS HERE.
 */
-inline void 
-acc::MapVarCmd::_alloc_map_cmd() {
+void 
+acc::MapVarCmd::_alloc_map_cmd(std::map<std::string, DroneItem>& _map_cmd) {
     INSERT_CMD("DIMC_motor_1",                 0x0500);
     INSERT_CMD("DIMC_motor_2",                 0x0501);
     INSERT_CMD("DIMC_motor_3",                 0x0502);

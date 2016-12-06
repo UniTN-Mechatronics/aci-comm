@@ -3,7 +3,6 @@
 #ifdef __cplusplus
 
 #include <thread>
-#include <atomic>
 #include <iostream>
 #include <tuple>
 #include <map>
@@ -72,8 +71,7 @@ namespace acc
             _bus(bus_), 
             _aci_thread_run(false),
             _aci_thread_sem(1) {
-                auto ptr = &MapVarCmd::init();
-                _map_var_cmd = ptr->get_map();
+                MapVarCmd::init(_map_var, _map_cmd);
         };
 
         /**
@@ -96,15 +94,26 @@ namespace acc
         */
         BUS* bus() { return &_bus; }
 
-        void add_read(std::initializer_list<std::string> reads, int pck = 0);
-        void add_read(int pck, std::string read);
-        
+        /**
+        *   Add variables.
+        */               
         template<class... Args> void 
         add_read(int pck, std::string key_read, Args... args) {
             add_read(pck, key_read);
             add_read(pck, args...);
         }
+
+        void add_read(int pck, std::string read);
   
+        /**
+        *   Add commands.
+        */  
+        template<class... Args> void 
+        add_write(int pck, std::string key_write, Args... args) {
+            add_write(pck, key_write);
+            add_write(pck, args...);
+        }
+
         void add_write(int pck, std::string write);
 
         /**
@@ -125,23 +134,58 @@ namespace acc
         */
         void stop();
 
-        int read(std::string key_read);
-
+        /**
+        *   Read variables.
+        */ 
         template<class... Args> std::vector<int> 
         read(std::string key_read, Args... args) {
             std::vector<int> read_results;
             read_results.push_back(read(key_read));
-            auto vec = read(args...);
-            //read_results.push_back();
+            read(read_results, args...);
             return read_results;
-            //read(key_read);
-            //read(args...);
         }
 
-        std::vector<int> 
-        read(std::initializer_list<std::string> reads, bool pretty_print = false);  
+        template<class... Args> void
+        read(std::vector<int>& read_results, std::string key_read, Args... args) {
+            read_results.push_back(read(key_read));
+            read(read_results, args...);
+        }
 
-        void write(std::string key_write, int value);
+        void
+        read(std::vector<int>& read_results, std::string key_read) {
+            read_results.push_back(read(key_read));
+        }
+
+        int read(std::string key_read);
+
+        /**
+        *   Write variables.
+        */ 
+        template<class... Args> void 
+        write(std::string key_write, int value_write, Args... args) {
+            write(key_write, value_write);
+            write(args...);
+        }
+
+        void write(std::string key_write, int value_write);
+
+    protected:
+        /* Ideas */
+        /********************/
+        void get_version(bool version = false);
+        /********************/
+        template<class... Args> void 
+        add_read_label(int packet, std::string label, Args... args) {}
+        /********************/
+        template<class... Args> void 
+        add_write_label(int packet, std::string label, Args... args) {}
+        /********************/
+        template<class... Args> void 
+        read_label(std::string label, Args... args) {}
+        /********************/
+        template<class... Args> void 
+        write_label(std::string label, Args... args) {}
+        /********************/
 
     private:
         BUS _bus;
@@ -163,7 +207,8 @@ namespace acc
         /**
         *   The dictionary.
         */
-        std::map<std::string, DroneItem> _map_var_cmd;
+        std::map<std::string, DroneItem> _map_var;
+        std::map<std::string, DroneItem> _map_cmd;
 
         void _launch_aci_thread();
         void _aci_thread_runner();

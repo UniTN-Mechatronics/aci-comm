@@ -12,36 +12,50 @@ namespace acc
 {
     /**
     *   Singleton class.
+    *   Currently, have an entire
+    *   class only to build up 
+    *   a map is an overhead:
+    *   maybe in the future this class
+    *   will make some other things, like
+    *   read from json map file.
     */
     class MapVarCmd
     {
     public:
 
-        static MapVarCmd& init() {
-            static MapVarCmd mapVarCmd;
+        static MapVarCmd& init(
+            std::map<std::string, DroneItem>& _map_var,
+            std::map<std::string, DroneItem>& _map_cmd
+        ) {
+            static MapVarCmd mapVarCmd(_map_var, _map_cmd);
             return mapVarCmd;
         }
-
-        std::map<std::string, DroneItem>
-        get_map() { return _map_var_cmd; }
 
     private:
 
         /**
         *   Private constructor.
         */
-        MapVarCmd() { _alloc_map_var_cmd(); };
+        MapVarCmd(
+            std::map<std::string, DroneItem>& _map_var,
+            std::map<std::string, DroneItem>& _map_cmd
+        ) { 
+            _alloc_map_var(_map_var);
+            _alloc_map_cmd(_map_cmd);
+        };
 
         /**
         *   Private destructor.
         */
         ~MapVarCmd() {}
-
-        std::map<std::string, DroneItem> _map_var_cmd;
         
-        void _alloc_map_var_cmd();
-        inline void _alloc_map_var();
-        inline void _alloc_map_cmd();
+        void _alloc_map_var(std::map<std::string, DroneItem>& _map_var);
+        void _alloc_map_cmd(std::map<std::string, DroneItem>& _map_cmd);
+
+        /*  Maybe we will need them in future.
+        *   std::map<std::string, DroneItem> _internal_map_var;
+        *   std::map<std::string, DroneItem> _internal_map_cmd;
+        */
 
     public:
 

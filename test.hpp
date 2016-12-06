@@ -6,7 +6,6 @@ testcase() {
     using namespace acc;
     Engine<SerialBus>* ae;
 
-
     try {
         std::string port = "/dev/tty.usbserial-A504DRSI";
 
@@ -16,24 +15,34 @@ testcase() {
         // instance of Engine.
         ae = &Engine<SerialBus>::init(port, B57600);
 
-        // Add variables to read.
-        ae->add_read(1, "motor_rpm_1"); // To packet 0
+        // Add variables to read, to packet 1.
+        ae->add_read(1, "motor_rpm_1", "motor_rpm_2", "motor_rpm_3", "motor_rpm_4"); 
 
-        // Add commands to write.
-        ae->add_write(0, "DIMC_motor_1");
-        ae->add_write(0, "ctrl_mode");
-        ae->add_write(0, "ctrl_enabled");
-        ae->add_write(0, "disable_motor_onoff_by_stick");
+        // Add commands to write, packet 0.
+        ae->add_write(0, "DIMC_motor_1", 
+                         "DIMC_motor_2",
+                         "DIMC_motor_3",
+                         "DIMC_motor_4",   
+                         "ctrl_mode", 
+                         "ctrl_enabled", 
+                         "disable_motor_onoff_by_stick");
 
         // Start the engine.
         // Returns when the variables and
         // commands callbacks are executed.
         // Default engine params: 100, 10
         ae->start();
-        ae->write("ctrl_mode", 0);
-        ae->write("ctrl_enabled", 1);
-        ae->write("disable_motor_onoff_by_stick", 1);
 
+        // For each key_write, write the
+        // specified value.
+        ae->write("cntr_mode",                    0,
+                  "ctrl_enabled",                 1,
+                  "disable_motor_onoff_by_stick", 1);
+
+        auto vec_of_res = ae->read("motor_rpm_1", "motor_rpm_2", "motor_rpm_3", "motor_rpm_4");
+
+        // Cycle for control
+        // the drone from console input.
         int val = 0;
         while(true) {
             std::string cmd;
