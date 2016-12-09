@@ -16,7 +16,6 @@
 #define INSERT_VAR(id, num_id) _map_var.insert(std::make_pair(id, acc::DroneItem(id,  num_id)))
 #define INSERT_CMD(id, num_id) _map_cmd.insert(std::make_pair(id, acc::DroneItem(id,  num_id, DIP::WRITE)))
 
-
 /**
 *   Variables.
 *   INSERT NEW VARIABLES HERE.

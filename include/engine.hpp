@@ -140,13 +140,15 @@ namespace acc
         template<class... Args> std::vector<int> 
         read(std::string key_read, Args... args) {
             std::vector<int> read_results;
-            read_results.push_back(read(key_read));
+            read_results.push_back( read(key_read) );
             read(read_results, args...);
             return read_results;
         }
 
         template<class... Args> void
-        read(std::vector<int>& read_results, std::string key_read, Args... args) {
+        read(std::vector<int>& read_results, 
+             std::string key_read, Args... args) 
+        {
             read_results.push_back(read(key_read));
             read(read_results, args...);
         }

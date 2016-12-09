@@ -129,6 +129,7 @@ acc::Engine<BUS>::_aci_thread_runner() {
 
 template<class BUS> void 
 acc::Engine<BUS>::add_read(int pck, std::string read) {
+    if (_aci_thread_run) throw std::runtime_error("Engine is running, you cannot add reads");
     std::map<std::string, DroneItem>::iterator it;
     it = _map_var.find(read);
     if (it == _map_var.end()) throw std::runtime_error("This entry read key not exist: " + read);
@@ -141,6 +142,7 @@ acc::Engine<BUS>::add_read(int pck, std::string read) {
 
 template<class BUS> void 
 acc::Engine<BUS>::add_write(int pck, std::string write) {
+    if (_aci_thread_run) throw std::runtime_error("Engine is running, you cannot add writes");
     std::map<std::string, DroneItem>::iterator it;
     it = _map_cmd.find(write);
     if (it == _map_cmd.end()) throw std::runtime_error("This entry write key not exist: " + write);

@@ -8,8 +8,19 @@
     #include "drone_items.hpp"
 #endif
 
+
+
 namespace acc
 {
+    enum class ACI_COMM_VAR
+    {
+        UAV_status  = 0x0001,  
+        flight_time = 0x0002
+    };
+
+    using Vars = acc::ACI_COMM_VAR; 
+
+
     /**
     *   Singleton class.
     *   Currently, have an entire
