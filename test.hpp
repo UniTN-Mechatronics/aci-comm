@@ -11,7 +11,7 @@ testcase() {
         std::string port = "/dev/tty.usbserial-A504DRSI";
         //std::string port = "/dev/tty.usbserial-AL00XNUW";
         
-        auto e = Vars::UAV_status;
+        auto e = Var::UAV_status;
 
         // Create an Engine with a SerialBus.
         // The init arguments are the SerialBus
@@ -22,6 +22,8 @@ testcase() {
         // Add variables to read, to packet 1.
         ae->add_read(0, "motor_rpm_1", "motor_rpm_2", "motor_rpm_3", "motor_rpm_4"); 
 
+        ae->add_read(1, e, e, e);
+        
         // Add commands to write, packet 0.
         ae->add_write(0, "DIMC_motor_1",
                          "DIMC_motor_2",
@@ -30,6 +32,8 @@ testcase() {
                          "ctrl_mode", 
                          "ctrl_enabled", 
                          "disable_motor_onoff_by_stick");
+
+        ae->add_write(2, Cmd::DIMC_motor_1);
 
         // Start the engine.
         // Returns when the variables and

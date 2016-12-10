@@ -18,8 +18,14 @@ namespace acc
         flight_time = 0x0002
     };
 
-    using Vars = acc::ACI_COMM_VAR; 
+    using Var = acc::ACI_COMM_VAR; 
 
+    enum class ACI_COMM_CMD
+    {
+        DIMC_motor_1  = 0x0500,  
+    };
+
+    using Cmd = acc::ACI_COMM_CMD; 
 
     /**
     *   Singleton class.

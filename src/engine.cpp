@@ -128,29 +128,39 @@ acc::Engine<BUS>::_aci_thread_runner() {
 }
 
 template<class BUS> void 
-acc::Engine<BUS>::add_read(int pck, std::string read) {
+acc::Engine<BUS>::_add_read(int pck, std::string key_read) {
     if (_aci_thread_run) throw std::runtime_error("Engine is running, you cannot add reads");
     std::map<std::string, DroneItem>::iterator it;
-    it = _map_var.find(read);
-    if (it == _map_var.end()) throw std::runtime_error("This entry read key not exist: " + read);
-    if (!it->second.can_be_read()) throw std::runtime_error("This entry read cannot be read: " + read);
-    _requsted_vars.insert(std::make_pair(read, it->second));
+    it = _map_var.find(key_read);
+    if (it == _map_var.end()) throw std::runtime_error("This entry read key not exist: " + key_read);
+    if (!it->second.can_be_read()) throw std::runtime_error("This entry read cannot be read: " + key_read);
+    _requsted_vars.insert(std::make_pair(key_read, it->second));
     std::map<std::string, DroneItem>::iterator it2;
-    it2 = _requsted_vars.find(read);
+    it2 = _requsted_vars.find(key_read);
     it2->second.pck = pck;
 }
 
 template<class BUS> void 
-acc::Engine<BUS>::add_write(int pck, std::string write) {
+acc::Engine<BUS>::_add_read(int pck, ACI_COMM_VAR key_read) {
+
+}
+
+template<class BUS> void 
+acc::Engine<BUS>::_add_write(int pck, std::string key_write) {
     if (_aci_thread_run) throw std::runtime_error("Engine is running, you cannot add writes");
     std::map<std::string, DroneItem>::iterator it;
-    it = _map_cmd.find(write);
-    if (it == _map_cmd.end()) throw std::runtime_error("This entry write key not exist: " + write);
-    if (!it->second.can_be_written()) throw std::runtime_error("This entry write cannot be written: " + write);
-    _requsted_cmds.insert(std::make_pair(write, it->second));
+    it = _map_cmd.find(key_write);
+    if (it == _map_cmd.end()) throw std::runtime_error("This entry write key not exist: " + key_write);
+    if (!it->second.can_be_written()) throw std::runtime_error("This entry write cannot be written: " + key_write);
+    _requsted_cmds.insert(std::make_pair(key_write, it->second));
     std::map<std::string, DroneItem>::iterator it2;
-    it2 = _requsted_cmds.find(write);
+    it2 = _requsted_cmds.find(key_write);
     it2->second.pck = pck;
+}
+
+template<class BUS> void 
+acc::Engine<BUS>::_add_write(int pck, ACI_COMM_CMD key_write) {
+
 }
 
 template<class BUS> int 

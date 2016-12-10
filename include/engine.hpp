@@ -62,25 +62,6 @@ namespace acc
             return engine;
         }
 
-    private:
-
-        /**
-        *   Private constructor.
-        */
-        Engine(BUS&& bus_) : 
-            _bus(bus_), 
-            _aci_thread_run(false),
-            _aci_thread_sem(1) {
-                MapVarCmd::init(_map_var, _map_cmd);
-        };
-
-        /**
-        *   Private destructor.
-        */
-        ~Engine() { stop(); }
-
-    public:
-
         /**
         *   Deleted copy constructor and
         *   copy operator.
@@ -94,17 +75,26 @@ namespace acc
         */
         BUS* bus() { return &_bus; }
 
+
         /**
         *   Add variables.
         */               
-        template<class... Args> void 
-        add_read(int pck, std::string key_read, Args... args) {
+        template<class Key, class... Args> void 
+        add_read(int pck, Key key_read, Args... args) {
             add_read(pck, key_read);
             add_read(pck, args...);
         }
 
-        void add_read(int pck, std::string read);
-  
+        template<class... Args> void 
+        add_read(int pck, Args... args) {
+            add_read(pck, args...);
+        }
+
+        template<class Key> void 
+        add_read(int pck, Key key_read) {
+            _add_read(pck, key_read);
+        }
+
         /**
         *   Add commands.
         */  
@@ -114,7 +104,15 @@ namespace acc
             add_write(pck, args...);
         }
 
-        void add_write(int pck, std::string write);
+        template<class... Args> void 
+        add_write(int pck, Args... args) {
+            add_write(pck, args...);
+        }
+
+        template<class Key> void 
+        add_write(int pck, Key key_write) {
+            _add_write(pck, key_write);
+        }
 
         /**
         *   Start port setup,
@@ -190,6 +188,16 @@ namespace acc
         /********************/
 
     private:
+
+        Engine(BUS&& bus_) : 
+            _bus(bus_), 
+            _aci_thread_run(false),
+            _aci_thread_sem(1) {
+                MapVarCmd::init(_map_var, _map_cmd);
+        };
+
+        ~Engine() { stop(); }
+
         BUS _bus;
 
         /**
@@ -214,6 +222,10 @@ namespace acc
 
         void _launch_aci_thread();
         void _aci_thread_runner();
+        void _add_read(int pck,  std::string  key_read);
+        void _add_write(int pck, std::string  key_write);
+        void _add_read(int pck,  ACI_COMM_VAR key_read);
+        void _add_write(int pck, ACI_COMM_CMD key_write);
 
     }; // End Engine<BUS>
 
