@@ -22,7 +22,8 @@ namespace acc
 
     enum class ACI_COMM_CMD
     {
-        DIMC_motor_1  = 0x0500,  
+        DIMC_motor_1  = 0x0500, 
+        DIMC_motor_2  = 0x0501 
     };
 
     using Cmd = acc::ACI_COMM_CMD; 
