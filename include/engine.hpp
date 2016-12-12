@@ -115,6 +115,24 @@ namespace acc
         }
 
         /**
+        *   Start port setup,
+        *   start aci_thread,
+        *   load the packet workload.
+        *
+        *   Throws when:
+        *   * bus cannot be opened
+        *   * the port confs cannot be applied
+        *   * the packet is not setted
+        */
+        void start(int ep1 = 100, int ep2 = 10);
+
+        /**
+        *   Join the aci_thread to the
+        *   main thread.
+        */
+        void stop();
+
+        /**
         *   Read variables.
         */ 
         template<class... Args> std::vector<int> 
@@ -151,23 +169,23 @@ namespace acc
 
         void write(std::string key_write, int value_write);
 
-        /**
-        *   Start port setup,
-        *   start aci_thread,
-        *   load the packet workload.
-        *
-        *   Throws when:
-        *   * bus cannot be opened
-        *   * the port confs cannot be applied
-        *   * the packet is not setted
-        */
-        void start(int ep1 = 100, int ep2 = 10);
-
-        /**
-        *   Join the aci_thread to the
-        *   main thread.
-        */
-        void stop();
+    protected:
+        /* Ideas */
+        /********************/
+        void get_version(bool version = false);
+        /********************/
+        template<class... Args> void 
+        add_read_label(int packet, std::string label, Args... args) {}
+        /********************/
+        template<class... Args> void 
+        add_write_label(int packet, std::string label, Args... args) {}
+        /********************/
+        template<class... Args> void 
+        read_label(std::string label, Args... args) {}
+        /********************/
+        template<class... Args> void 
+        write_label(std::string label, Args... args) {}
+        /********************/
 
     private:
 
@@ -202,15 +220,12 @@ namespace acc
         std::map<std::string, DroneItem> _map_var;
         std::map<std::string, DroneItem> _map_cmd;
 
-        void _set_c_api_callbacks();
-        void _wait_on_c_api_callbacks();
         void _launch_aci_thread();
         void _aci_thread_runner();
         void _add_read(int pck,  std::string  key_read);
         void _add_write(int pck, std::string  key_write);
         void _add_read(int pck,  ACI_COMM_VAR key_read);
         void _add_write(int pck, ACI_COMM_CMD key_write);
-        void _add_read(int pck,  CompoundDroneItem read_arg);
 
     }; // End Engine<BUS>
 

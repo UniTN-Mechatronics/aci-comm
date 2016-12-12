@@ -72,17 +72,6 @@ namespace acc
         int _value;
     };
 
-    class CompoundDroneItem {
-    public:
-        CompoundDroneItem(std::string name) {
-
-        }
-
-    private:
-        std::map<std::string, DroneItem> _items;
-
-    };
-
 };
 
 

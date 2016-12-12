@@ -24,10 +24,10 @@ namespace
     *   Pointing at the Bus member
     *   variable.
     */
-    int *_bus_port        = NULL;   
+    int *_bus_port;   
     int _version_callback = 0;
-    int _reads_callback   = 0;
-    int _writes_callback  = 0;
+    int _reads_callback = 0;
+    int _writes_callback = 0;
     int _reads_update_val = 10;
     std::map<std::string, acc::DroneItem> _requsted_vars;
     std::map<std::string, acc::DroneItem> _requsted_cmds;
@@ -45,20 +45,47 @@ namespace
 */                            
 template<class BUS> void 
 acc::Engine<BUS>::start(int ep1, int ep2) {
-    if (_aci_thread_run) throw std::runtime_error("Engine is already started!");
-    if (ep1 < 0 || ep2 < 0) throw std::runtime_error("Ep1 and Ep2 must be positive integers!");
-    if (_requsted_vars.empty() && _requsted_cmds.empty()) throw std::runtime_error("Neither reads or writes are set!");
+    if (_aci_thread_run) 
+        throw std::runtime_error("Engine is already started!");
+
+    if (ep1 < 0 || ep2 < 0) 
+        throw std::runtime_error("Ep1 and Ep2 must be positive integers!");
+    
+    if (_requsted_vars.empty() && _requsted_cmds.empty()) 
+        throw std::runtime_error("Neither reads or writes are set!");
+
     try {
         _bus.open(); 
         _bus_port = &_bus._port_state;
         aciInit();
+
         // Callbacks
-        _set_c_api_callbacks();
+        aciSetSendDataCallback(&c_api_transmit_callback);              // Transmit
+        aciInfoPacketReceivedCallback(&c_api_versions_callback);       // Version 
+        aciSetVarListUpdateFinishedCallback(&c_api_reads_callback);    // Read
+        aciSetCmdListUpdateFinishedCallback(&c_api_writes_callback);   // Write
+        aciSetParamListUpdateFinishedCallback(&c_api_params_callback); // Params
+
         // Set engine and start thread.
         aciSetEngineRate(ep1, ep2);
         _launch_aci_thread();
-        // Wait callbacks 
-        _wait_on_c_api_callbacks();
+        
+        // Version
+        aciCheckVerConf(); 
+        while(!_version_callback) usleep(1000);
+        
+        // Read
+        if (!_requsted_vars.empty()) {
+            aciGetDeviceVariablesList(); 
+            while(!_reads_callback) usleep(1000);
+        }
+        
+        // Write
+        if (!_requsted_cmds.empty()) {
+            aciGetDeviceCommandsList(); 
+            while(!_writes_callback) usleep(1000);
+        }
+
     } catch (std::runtime_error e) {
         throw e;
     }
@@ -76,15 +103,6 @@ acc::Engine<BUS>::stop() {
     _version_callback = 0;
     _reads_callback   = 0;
     _writes_callback  = 0;
-}
-
-template<class BUS> void
-acc::Engine<BUS>::_set_c_api_callbacks() {
-    aciSetSendDataCallback(&c_api_transmit_callback);              // Transmit
-    aciInfoPacketReceivedCallback(&c_api_versions_callback);       // Version 
-    aciSetVarListUpdateFinishedCallback(&c_api_reads_callback);    // Read
-    aciSetCmdListUpdateFinishedCallback(&c_api_writes_callback);   // Write
-    aciSetParamListUpdateFinishedCallback(&c_api_params_callback); // Params
 }
 
 template<class BUS> void 
@@ -109,33 +127,8 @@ acc::Engine<BUS>::_aci_thread_runner() {
     }
 }
 
-template<class BUS> void
-acc::Engine<BUS>::_wait_on_c_api_callbacks() {
-    // Version
-    aciCheckVerConf(); 
-    while(!_version_callback) usleep(1000);
-    // Read
-    if (!_requsted_vars.empty()) {
-        aciGetDeviceVariablesList(); 
-        while(!_reads_callback) usleep(1000);
-    }
-    // Write
-    if (!_requsted_cmds.empty()) {
-        aciGetDeviceCommandsList(); 
-        while(!_writes_callback) usleep(1000);
-    }
-}
-
-template<class BUS> void 
-acc::Engine<BUS>::_add_read(int pck, CompoundDroneItem read_arg) {
-
-}
-
 template<class BUS> void 
 acc::Engine<BUS>::_add_read(int pck, std::string key_read) {
-    // Convert to ACI_COMM_VAR
-    // than _add_read(int pck, ACI_COMM_VAR key_read)
-
     if (_aci_thread_run) throw std::runtime_error("Engine is running, you cannot add reads");
     std::map<std::string, DroneItem>::iterator it;
     it = _map_var.find(key_read);
