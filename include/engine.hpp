@@ -145,29 +145,29 @@ namespace acc
 
         template<class... Args> void
         read(std::vector<int>& read_results, 
-             std::string key_read, Args... args) 
+             acc::ACI_COMM_VAR key_read, Args... args) 
         {
             read_results.push_back(read(key_read));
             read(read_results, args...);
         }
 
         void
-        read(std::vector<int>& read_results, std::string key_read) {
+        read(std::vector<int>& read_results, acc::ACI_COMM_VAR key_read) {
             read_results.push_back(read(key_read));
         }
 
-        int read(std::string key_read);
+        int read(acc::ACI_COMM_VAR key_read);
 
         /**
         *   Write variables.
         */ 
         template<class... Args> void 
-        write(std::string key_write, int value_write, Args... args) {
+        write(acc::ACI_COMM_CMD key_write, int value_write, Args... args) {
             write(key_write, value_write);
             write(args...);
         }
 
-        void write(std::string key_write, int value_write);
+        void write(acc::ACI_COMM_CMD key_write, int value_write);
 
     protected:
         /* Ideas */
@@ -217,13 +217,11 @@ namespace acc
         /**
         *   The dictionary.
         */
-        std::map<std::string, DroneItem> _map_var;
-        std::map<std::string, DroneItem> _map_cmd;
+        std::map<acc::ACI_COMM_VAR, DroneItemVar> _map_var;
+        std::map<acc::ACI_COMM_CMD, DroneItemCmd> _map_cmd;
 
         void _launch_aci_thread();
         void _aci_thread_runner();
-        void _add_read(int pck,  std::string  key_read);
-        void _add_write(int pck, std::string  key_write);
         void _add_read(int pck,  ACI_COMM_VAR key_read);
         void _add_write(int pck, ACI_COMM_CMD key_write);
 

@@ -24,13 +24,13 @@ namespace
     *   Pointing at the Bus member
     *   variable.
     */
-    int *_bus_port;   
-    int _version_callback = 0;
-    int _reads_callback = 0;
-    int _writes_callback = 0;
-    int _reads_update_val = 10;
-    std::map<std::string, acc::DroneItem> _requsted_vars;
-    std::map<std::string, acc::DroneItem> _requsted_cmds;
+    int *_bus_port          = NULL;   
+    int _version_callback   = 0;
+    int _reads_callback     = 0;
+    int _writes_callback    = 0;
+    int _reads_update_val   = 10;
+    std::map<acc::ACI_COMM_VAR, acc::DroneItemVar> _requsted_vars;
+    std::map<acc::ACI_COMM_CMD, acc::DroneItemCmd> _requsted_cmds;
 }
 
 
@@ -128,56 +128,46 @@ acc::Engine<BUS>::_aci_thread_runner() {
 }
 
 template<class BUS> void 
-acc::Engine<BUS>::_add_read(int pck, std::string key_read) {
+acc::Engine<BUS>::_add_read(int pck, acc::ACI_COMM_VAR key_read) {
     if (_aci_thread_run) throw std::runtime_error("Engine is running, you cannot add reads");
-    std::map<std::string, DroneItem>::iterator it;
+    std::map<acc::ACI_COMM_VAR, DroneItemVar>::iterator it;
     it = _map_var.find(key_read);
-    if (it == _map_var.end()) throw std::runtime_error("This entry read key not exist: " + key_read);
-    if (!it->second.can_be_read()) throw std::runtime_error("This entry read cannot be read: " + key_read);
+    if (it == _map_var.end()) throw std::runtime_error("This entry read key not exist: ");
+    if (!it->second.can_be_read()) throw std::runtime_error("This entry read cannot be read: ");
     _requsted_vars.insert(std::make_pair(key_read, it->second));
-    std::map<std::string, DroneItem>::iterator it2;
+    std::map<acc::ACI_COMM_VAR, DroneItemVar>::iterator it2;
     it2 = _requsted_vars.find(key_read);
     it2->second.pck = pck;
 }
 
 template<class BUS> void 
-acc::Engine<BUS>::_add_read(int pck, ACI_COMM_VAR key_read) {
-
-}
-
-template<class BUS> void 
-acc::Engine<BUS>::_add_write(int pck, std::string key_write) {
+acc::Engine<BUS>::_add_write(int pck, acc::ACI_COMM_CMD key_write) {
     if (_aci_thread_run) throw std::runtime_error("Engine is running, you cannot add writes");
-    std::map<std::string, DroneItem>::iterator it;
+    std::map<acc::ACI_COMM_CMD, DroneItemCmd>::iterator it;
     it = _map_cmd.find(key_write);
-    if (it == _map_cmd.end()) throw std::runtime_error("This entry write key not exist: " + key_write);
-    if (!it->second.can_be_written()) throw std::runtime_error("This entry write cannot be written: " + key_write);
+    if (it == _map_cmd.end()) throw std::runtime_error("This entry write key not exist: ");
+    if (!it->second.can_be_written()) throw std::runtime_error("This entry write cannot be written: ");
     _requsted_cmds.insert(std::make_pair(key_write, it->second));
-    std::map<std::string, DroneItem>::iterator it2;
+    std::map<acc::ACI_COMM_CMD, DroneItemCmd>::iterator it2;
     it2 = _requsted_cmds.find(key_write);
     it2->second.pck = pck;
 }
 
-template<class BUS> void 
-acc::Engine<BUS>::_add_write(int pck, ACI_COMM_CMD key_write) {
-
-}
-
 template<class BUS> int 
-acc::Engine<BUS>::read(std::string key_read) {
-    for (std::map<std::string, DroneItem>::iterator it=_requsted_vars.begin(); 
+acc::Engine<BUS>::read(acc::ACI_COMM_VAR key_read) {
+    for (std::map<acc::ACI_COMM_VAR, DroneItemVar>::iterator it=_requsted_vars.begin(); 
         it!=_requsted_vars.end(); ++it) 
     {
         if (it->first == key_read) {
             return *it->second.value_ptr();
         }
     }
-    throw std::runtime_error("This entry read key not exist: " + key_read);
+    throw std::runtime_error("This entry read key not exist: ");
 }  
 
 template<class BUS> void 
-acc::Engine<BUS>::write(std::string key_write, int value_write) {
-    for (std::map<std::string, DroneItem>::iterator it=_requsted_cmds.begin(); 
+acc::Engine<BUS>::write(acc::ACI_COMM_CMD key_write, int value_write) {
+    for (std::map<acc::ACI_COMM_CMD, DroneItemCmd>::iterator it=_requsted_cmds.begin(); 
         it!=_requsted_cmds.end(); ++it) 
     {
         if (it->first == key_write) {
@@ -186,7 +176,7 @@ acc::Engine<BUS>::write(std::string key_write, int value_write) {
             return;
         }
     }
-    throw std::runtime_error("This entry write key not exist: " + key_write);
+    throw std::runtime_error("This entry write key not exist: ");
 }
 
 
@@ -224,7 +214,7 @@ c_api_versions_callback(struct ACI_INFO aciInfo) {
 static void 
 c_api_reads_callback() {
     std::vector<int> pkc_idx;
-    for (std::map<std::string, acc::DroneItem>::iterator it=_requsted_vars.begin(); 
+    for (std::map<acc::ACI_COMM_VAR, acc::DroneItemVar>::iterator it=_requsted_vars.begin(); 
         it!=_requsted_vars.end(); ++it) 
     {
         pkc_idx.push_back(it->second.pck);
@@ -243,7 +233,7 @@ c_api_reads_callback() {
 static void 
 c_api_writes_callback() {
     std::vector<int> pkc_idx;
-    for (std::map<std::string, acc::DroneItem>::iterator it=_requsted_cmds.begin(); 
+    for (std::map<acc::ACI_COMM_CMD, acc::DroneItemCmd>::iterator it=_requsted_cmds.begin(); 
         it!=_requsted_cmds.end(); ++it) 
     {
         pkc_idx.push_back(it->second.pck);

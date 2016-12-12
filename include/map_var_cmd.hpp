@@ -4,29 +4,12 @@
 
 #include <map>
 #include <string>
-#ifndef _ACI_COMM_DRONE_ITEMS_HPP_   
-    #include "drone_items.hpp"
-#endif
-
+#include "drone_items.hpp"
 
 
 namespace acc
 {
-    enum class ACI_COMM_VAR
-    {
-        UAV_status  = 0x0001,  
-        flight_time = 0x0002
-    };
-
-    using Var = acc::ACI_COMM_VAR; 
-
-    enum class ACI_COMM_CMD
-    {
-        DIMC_motor_1  = 0x0500,  
-    };
-
-    using Cmd = acc::ACI_COMM_CMD; 
-
+    
     /**
     *   Singleton class.
     *   Currently, have an entire
@@ -41,8 +24,8 @@ namespace acc
     public:
 
         static MapVarCmd& init(
-            std::map<std::string, DroneItem>& _map_var,
-            std::map<std::string, DroneItem>& _map_cmd
+            std::map<acc::ACI_COMM_VAR, DroneItemVar>& _map_var,
+            std::map<acc::ACI_COMM_CMD, DroneItemCmd>& _map_cmd
         ) {
             static MapVarCmd mapVarCmd(_map_var, _map_cmd);
             return mapVarCmd;
@@ -54,8 +37,8 @@ namespace acc
         *   Private constructor.
         */
         MapVarCmd(
-            std::map<std::string, DroneItem>& _map_var,
-            std::map<std::string, DroneItem>& _map_cmd
+            std::map<acc::ACI_COMM_VAR, DroneItemVar>& _map_var,
+            std::map<acc::ACI_COMM_CMD, DroneItemCmd>& _map_cmd
         ) { 
             _alloc_map_var(_map_var);
             _alloc_map_cmd(_map_cmd);
@@ -64,10 +47,10 @@ namespace acc
         /**
         *   Private destructor.
         */
-        ~MapVarCmd() {}
+        ~MapVarCmd() {};
         
-        void _alloc_map_var(std::map<std::string, DroneItem>& _map_var);
-        void _alloc_map_cmd(std::map<std::string, DroneItem>& _map_cmd);
+        void _alloc_map_var(std::map<acc::ACI_COMM_VAR, DroneItemVar>& _map_var);
+        void _alloc_map_cmd(std::map<acc::ACI_COMM_CMD, DroneItemCmd>& _map_cmd);
 
         /*  Maybe we will need them in future.
         *   std::map<std::string, DroneItem> _internal_map_var;
@@ -80,8 +63,8 @@ namespace acc
         *   Deleted copy constructor and
         *   copy operator.
         */
-        MapVarCmd(MapVarCmd const&) = delete;
-        void operator=(MapVarCmd const&) = delete;
+        //MapVarCmd(MapVarCmd const&) delete;
+        //void operator(MapVarCmd const&) delete;
     };
 };
 
