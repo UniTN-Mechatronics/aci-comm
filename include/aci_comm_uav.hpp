@@ -7,36 +7,43 @@
 
 namespace acc 
 {
-	
+
 	class UAV
 	{
 	public:
+		friend class Angles<UAV>;
 		
 		/**
 		*	SerialBus UAV constructor.
 		*/
-		UAV(std::string port, int baud_rate) {
-			ae = &Engine<SerialBus>::init(port, baud_rate);
-			angles.engine = ae;
-			angles.pitch.engine = ae;
-			angles.roll.engine = ae;
-			angles.yaw.engine = ae;
+		UAV(std::string port, int baud_rate, CTRL_MODE mode) : _mode(mode) {
+			engine = &Engine<SerialBus>::init(port, baud_rate);
+			angles = Angles<UAV>(this);
 		};
+
+		~UAV() {
+			engine->stop();
+		}
 
 		// Setup
 		void set_port(std::string port_id);
+		std::string port();
 
 		// Run
 		void start(); 
 		void stop(); 
 
 		// Packets
-		Angles angles;
+		Angles<UAV> angles;
+
+		// Settings
+		typedef struct Settings {
+			int update_frequency = 1000; 
+		} settings; 
 
 	private:
-		Engine<SerialBus>* ae;
-		
-
+		Engine<SerialBus>* engine;
+		CTRL_MODE _mode;
 	};
 
 };

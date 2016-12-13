@@ -2,6 +2,17 @@
 #define _ACI_COMM_COMMONS_HPP_
 #ifdef __cplusplus
 
+namespace acc {
+
+	enum class CTRL_MODE 
+	{
+		DIMC,
+		DMC,
+		CTRL,
+		READ
+	};
+}
+
 extern "C" {
     #include "asctecCommIntf.h"
 }

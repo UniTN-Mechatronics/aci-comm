@@ -1,6 +1,6 @@
 # Compiling
-CC=gcc -O1
-CXX=g++ -O1
+CC=gcc -O1 -pthread
+CXX=g++ -O1 -pthread
 INCPATH=-Iinclude -Iasctec
 SRCPATH=src/
 SRCPATHASCTEC=asctec/
@@ -11,7 +11,7 @@ CXXFLAGS=-Wall -std=c++11
 OBJECTC=acic.o
 
 # Linking
-LIBS=-lm -pthread
+LIBS=-lm 
 
 # Source
 CSOURCES=$(SRCPATHASCTEC)asctecCommIntf.c 

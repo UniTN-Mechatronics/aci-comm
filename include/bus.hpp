@@ -99,6 +99,11 @@ namespace acc
             _port = port;
         }
 
+        std::string 
+        port() {
+            return _port;
+        }
+
     protected:
         /**
         *   They will be called from
