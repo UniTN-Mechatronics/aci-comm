@@ -11,7 +11,7 @@ CXXFLAGS=-Wall -std=c++11
 OBJECTC=acic.o
 
 # Linking
-LIBS=-lm -lpthread
+LIBS=-lm -pthread
 
 # Source
 CSOURCES=$(SRCPATHASCTEC)asctecCommIntf.c 
