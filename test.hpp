@@ -1,5 +1,5 @@
 #include "engine.hpp"
-
+#include "aci_comm_uav.hpp"
 
 void 
 testcase() {
@@ -41,8 +41,6 @@ testcase() {
                   Cmd::ctrl_enabled,                 1,
                   Cmd::disable_motor_onoff_by_stick, 1);
 
-
-
     } catch (std::runtime_error e) {
         std::cout << "Exception: " << e.what() << std::endl;
         ae->stop();
@@ -52,16 +50,38 @@ testcase() {
     }
 }
 
-
-/*
-        aciPacket motors_rpm(1, 1000, "motor_rpm_1", "motor_rpm_2", "motor_rpm_3", "motor_rpm_4");
-
-        aciPacket quaternion(2, 1000, "quaternion"); // quaterrnon \in R^4
-
-        motors_rpm[1].read()
-
-        ae->add_read(motors_rpm, quaternion);
-        auto rpm = ae->read(motors_rpm);
-        ae->read(motors_rpm[1]);*/
+void
+testcase2() {
+    acc::UAV uav("/dev/tty.usbserial-A504DRSI", B57600);
+    try {
+        // Enable
+        //uav.angles.pitch.enable_write(0);
+        uav.angles.pitch.enable_read(0);
+        uav.angles.yaw.enable_read(0);
+        //uav.angles.roll.enable_write(2);
+        uav.start();
+    
+        // Write
+        //uav.angles.pitch.write(30.0);
+        //uav.angles.roll.write(30.0);
+    
+        // Read
+        int i = 0;
+        while(i < 1000) {
+            auto value = uav.angles.pitch.read();
+            auto valueyaw = uav.angles.yaw.read(); 
+            std::cout << value << " " << valueyaw << std::endl;
+            i++;
+            usleep(10000);
+        }
+        
+    } catch (std::runtime_error e) {
+        std::cout << "Exception: " << e.what() << std::endl;
+        uav.stop();
+    } catch (...) {
+        std::cout << "!!! Unexpected error !!!" << std::endl;
+        uav.stop();
+    }
+}
 
 

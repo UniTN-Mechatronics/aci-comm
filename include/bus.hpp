@@ -94,6 +94,11 @@ namespace acc
             int c_lflag = 0;
         } settings;
 
+        void 
+        set_port(std::string port) {
+            _port = port;
+        }
+
     protected:
         /**
         *   They will be called from
