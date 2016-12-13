@@ -7,6 +7,8 @@
 #include <tuple>
 #include <map>
 #include <vector>
+#include <algorithm>
+#include <atomic>
 #include <assert.h>
 
 #ifndef _ACI_COMM_BUS_HPP_
