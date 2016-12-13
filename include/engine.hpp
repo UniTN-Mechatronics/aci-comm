@@ -15,9 +15,7 @@
 #ifndef _ACI_COMM_PACKET_HPP_
     #include "packet.hpp"
 #endif
-#ifndef _SEMAPHORE_HPP_
-    #include "semaphore.hpp"
-#endif
+
 #ifndef _ACI_COMM_COMMONS_HPP_
     #include "commons.hpp"
 #endif
@@ -191,8 +189,7 @@ namespace acc
 
         Engine(BUS&& bus_) : 
             _bus(bus_), 
-            _aci_thread_run(false),
-            _aci_thread_sem(1) {
+            _aci_thread_run(false) {
                 MapVarCmd::init(_map_var, _map_cmd);
         };
 
@@ -213,7 +210,7 @@ namespace acc
         /**
         *   Not used yet.
         */
-        Semaphore _aci_thread_sem;
+        
         /**
         *   The dictionary.
         */
