@@ -1,23 +1,23 @@
 #include "aci_comm_uav.hpp"
 
 
-void 
+void
 acc::UAV::set_port(std::string port_id) {
 	engine->bus()->set_port(port_id);
 }
 
-std::string 
+std::string
 acc::UAV::port() {
 	return engine->bus()->port();
 }
 
-void 
+void
 acc::UAV::start() {
 	engine->start();
   _write_ctrl();
 }
 
-void 
+void
 acc::UAV::stop() {
 	engine->stop();
 }
@@ -33,7 +33,6 @@ acc::UAV::control_enable(bool value) {
 void
 acc::UAV::_add_write_ctrl() {
   if (_ctrl_mode == CTRL_MODE::READ_ONLY) return;
-  std::cout << "ADD WRITE" << std::endl;
   engine->add_write(0, ACI_COMM_CMD::ctrl_mode,
                        ACI_COMM_CMD::ctrl_enabled,
                        ACI_COMM_CMD::disable_motor_onoff_by_stick);
@@ -42,7 +41,6 @@ acc::UAV::_add_write_ctrl() {
 void
 acc::UAV::_write_ctrl() {
   if (_ctrl_mode == CTRL_MODE::READ_ONLY) return;
-  std::cout << "EXC WRITE" << std::endl;
   engine->write(ACI_COMM_CMD::ctrl_mode, 0,
                 ACI_COMM_CMD::disable_motor_onoff_by_stick, 1);
 }
