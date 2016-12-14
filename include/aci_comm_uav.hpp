@@ -13,7 +13,7 @@
 #define FLOATING_POINT_PRECISION float
 #endif
 
-namespace acc 
+namespace acc
 {
 
     class UAV
@@ -27,18 +27,18 @@ namespace acc
         friend class ChannelWrite<UAV, FLOATING_POINT_PRECISION>;
 
         using Attitude = Angles<UAV, FLOATING_POINT_PRECISION>;
-        using Motor = Motor<UAV, FLOATING_POINT_PRECISION>;
-        
+        using Motors = Motor<UAV, FLOATING_POINT_PRECISION>;
+
         /**
         *   SerialBus UAV constructor.
         */
         UAV(std::string port, int baud_rate, CTRL_MODE mode) : _ctrl_mode(mode) {
             engine = &Engine<SerialBus>::init(port, baud_rate);
             attitude = Attitude(this);
-            motors[0] = Motor(this, ACI_COMM_VAR::motor_rpm_1, ACI_COMM_CMD::DIMC_motor_1);
-            motors[1] = Motor(this, ACI_COMM_VAR::motor_rpm_2, ACI_COMM_CMD::DIMC_motor_2);
-            motors[2] = Motor(this, ACI_COMM_VAR::motor_rpm_3, ACI_COMM_CMD::DIMC_motor_3);
-            motors[3] = Motor(this, ACI_COMM_VAR::motor_rpm_4, ACI_COMM_CMD::DIMC_motor_4);
+            motors[0] = Motors(this, ACI_COMM_VAR::motor_rpm_1, ACI_COMM_CMD::DIMC_motor_1);
+            motors[1] = Motors(this, ACI_COMM_VAR::motor_rpm_2, ACI_COMM_CMD::DIMC_motor_2);
+            motors[2] = Motors(this, ACI_COMM_VAR::motor_rpm_3, ACI_COMM_CMD::DIMC_motor_3);
+            motors[3] = Motors(this, ACI_COMM_VAR::motor_rpm_4, ACI_COMM_CMD::DIMC_motor_4);
             _add_write_ctrl();
         };
 
@@ -51,22 +51,22 @@ namespace acc
         std::string port();
 
         // Run
-        void start(); 
-        void stop(); 
+        void start();
+        void stop();
 
         // Controller setup
         void control_enable(bool value);
 
         // Packets
         Attitude attitude;
-        std::array<Motor, MOTORS_NUM> motors;
+        std::array<Motors, MOTORS_NUM> motors;
 
         // Settings
         typedef struct Settings {
-            int update_frequency = 1000; 
-        } settings; 
+            int update_frequency = 1000;
+        } settings;
 
-        CTRL_MODE 
+        CTRL_MODE
         ctrl_mode() {
             return _ctrl_mode;
         }
