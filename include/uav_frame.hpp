@@ -5,6 +5,41 @@
 #include "engine.hpp"
 #include "aci_comm_uav.hpp"
 
+#define ENABLE_READ()                                               \
+enable_read(int packet) {                                           \
+    _check_null_uav_ptr(_uav_ptr);                                  \
+    _uav_ptr->engine->add_read(packet, read_type);                  \
+    return *this;                                                   \
+} 
+
+#define ENABLE_WRITE()                                              \
+enable_write(int packet) {                                          \
+    _check_null_uav_ptr(_uav_ptr);                                  \
+    _uav_ptr->engine->add_write(packet, write_type);                \
+    return *this;                                                   \
+} 
+
+#define READ()                                                      \
+read() {                                                            \
+    _check_null_uav_ptr(_uav_ptr);                                  \
+    return _read_conversion(_uav_ptr->engine->read(read_type));     \
+}
+
+#define WRITE()                                                     \
+write(double val) {                                                 \
+    _check_null_uav_ptr(_uav_ptr);                                  \
+    auto val_conv = _write_conversion(val);                         \
+    _uav_ptr->engine->write(val_conv, val);                         \
+    return *this;                                                   \
+}
+
+#define PROTECTED_ITEM()                                            \
+TP *_uav_ptr = NULL;                                                \
+void                                                                \
+_check_null_uav_ptr(TP *uav_ptr) noexcept(false) {                  \
+    if (!uav_ptr) throw std::runtime_error("UAV pointer is null!"); \
+}    
+
 namespace acc 
 {
     template<class T>
@@ -28,41 +63,25 @@ namespace acc
         {
         public:
             friend class Angles;
+            Pitch& ENABLE_READ()
+            Pitch& ENABLE_WRITE()
+            double READ()
+            Pitch& WRITE()
             
-            Pitch&
-            enable_read(int packet) {
-                _check_null_uav_ptr(_uav_ptr);
-                _uav_ptr->engine->add_read(packet, ACI_COMM_VAR::angle_pitch);
-                return *this;
-            }
-
-            Pitch& 
-            enable_write(int packet) {
-                _check_null_uav_ptr(_uav_ptr);
-                _uav_ptr->engine->add_write(packet, ACI_COMM_CMD::CTRL_pitch);
-                return *this;
-            }
+        protected:
+            ACI_COMM_VAR read_type  = ACI_COMM_VAR::angle_pitch;
+            ACI_COMM_CMD write_type = ACI_COMM_CMD::CTRL_pitch;
+            PROTECTED_ITEM()
 
             double 
-            read() { 
-                _check_null_uav_ptr(_uav_ptr);
-                return _uav_ptr->engine->read(ACI_COMM_VAR::angle_pitch);
+            _read_conversion(int value) {
+                return (double)value;
             }
 
-            Pitch& 
-            write(double val) {
-                _check_null_uav_ptr(_uav_ptr);
-                _uav_ptr->engine->write(ACI_COMM_CMD::CTRL_pitch, val);
-                return *this;
+            int 
+            _write_conversion(double value) {
+                return (int)value;
             }
-
-        protected:
-            TP *_uav_ptr = NULL;    
-            
-            void 
-            _check_null_uav_ptr(TP *uav_ptr) noexcept(false) {
-                if (!uav_ptr) throw std::runtime_error("UAV pointer is null!");
-            }       
         };
 
 
@@ -76,31 +95,27 @@ namespace acc
         {
         public:
             friend class Angles;
-
-            void 
-            enable_read(int packet) {
-                _uav_ptr->engine->add_read(packet, ACI_COMM_VAR::angle_roll);
-            }
-
-            void 
-            enable_write(int packet) {
-                _uav_ptr->engine->add_write(packet, ACI_COMM_CMD::CTRL_roll);
-            }
+            Roll& ENABLE_READ()
+            Roll& ENABLE_WRITE()
+            double READ()
+            Roll& WRITE()
+            
+        protected:
+            ACI_COMM_VAR read_type  = ACI_COMM_VAR::angle_roll;
+            ACI_COMM_CMD write_type = ACI_COMM_CMD::CTRL_roll;
+            PROTECTED_ITEM()
 
             double 
-            read() { 
-                return _uav_ptr->engine->read(ACI_COMM_VAR::angle_roll);
+            _read_conversion(int value) {
+                return (double)value;
             }
 
-            void 
-            write(double val) {
-                _uav_ptr->engine->write(ACI_COMM_CMD::CTRL_roll, val);
+            int 
+            _write_conversion(double value) {
+                return (int)value;
             }
-
-        protected:
-            TP *_uav_ptr = NULL;
         };
-    
+
 
         /*
         *   \_/_     
@@ -111,19 +126,17 @@ namespace acc
         {
         public:
             friend class Angles;
-
-            void 
-            enable_read(int packet) {
-                _uav_ptr->engine->add_read(packet, ACI_COMM_VAR::angle_yaw);
-            }
+            Yaw& ENABLE_READ()
+            double READ()
+            
+        protected:
+            ACI_COMM_VAR read_type  = ACI_COMM_VAR::angle_yaw;
+            PROTECTED_ITEM()
 
             double 
-            read() { 
-                return _uav_ptr->engine->read(ACI_COMM_VAR::angle_yaw);
+            _read_conversion(int value) {
+                return (double)value;
             }
-
-        protected:
-            TP *_uav_ptr = NULL;
         };
 
     public:
