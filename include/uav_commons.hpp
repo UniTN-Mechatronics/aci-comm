@@ -2,6 +2,11 @@
 #define _ACI_COMM_UAV_COMMONS_HPP_
 #ifdef __cplusplus
 
+namespace acc 
+{
+        
+};
+/*
 #define ENABLE_READ()                                               \
 enable_read(int packet) {                                           \
     _check_null_uav_ptr(_uav_ptr);                                  \
@@ -49,6 +54,6 @@ ACI_COMM_CMD                                                        \
 write_type() {                                                      \
     return _write_type;                                             \
 }
-
+*/
 #endif // __cplusplus
 #endif // _ACI_COMM_UAV_COMMONS_HPP_

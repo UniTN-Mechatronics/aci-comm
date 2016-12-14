@@ -6,20 +6,24 @@
 #include "uav_commons.hpp"
 #include "uav_frame.hpp"
 
+#ifndef FLOATING_POINT_PRECISION
+#define FLOATING_POINT_PRECISION float
+#endif
+
 namespace acc 
 {
 
     class UAV
     {
     public:
-        friend class Angles<UAV>;
+        friend class Angles<UAV, FLOATING_POINT_PRECISION>;
         
         /**
         *   SerialBus UAV constructor.
         */
         UAV(std::string port, int baud_rate, CTRL_MODE mode) : _ctrl_mode(mode) {
             engine = &Engine<SerialBus>::init(port, baud_rate);
-            angles = Angles<UAV>(this);
+            angles = Angles<UAV, FLOATING_POINT_PRECISION>(this);
         };
 
         ~UAV() {
@@ -35,7 +39,7 @@ namespace acc
         void stop(); 
 
         // Packets
-        Angles<UAV> angles;
+        Angles<UAV, FLOATING_POINT_PRECISION> angles;
 
         // Settings
         typedef struct Settings {
