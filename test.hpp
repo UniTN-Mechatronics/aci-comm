@@ -58,12 +58,13 @@ testcase2() {
     UAV uav(port, B57600, CTRL_MODE::READ);
     try {
         // Enable
-        auto pitch = uav.angles.pitch;
-        pitch.enable_read(0).enable_write(0);
+        //auto pitch = uav.angles.pitch;
+        //pitch.enable_read(0).enable_write(0);
 
         //uav.angles.pitch.enable_write(0).enable_read(0);
         uav.angles.yaw.enable_read(0);
-        uav.angles.roll.enable_write(2);
+        uav.angles.pitch.enable_read(0);
+        uav.angles.roll.enable_read(0);
         uav.start();
     
         // Write
@@ -73,9 +74,11 @@ testcase2() {
         // Read
         int i = 0;
         while(i < 1000) {
-            auto value = uav.angles.pitch.read();
-            //auto valueyaw = uav.angles.yaw.read(); 
-            std::cout << value << std::endl;
+            auto yaw = uav.angles.yaw.read();
+            auto pitch = uav.angles.pitch.read();
+            auto roll = uav.angles.roll.read();
+            
+            std::cout << yaw << " " << pitch << " " << roll << std::endl;
             i++;
             usleep(10000);
         }

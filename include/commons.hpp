@@ -2,6 +2,41 @@
 #define _ACI_COMM_COMMONS_HPP_
 #ifdef __cplusplus
 
+#define ENABLE_READ()                                               \
+enable_read(int packet) {                                           \
+    _check_null_uav_ptr(_uav_ptr);                                  \
+    _uav_ptr->engine->add_read(packet, read_type);                  \
+    return *this;                                                   \
+} 
+
+#define ENABLE_WRITE()                                              \
+enable_write(int packet) {                                          \
+    _check_null_uav_ptr(_uav_ptr);                                  \
+    _uav_ptr->engine->add_write(packet, write_type);                \
+    return *this;                                                   \
+} 
+
+#define READ()                                                      \
+read() {                                                            \
+    _check_null_uav_ptr(_uav_ptr);                                  \
+    return _read_conversion(_uav_ptr->engine->read(read_type));     \
+}
+
+#define WRITE()                                                     \
+write(double val) {                                                 \
+    _check_null_uav_ptr(_uav_ptr);                                  \
+    auto val_conv = _write_conversion(val);                         \
+    _uav_ptr->engine->write(val_conv, val);                         \
+    return *this;                                                   \
+}
+
+#define PROTECTED_ITEM()                                            \
+TP *_uav_ptr = NULL;                                                \
+void                                                                \
+_check_null_uav_ptr(TP *uav_ptr) noexcept(false) {                  \
+    if (!uav_ptr) throw std::runtime_error("UAV pointer is null!"); \
+}  
+
 namespace acc 
 {
     enum class ACI_COMM_VAR
