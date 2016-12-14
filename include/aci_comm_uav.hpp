@@ -12,7 +12,7 @@
 
 namespace acc
 {
-    enum class UAV_Z {
+    enum class UAV_Z : signed int {
       UPWARD = -1,
       DOWNWARD = 1
     };
