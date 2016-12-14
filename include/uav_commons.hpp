@@ -5,6 +5,10 @@
 #include "aci_comm_uav.hpp"
 #include "conversion_lambda.hpp"
 
+#ifndef MOTORS_NUM
+#define MOTORS_NUM 4
+#endif
+
 namespace acc 
 {
     template<class TP>
@@ -91,7 +95,6 @@ namespace acc
 
         virtual void
         _ctrl_mode_check() {
-            return;
             if (Channel<TP>::_uav_ptr->_ctrl_mode == CTRL_MODE::DMC || Channel<TP>::_uav_ptr->_ctrl_mode == CTRL_MODE::CTRL) return;
             throw std::runtime_error("Pitch can be written only with control mode setted to DMC or CTRL");
         }

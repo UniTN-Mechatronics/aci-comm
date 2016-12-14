@@ -20,6 +20,8 @@ acc::SerialBus::open() {
 void 
 acc::SerialBus::close() {
     if (!_open) return;
+    sleep(2);
+    ::tcflush(_port_state, TCIOFLUSH); // TODO check why it destroy port before finishing command
     ::close(_port_state);
 }
 

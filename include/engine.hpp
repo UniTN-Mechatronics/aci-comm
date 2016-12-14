@@ -98,8 +98,8 @@ namespace acc
         /**
         *   Add commands.
         */  
-        template<class... Args> void 
-        add_write(int pck, std::string key_write, Args... args) {
+        template<class Key, class... Args> void 
+        add_write(int pck, Key key_write, Args... args) {
             add_write(pck, key_write);
             add_write(pck, args...);
         }

@@ -78,7 +78,7 @@ namespace acc
     public:
         DroneItemCmd(ACI_COMM_CMD id, 
             int num_id, 
-            DIP rw = DIP::READ, 
+            DIP rw = DIP::WRITE, 
             int def_val = 0) : 
         _id(id),
         _num_id(num_id),

@@ -3,7 +3,7 @@
 
 int 
 main() {
-	//testcase();
-	testcase2();
+	testcase();
+	//testcase2();
 	return 0;
 }

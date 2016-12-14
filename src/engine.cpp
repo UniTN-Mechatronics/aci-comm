@@ -28,7 +28,7 @@ namespace
     int _version_callback   = 0;
     int _reads_callback     = 0;
     int _writes_callback    = 0;
-    int _reads_update_val   = 10;
+    int _reads_update_val   = 1; // TODO the upd freq is 1000/_reads_update_val
     std::map<acc::ACI_COMM_VAR, acc::DroneItemVar> _requsted_vars;
     std::map<acc::ACI_COMM_CMD, acc::DroneItemCmd> _requsted_cmds;
 }
@@ -123,7 +123,7 @@ acc::Engine<BUS>::_aci_thread_runner() {
         }
         aciSynchronizeVars();
         aciEngine();
-        usleep(10000);
+        usleep(1000); // TODO: remove hardcoded
     }
 }
 
@@ -145,7 +145,7 @@ acc::Engine<BUS>::_add_write(int pck, acc::ACI_COMM_CMD key_write) {
     if (_aci_thread_run) throw std::runtime_error("Engine is running, you cannot add writes");
     std::map<acc::ACI_COMM_CMD, DroneItemCmd>::iterator it;
     it = _map_cmd.find(key_write);
-    if (it == _map_cmd.end()) throw std::runtime_error("This entry write key not exist: ");
+    if (it == _map_cmd.end()) throw std::runtime_error("ADD: This entry write key not exist: ");
     if (!it->second.can_be_written()) throw std::runtime_error("This entry write cannot be written: ");
     _requsted_cmds.insert(std::make_pair(key_write, it->second));
     std::map<acc::ACI_COMM_CMD, DroneItemCmd>::iterator it2;
@@ -171,12 +171,14 @@ acc::Engine<BUS>::write(acc::ACI_COMM_CMD key_write, int value_write) {
         it!=_requsted_cmds.end(); ++it) 
     {
         if (it->first == key_write) {
+            //std::cout << static_cast<std::underlying_type<acc::ACI_COMM_CMD>::type>(key_write) << " " << value_write << std::endl;
             it->second.set_value(value_write);
             aciUpdateCmdPacket(it->second.pck);
             return;
         }
     }
-    throw std::runtime_error("This entry write key not exist: ");
+    int value = static_cast<std::underlying_type<acc::ACI_COMM_CMD>::type>(key_write);
+    throw std::runtime_error("WRITE: This entry write key not exist: " + std::to_string(value) );
 }
 
 
