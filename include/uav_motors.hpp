@@ -32,7 +32,7 @@ namespace acc
             return DIMC_motor_write_conv(value);
         }
 
-        void 
+        void
         _ctrl_mode_check() {
             if (ChannelWrite<T, FloatingPointPrecision>::_uav_ptr->_ctrl_mode == CTRL_MODE::DIMC) return;
             throw std::runtime_error("Motors can be controlled only with control mode set to DIMC");

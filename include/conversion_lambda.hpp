@@ -3,7 +3,7 @@
 #ifdef __cplusplus
 
 
-#include <iostream> 
+#include <iostream>
 
   auto flight_time_read_conv = [] (int v) -> int { // [s]
     return v;
@@ -13,11 +13,11 @@
     return v / 1000.0;
   };
 
-  auto HL_cpu_load_read_conv = [] (int v) -> int { // [Hz]
+  auto hl_cpu_load_read_conv = [] (int v) -> int { // [Hz]
     return v;
   };
 
-  auto HL_up_time_read_conv = [] (int v) -> int { // [s]
+  auto hl_up_time_read_conv = [] (int v) -> int { // [s]
     return v;
   };
 
@@ -33,7 +33,7 @@
     return v / 10000.0;
   };
 
-  auto H_read_conv = [] (int v) -> double { // (earth magnetic field strength)
+  auto h_read_conv = [] (int v) -> double { // (earth magnetic field strength)
     return v / 2500.0;
   };
 
@@ -41,7 +41,7 @@
     return v / 1000.0;
   };
 
-  auto RC_channel_read_conv = [] (int v) -> double { // [normalized] (0-1)
+  auto rc_channel_read_conv = [] (int v) -> double { // [normalized] (0-1)
     return v / 4095.0;
   };
 
@@ -50,7 +50,7 @@
   | | /| / / /_/ // /  / / / __/
   | |/ |/ / _, _// /  / / / /___
   |__/|__/_/ |_/___/ /_/ /_____/
-  */ 
+  */
   auto DIMC_motor_write_conv = [] (double v) -> int { // [rpm] (rouds per minute)
     if(v < 1075) {
       throw std::runtime_error("it is not possible to set RPM lower than 1075");

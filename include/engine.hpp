@@ -14,9 +14,6 @@
 #ifndef _ACI_COMM_BUS_HPP_
     #include "bus.hpp"
 #endif
-#ifndef _ACI_COMM_PACKET_HPP_
-    #include "packet.hpp"
-#endif
 
 #ifndef _ACI_COMM_COMMONS_HPP_
     #include "commons.hpp"
@@ -25,25 +22,25 @@
     #include "map_var_cmd.hpp"
 #endif
 
-namespace acc 
+namespace acc
 {
 
     /*
-    *    _____             _            
-    *   | ____|_ __   __ _(_)_ __   ___ 
+    *    _____             _
+    *   | ____|_ __   __ _(_)_ __   ___
     *   |  _| | '_ \ / _` | | '_ \ / _ \
     *   | |___| | | | (_| | | | | |  __/
     *   |_____|_| |_|\__, |_|_| |_|\___|
-    *                |___/              
-    *   
+    *                |___/
+    *
     */
     /**
     *    Singleton class.
     *
     *    This class is NOT thread safe:
     *    you must use it from only ONE thread.
-    */   
-    template<class BUS>   
+    */
+    template<class BUS>
     class Engine
     {
     public:
@@ -78,38 +75,38 @@ namespace acc
 
         /**
         *   Add variables.
-        */               
-        template<class Key, class... Args> void 
+        */
+        template<class Key, class... Args> void
         add_read(int pck, Key key_read, Args... args) {
             add_read(pck, key_read);
             add_read(pck, args...);
         }
 
-        template<class... Args> void 
+        template<class... Args> void
         add_read(int pck, Args... args) {
             add_read(pck, args...);
         }
 
-        template<class Key> void 
+        template<class Key> void
         add_read(int pck, Key key_read) {
             _add_read(pck, key_read);
         }
 
         /**
         *   Add commands.
-        */  
-        template<class Key, class... Args> void 
+        */
+        template<class Key, class... Args> void
         add_write(int pck, Key key_write, Args... args) {
             add_write(pck, key_write);
             add_write(pck, args...);
         }
 
-        template<class... Args> void 
+        template<class... Args> void
         add_write(int pck, Args... args) {
             add_write(pck, args...);
         }
 
-        template<class Key> void 
+        template<class Key> void
         add_write(int pck, Key key_write) {
             _add_write(pck, key_write);
         }
@@ -134,8 +131,8 @@ namespace acc
 
         /**
         *   Read variables.
-        */ 
-        template<class... Args> std::vector<int> 
+        */
+        template<class... Args> std::vector<int>
         read(std::string key_read, Args... args) {
             std::vector<int> read_results;
             read_results.push_back( read(key_read) );
@@ -144,8 +141,8 @@ namespace acc
         }
 
         template<class... Args> void
-        read(std::vector<int>& read_results, 
-             acc::ACI_COMM_VAR key_read, Args... args) 
+        read(std::vector<int>& read_results,
+             acc::ACI_COMM_VAR key_read, Args... args)
         {
             read_results.push_back(read(key_read));
             read(read_results, args...);
@@ -160,8 +157,8 @@ namespace acc
 
         /**
         *   Write variables.
-        */ 
-        template<class... Args> void 
+        */
+        template<class... Args> void
         write(acc::ACI_COMM_CMD key_write, int value_write, Args... args) {
             write(key_write, value_write);
             write(args...);
@@ -174,23 +171,23 @@ namespace acc
         /********************/
         void get_version(bool version = false);
         /********************/
-        template<class... Args> void 
+        template<class... Args> void
         add_read_label(int packet, std::string label, Args... args) {}
         /********************/
-        template<class... Args> void 
+        template<class... Args> void
         add_write_label(int packet, std::string label, Args... args) {}
         /********************/
-        template<class... Args> void 
+        template<class... Args> void
         read_label(std::string label, Args... args) {}
         /********************/
-        template<class... Args> void 
+        template<class... Args> void
         write_label(std::string label, Args... args) {}
         /********************/
 
     private:
 
-        Engine(BUS&& bus_) : 
-            _bus(bus_), 
+        Engine(BUS&& bus_) :
+            _bus(bus_),
             _aci_thread_run(false) {
                 MapVarCmd::init(_map_var, _map_cmd);
         };
@@ -200,7 +197,7 @@ namespace acc
         BUS _bus;
 
         /**
-        *   The thread where the 
+        *   The thread where the
         *   aci_callback lives.
         */
         std::thread _aci_thread;
@@ -212,7 +209,7 @@ namespace acc
         /**
         *   Not used yet.
         */
-        
+
         /**
         *   The dictionary.
         */
