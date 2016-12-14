@@ -30,6 +30,10 @@ namespace acc
             dd_x.ChannelRead<T,    FloatingPointPrecision>::_uav_ptr = uav_ptr;
             dd_y.ChannelRead<T,    FloatingPointPrecision>::_uav_ptr = uav_ptr;
             dd_z.ChannelRead<T,    FloatingPointPrecision>::_uav_ptr = uav_ptr;
+
+            dd_y.YZDotDot<T, FloatingPointPrecision>::_read_type = ACI_COMM_VAR::acc_y; // TODO Check THIS!! To avoid class duplication.
+            dd_z.YZDotDot<T, FloatingPointPrecision>::_read_type = ACI_COMM_VAR::acc_z; // TODO Check THIS!!
+
         };
 
         /*
@@ -214,31 +218,13 @@ namespace acc
         };
 
         template<class TP, class ReturnType>
-        class YDotDot: public virtual ChannelRead<TP, ReturnType>
+        class YZDotDot: public virtual ChannelRead<TP, ReturnType>
         {
         public:
             friend class Angles;
 
-            YDotDot() {
-                ChannelRead<TP, ReturnType>::_read_type = ACI_COMM_VAR::acc_y;
-            };
-
-        protected:
-            ReturnType
-            _read_conversion(int value) {
-                return acc_read_conv(value) *
-                  static_cast<ReturnType>(ChannelRead<TP, ReturnType>::_uav_ptr->orientation); // TODO check if correct
-            }
-        };
-
-        template<class TP, class ReturnType>
-        class ZDotDot: public virtual ChannelRead<TP, ReturnType>
-        {
-        public:
-            friend class Angles;
-
-            ZDotDot() {
-                ChannelRead<TP, ReturnType>::_read_type = ACI_COMM_VAR::acc_z;
+            YZDotDot() {
+                // ChannelRead<TP, ReturnType>::_read_type = ACI_COMM_VAR::acc_y;
             };
 
         protected:
@@ -260,8 +246,8 @@ namespace acc
         PitchDot<T, FloatingPointPrecision, FloatingPointPrecision> d_pitch;
 
         XDotDot<T, FloatingPointPrecision> dd_x;
-        YDotDot<T, FloatingPointPrecision> dd_y;
-        ZDotDot<T, FloatingPointPrecision> dd_z;
+        YZDotDot<T, FloatingPointPrecision> dd_y;
+        YZDotDot<T, FloatingPointPrecision> dd_z;
 
         Angles() {};
     };
