@@ -17,13 +17,18 @@ namespace acc
     {
     public:
         friend class Angles<UAV, FLOATING_POINT_PRECISION>;
+        friend class Channel<UAV>;
+        friend class ChannelRead<UAV, FLOATING_POINT_PRECISION>;
+        friend class ChannelWrite<UAV, FLOATING_POINT_PRECISION>;
+
+        using Attitude = Angles<UAV, FLOATING_POINT_PRECISION>;
         
         /**
         *   SerialBus UAV constructor.
         */
         UAV(std::string port, int baud_rate, CTRL_MODE mode) : _ctrl_mode(mode) {
             engine = &Engine<SerialBus>::init(port, baud_rate);
-            angles = Angles<UAV, FLOATING_POINT_PRECISION>(this);
+            attitude = Attitude(this);
         };
 
         ~UAV() {
@@ -39,7 +44,7 @@ namespace acc
         void stop(); 
 
         // Packets
-        Angles<UAV, FLOATING_POINT_PRECISION> angles;
+        Attitude attitude;
 
         // Settings
         typedef struct Settings {
