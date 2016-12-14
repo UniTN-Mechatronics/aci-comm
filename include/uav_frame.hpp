@@ -4,6 +4,7 @@
 
 #include "engine.hpp"
 #include "aci_comm_uav.hpp"
+#include "conversion_lambda.hpp"
 
 namespace acc 
 {
@@ -40,7 +41,7 @@ namespace acc
 
             double 
             _read_conversion(int value) {
-                return (double)value;
+                return angle_read_conv(value);
             }
 
             int 
@@ -72,7 +73,7 @@ namespace acc
 
             double 
             _read_conversion(int value) {
-                return (double)value;
+                return angle_read_conv(value);
             }
 
             int 
@@ -100,7 +101,7 @@ namespace acc
 
             double 
             _read_conversion(int value) {
-                return (double)value;
+                return angle_read_conv(value);
             }
         };
 
