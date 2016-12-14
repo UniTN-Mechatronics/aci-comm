@@ -12,6 +12,10 @@
 
 namespace acc
 {
+    enum class UAV_Z {
+      UPWARD = -1,
+      DOWNWARD = 1
+    };
 
     class UAV
     {
@@ -84,6 +88,9 @@ namespace acc
         ctrl_mode() {
             return _ctrl_mode;
         }
+
+        // Orientation
+        UAV_Z orientation = UAV_Z::DOWNWARD;  // TODO: insert orientation inside requested vars
 
     private:
         Engine<SerialBus>* engine;
