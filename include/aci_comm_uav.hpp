@@ -3,6 +3,7 @@
 #ifdef __cplusplus
 
 #include "engine.hpp"
+#include "uav_commons.hpp"
 #include "uav_frame.hpp"
 
 namespace acc 

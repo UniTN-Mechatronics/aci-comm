@@ -33,10 +33,13 @@ namespace acc
             Pitch& ENABLE_WRITE()
             double READ()
             Pitch& WRITE()
+
+            READ_TYPE()
+            WRITE_TYPE()
             
         protected:
-            ACI_COMM_VAR read_type  = ACI_COMM_VAR::angle_pitch;
-            ACI_COMM_CMD write_type = ACI_COMM_CMD::CTRL_pitch;
+            ACI_COMM_VAR _read_type  = ACI_COMM_VAR::angle_pitch;
+            ACI_COMM_CMD _write_type = ACI_COMM_CMD::CTRL_pitch;
             PROTECTED_ITEM()
 
             double 
@@ -65,10 +68,13 @@ namespace acc
             Roll& ENABLE_WRITE()
             double READ()
             Roll& WRITE()
+
+            READ_TYPE()
+            WRITE_TYPE()
             
         protected:
-            ACI_COMM_VAR read_type  = ACI_COMM_VAR::angle_roll;
-            ACI_COMM_CMD write_type = ACI_COMM_CMD::CTRL_roll;
+            ACI_COMM_VAR _read_type  = ACI_COMM_VAR::angle_roll;
+            ACI_COMM_CMD _write_type = ACI_COMM_CMD::CTRL_roll;
             PROTECTED_ITEM()
 
             double 
@@ -94,9 +100,11 @@ namespace acc
             friend class Angles;
             Yaw& ENABLE_READ()
             double READ()
+
+            READ_TYPE()
             
         protected:
-            ACI_COMM_VAR read_type  = ACI_COMM_VAR::angle_yaw;
+            ACI_COMM_VAR _read_type  = ACI_COMM_VAR::angle_yaw;
             PROTECTED_ITEM()
 
             double 
