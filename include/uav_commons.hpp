@@ -12,6 +12,7 @@ enable_read(int packet) {                                           \
 #define ENABLE_WRITE()                                              \
 enable_write(int packet) {                                          \
     _check_null_uav_ptr(_uav_ptr);                                  \
+    _ctrl_mode_check();                                             \
     _uav_ptr->engine->add_write(packet, _write_type);               \
     return *this;                                                   \
 } 

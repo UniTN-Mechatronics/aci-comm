@@ -17,7 +17,7 @@ namespace acc
         /**
         *   SerialBus UAV constructor.
         */
-        UAV(std::string port, int baud_rate, CTRL_MODE mode) : _mode(mode) {
+        UAV(std::string port, int baud_rate, CTRL_MODE mode) : _ctrl_mode(mode) {
             engine = &Engine<SerialBus>::init(port, baud_rate);
             angles = Angles<UAV>(this);
         };
@@ -42,9 +42,14 @@ namespace acc
             int update_frequency = 1000; 
         } settings; 
 
+        CTRL_MODE 
+        ctrl_mode() {
+            return _ctrl_mode;
+        }
+
     private:
         Engine<SerialBus>* engine;
-        CTRL_MODE _mode;
+        CTRL_MODE _ctrl_mode;
     };
 
 };

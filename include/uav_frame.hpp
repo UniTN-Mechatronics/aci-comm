@@ -51,6 +51,12 @@ namespace acc
             _write_conversion(double value) {
                 return (int)value;
             }
+
+            void
+            _ctrl_mode_check() {
+                if (_uav_ptr->_ctrl_mode == CTRL_MODE::DMC || _uav_ptr->_ctrl_mode == CTRL_MODE::CTRL) return;
+                throw std::runtime_error("Pitch can be written only with control mode setted to DMC or CTRL");
+            }
         };
 
 
@@ -85,6 +91,12 @@ namespace acc
             int 
             _write_conversion(double value) {
                 return (int)value;
+            }
+
+            void
+            _ctrl_mode_check() {
+                if (_uav_ptr->_ctrl_mode == CTRL_MODE::DMC || _uav_ptr->_ctrl_mode == CTRL_MODE::CTRL) return;
+                throw std::runtime_error("Roll can be written only with control mode setted to DMC or CTRL");
             }
         };
 

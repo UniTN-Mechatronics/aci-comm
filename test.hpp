@@ -55,7 +55,7 @@ testcase2() {
     using namespace acc;
     std::string port = "/dev/tty.usbserial-A504DRSI";
 
-    UAV uav(port, B57600, CTRL_MODE::READ);
+    UAV uav(port, B57600, CTRL_MODE::READ_ONLY);
     try {
         // Enable
         //auto pitch = uav.angles.pitch;
@@ -63,6 +63,7 @@ testcase2() {
 
         //uav.angles.pitch.enable_write(0).enable_read(0);
         uav.angles.yaw.enable_read(0);
+        uav.angles.pitch.enable_write(1);
         uav.angles.pitch.enable_read(0);
         uav.angles.roll.enable_read(0);
         uav.start();

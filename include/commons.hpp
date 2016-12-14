@@ -85,10 +85,11 @@ namespace acc
     
     enum class CTRL_MODE 
     {
-        DIMC,
+        DIMC = 0,
         DMC,
         CTRL,
-        READ
+        GPS,
+        READ_ONLY
     };
 }
 
