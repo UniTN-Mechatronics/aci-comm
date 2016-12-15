@@ -2,6 +2,8 @@
 #define _ACI_COMM_UAV_MOTORS_HPP_
 #ifdef __cplusplus
 
+#include <initializer_list>
+#include <array>
 #include "engine.hpp"
 #include "aci_comm_uav.hpp"
 #include "conversion_lambda.hpp"
@@ -40,9 +42,92 @@ namespace acc
 
     public:
         friend class UAV;
+        template<class K, class KK> friend class MotorCollection;
         Motor() {};
 
     };
+
+    template<class T, class FloatingPointPrecision>
+    class MotorCollection {
+    private:
+        using Motor_ = Motor<T, FLOATING_POINT_PRECISION>;
+        int _number_of_motors = -1;
+        std::vector<Motor<T, FloatingPointPrecision>> _motors;
+
+        MotorCollection(T *uav_ptr, int number_of_motors) {
+            if (number_of_motors == 4) {
+                _motors.push_back(Motor_(uav_ptr, ACI_COMM_VAR::motor_rpm_1, ACI_COMM_CMD::DIMC_motor_1));
+                _motors.push_back(Motor_(uav_ptr, ACI_COMM_VAR::motor_rpm_2, ACI_COMM_CMD::DIMC_motor_2));
+                _motors.push_back(Motor_(uav_ptr, ACI_COMM_VAR::motor_rpm_3, ACI_COMM_CMD::DIMC_motor_3));
+                _motors.push_back(Motor_(uav_ptr, ACI_COMM_VAR::motor_rpm_4, ACI_COMM_CMD::DIMC_motor_4));
+            } else if (number_of_motors == 6) {
+                _motors.push_back(Motor_(uav_ptr, ACI_COMM_VAR::motor_rpm_1, ACI_COMM_CMD::DIMC_motor_1));
+                _motors.push_back(Motor_(uav_ptr, ACI_COMM_VAR::motor_rpm_2, ACI_COMM_CMD::DIMC_motor_2));
+                _motors.push_back(Motor_(uav_ptr, ACI_COMM_VAR::motor_rpm_3, ACI_COMM_CMD::DIMC_motor_3));
+                _motors.push_back(Motor_(uav_ptr, ACI_COMM_VAR::motor_rpm_4, ACI_COMM_CMD::DIMC_motor_4));
+                _motors.push_back(Motor_(uav_ptr, ACI_COMM_VAR::motor_rpm_5, ACI_COMM_CMD::DIMC_motor_5));
+                _motors.push_back(Motor_(uav_ptr, ACI_COMM_VAR::motor_rpm_6, ACI_COMM_CMD::DIMC_motor_6));
+            } else {
+                throw std::runtime_error("The number of motors can be only FOUR or SIX");
+            }
+            _number_of_motors = number_of_motors;
+        };
+
+    public:
+
+        friend class UAV;
+        MotorCollection() {};
+
+        Motor<T, FloatingPointPrecision> 
+        operator[](int index) {
+            if (index < 0 || index > (_number_of_motors - 1)) {
+                std::runtime_error("Motors index is or greater than number of motors or less than zero");
+            }
+            return _motors[index];
+        }
+
+        MotorCollection&
+        enable_read(int packet) {
+            for (auto &m : _motors) m.enable_read(packet);
+            return *this;
+        }
+
+        MotorCollection&
+        enable_write(int packet) {
+            for (auto &m : _motors) m.enable_write(packet);
+            return *this;
+        }
+
+        MotorCollection&
+        write(std::array<FloatingPointPrecision, 4> write_values) {
+            if (_number_of_motors != 4) throw std::runtime_error("Write motors, number of motors is not FOUR");
+            for (int i = 0; i < 4; ++i) _motors[i].write(write_values[i]);
+            return *this;
+        }
+
+        MotorCollection&
+        write(std::initializer_list<FloatingPointPrecision> write_values) {
+            if (_number_of_motors == -1 || write_values.size() != _number_of_motors) {
+                throw std::runtime_error("Write motors, number of motors is not FOUR or SIX");
+            }
+            int i = 0;
+            for (auto &wv : write_values) {
+                _motors[i].write(wv);
+                ++i;
+            }
+            return *this;
+        }
+
+        std::vector<FloatingPointPrecision>
+        read() {
+            std::vector<FloatingPointPrecision> read_m;
+            for (auto &m : _motors) {
+                read_m.push_back(m.read());
+            }
+            return read_m;
+        }
+
+    }; // End MotorCollection
 
 }; // end namespace
 

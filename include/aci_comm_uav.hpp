@@ -12,6 +12,7 @@
 #include "uav_magnetometer.hpp"
 #include "uav_gps.hpp"
 #include "uav_info.hpp"
+#include "uav_logger.hpp"
 
 namespace acc
 {
@@ -25,7 +26,9 @@ namespace acc
     public:
         friend class Frames<UAV, FLOATING_POINT_PRECISION>;
         friend class Motor<UAV, FLOATING_POINT_PRECISION>;
+        friend class MotorCollection<UAV, FLOATING_POINT_PRECISION>;
         friend class RCChannel<UAV, FLOATING_POINT_PRECISION>;
+        friend class RCChannelCollection<UAV, FLOATING_POINT_PRECISION>;
         friend class MagnetoMeter<UAV, FLOATING_POINT_PRECISION>;
         friend class GPSS<UAV, FLOATING_POINT_PRECISION>;
         friend class Infos<UAV, FLOATING_POINT_PRECISION>;
@@ -37,12 +40,12 @@ namespace acc
         friend class ChannelWrite<UAV, FLOATING_POINT_PRECISION>;
         friend class ChannelWrite<UAV, int>;
 
+        /* Using directives */
         using Frame = Frames<UAV, FLOATING_POINT_PRECISION>;
-        using Motors = Motor<UAV, FLOATING_POINT_PRECISION>;
-
+        using Motors = MotorCollection<UAV, FLOATING_POINT_PRECISION>;
         using MagnetoMeters = MagnetoMeter<UAV, FLOATING_POINT_PRECISION>;
         using GPS = GPSS<UAV, FLOATING_POINT_PRECISION>;
-        using RCChannels = RCChannel<UAV, FLOATING_POINT_PRECISION>;
+        using RCChannels = RCChannelCollection<UAV, FLOATING_POINT_PRECISION>;
         using Info = Infos<UAV, FLOATING_POINT_PRECISION>;
 
         /**
@@ -51,6 +54,17 @@ namespace acc
         UAV(std::string port, int baud_rate, CTRL_MODE mode) : _ctrl_mode(mode) {
             engine = &Engine<SerialBus>::init(port, baud_rate);
             _uav_init();
+        };
+
+        /**
+        *   SerialBus UAV constructor
+        *   with Logger
+        */
+        //template<class LoggerType>
+        UAV(std::string port, int baud_rate, CTRL_MODE mode, bool logger_) : _ctrl_mode(mode) {
+            engine = &Engine<SerialBus>::init(port, baud_rate);
+            _uav_init();
+
         };
 
         ~UAV() {
@@ -70,11 +84,11 @@ namespace acc
 
         // Packets
         Frame frame;
-        std::array<Motors, MOTORS_NUM> motors;
+        Motors motors;
         MagnetoMeters magnetometer;
         GPS gps;
         Info info;
-        std::array<RCChannels, RC_CHANNELS_NUM> rc_ch;
+        RCChannels rc_ch;
 
         // Settings
         typedef struct Settings {
