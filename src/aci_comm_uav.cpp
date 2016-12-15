@@ -44,7 +44,7 @@ acc::UAV::control_enable(bool value) {
 */
 void
 acc::UAV::_uav_init() {
-    attitude    = Attitude(this);
+    frame       = Frame(this);
     motors[0]   = Motors(this, ACI_COMM_VAR::motor_rpm_1, ACI_COMM_CMD::DIMC_motor_1);
     motors[1]   = Motors(this, ACI_COMM_VAR::motor_rpm_2, ACI_COMM_CMD::DIMC_motor_2);
     motors[2]   = Motors(this, ACI_COMM_VAR::motor_rpm_3, ACI_COMM_CMD::DIMC_motor_3);

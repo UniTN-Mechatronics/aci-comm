@@ -19,13 +19,14 @@ namespace acc
             pitch.ChannelWrite  <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
             roll.ChannelRead    <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
             roll.ChannelWrite   <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
-            yaw._update_write_type(uav_ptr);
+            yaw.ChannelRead    <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
 
             pitch_d.ChannelRead <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
             pitch_d.ChannelWrite<T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
             roll_d.ChannelRead  <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
             roll_d.ChannelWrite <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
-            yaw_d.ChannelRead   <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
+            yaw_d._update_write_type(uav_ptr);
+
 
             x_dd.ChannelRead    <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
             y_dd.ChannelRead    <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
@@ -84,7 +85,7 @@ namespace acc
 
             int
             _write_conversion(ArgsType value) {
-                return DMC_Frames_write_conv(value *
+                return DMC_angles_write_conv(value *
                   static_cast<ReturnType>(ChannelRead<TP, ReturnType>::_uav_ptr->orientation)); // TODO check if correct
             }
 
@@ -142,7 +143,7 @@ namespace acc
 
             int
             _write_conversion(ReturnType value) {
-                return DMC_Frames_write_conv(value); // TODO check if correct
+                return DMC_angles_write_conv(value); // TODO check if correct
             }
 
             void
@@ -191,8 +192,9 @@ namespace acc
                   static_cast<ReturnType>(ChannelRead<TP, ReturnType>::_uav_ptr->orientation); // TODO check if correct
             }
 
-            YawDot& _update_write_type(TP *uav_ptr) {
-                if (uav_ptr->ctr_mode() == CTRL_MODE::CTRL) {
+            void
+            _update_write_type(TP *uav_ptr) {
+                if (uav_ptr->ctrl_mode() == CTRL_MODE::CTRL) {
                   ChannelWrite<TP, ArgsType>::_write_type = ACI_COMM_CMD::CTRL_yaw;
                 } else {
                   ChannelWrite<TP, ArgsType>::_write_type = ACI_COMM_CMD::DMC_yaw;
@@ -261,7 +263,7 @@ namespace acc
         //  |_   _| |_  _ _ _  _ __| |_
         //    | | | ' \| '_| || (_-<  _|
         //    |_| |_||_|_|  \_,_/__/\__|
-        template<class TP, class ArgType>
+        template<class TP, class ArgsType>
         class Thrust : public virtual ChannelWrite<TP, ArgsType>
         {
         public:
@@ -270,8 +272,9 @@ namespace acc
             Thrust () {};
 
         protected:
-            Thrust& _update_write_type(TP *uav_ptr) {
-                if (uav_ptr->ctr_mode() == CTRL_MODE::CTRL) {
+            void
+            _update_write_type(TP *uav_ptr) {
+                if (uav_ptr->ctrl_mode() == CTRL_MODE::CTRL) {
                   ChannelWrite<TP, ArgsType>::_write_type = ACI_COMM_CMD::CTRL_thrust;
                 } else {
                   ChannelWrite<TP, ArgsType>::_write_type = ACI_COMM_CMD::DMC_thrust;
@@ -287,7 +290,7 @@ namespace acc
             }
 
             int
-            _write_conversion(ReturnType value) {
+            _write_conversion(ArgsType value) {
                 if (ChannelWrite<TP, ArgsType>::_write_type == ACI_COMM_CMD::CTRL_thrust) {
                   return CTRL_thrust_write_conv(value);
                 } else {

@@ -23,7 +23,7 @@ namespace acc
     class UAV
     {
     public:
-        friend class Angles<UAV, FLOATING_POINT_PRECISION>;
+        friend class Frames<UAV, FLOATING_POINT_PRECISION>;
         friend class Motor<UAV, FLOATING_POINT_PRECISION>;
         friend class RCChannel<UAV, FLOATING_POINT_PRECISION>;
         friend class MagnetoMeter<UAV, FLOATING_POINT_PRECISION>;
@@ -37,7 +37,7 @@ namespace acc
         friend class ChannelWrite<UAV, FLOATING_POINT_PRECISION>;
         friend class ChannelWrite<UAV, int>;
 
-        using Attitude = Angles<UAV, FLOATING_POINT_PRECISION>;
+        using Frame = Frames<UAV, FLOATING_POINT_PRECISION>;
         using Motors = Motor<UAV, FLOATING_POINT_PRECISION>;
 
         using MagnetoMeters = MagnetoMeter<UAV, FLOATING_POINT_PRECISION>;
@@ -69,7 +69,7 @@ namespace acc
         UAV& control_enable(bool value);
 
         // Packets
-        Attitude attitude;
+        Frame frame;
         std::array<Motors, MOTORS_NUM> motors;
         MagnetoMeters magnetometer;
         GPS gps;
