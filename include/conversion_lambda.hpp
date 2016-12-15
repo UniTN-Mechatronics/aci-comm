@@ -13,7 +13,7 @@
 
 // TODO: for angles return rads not °
 
-inline template<class T> FLOATING_POINT_PRECISION 
+template<class T> FLOATING_POINT_PRECISION
 divide_by_1000(T v) {
   return static_cast<FLOATING_POINT_PRECISION>(v)/1000.0;
 }
@@ -58,6 +58,10 @@ divide_by_1000(T v) {
   };
 
   auto gps_accuracy_read_conv = [] (int v) -> FLOATING_POINT_PRECISION { // [m] [m/s]
+    return divide_by_1000(v);
+  };
+
+  auto gps_general_read_conv = [] (int v) -> FLOATING_POINT_PRECISION { // [m] [m/s]
     return divide_by_1000(v);
   };
 
