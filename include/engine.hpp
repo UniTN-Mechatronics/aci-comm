@@ -183,7 +183,9 @@ namespace acc
                 MapVarCmd::init(_map_var, _map_cmd);
         };
 
-        ~Engine() { stop(); }
+        ~Engine() { 
+            stop(); 
+        }
 
         BUS _bus;
 
@@ -197,9 +199,6 @@ namespace acc
         *   and as flag for thread loop exit.
         */
         std::atomic<bool> _aci_thread_run;
-        /**
-        *   Not used yet.
-        */
 
         /**
         *   The dictionary.
@@ -209,6 +208,7 @@ namespace acc
 
         void _launch_aci_thread(int time_sleep);
         void _aci_thread_runner(int time_sleep);
+        void _aci_thread_runner_func();
         void _add_read(int pck,  ACI_COMM_VAR key_read);
         void _add_write(int pck, ACI_COMM_CMD key_write);
 

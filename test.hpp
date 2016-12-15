@@ -61,7 +61,6 @@ testcase() {
         }*/
         std::cout << "READY TO STOP" << std::endl;
         ae->write(Cmd::DIMC_motor_1, 0);
-        //usleep(1000);
         //std::cout << "STOP" << std::endl;
         //sleep(5);
 
@@ -89,32 +88,24 @@ testcase2() {
         // uav.attitude.yaw.enable_read(0);
         // uav.attitude.pitch.enable_read(0);
         // uav.attitude.roll.enable_read(0);
-        uav.motors[0].enable_read(0);
-        uav.motors[0].enable_write(0);
-        uav.start();
+        for (int i = 0; i < 4; i++) {
+            uav.motors[i].enable_read(0);
+            uav.motors[i].enable_write(0);
+        }
+        uav.start().control_enable(true);
 
-        uav.control_enable(true);
-    
         // Write
         //uav.angles.pitch.write(30.0);
         //uav.angles.roll.write(30.0);
-        sleep(5);
+        sleep(2);
         std::cout << "READY" << std::endl;
         // Read
-        int i = 0;
-        while(i < 1000) {
-            // auto yaw = uav.attitude.yaw.read();
-            // auto pitch = uav.attitude.pitch.read();
-            // auto roll = uav.attitude.roll.read();
-            uav.motors[0].write(1500);
-            // std::cout << yaw << " " << pitch << " " << roll << std::endl;
-
-
-            i++;
-            usleep(10000);
+        for (int i = 0; i < 4; i++) {
+            uav.motors[i].write(1500);
+            sleep(2);
+            uav.motors[i].write(1075);
+            sleep(2);
         }
-        uav.motors[0].write(1075);
-        sleep(1);
 
     } catch (std::runtime_error e) {
         std::cout << "Exception: " << e.what() << std::endl;

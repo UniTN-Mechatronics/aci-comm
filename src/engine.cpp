@@ -113,18 +113,12 @@ acc::Engine<BUS>::_launch_aci_thread(int time_sleep) {
 
 template<class BUS> void
 acc::Engine<BUS>::_aci_thread_runner(int time_sleep) {
-    int result = 0;
-    unsigned char data = 0;
     while (_aci_thread_run) {
-        result = ::read(_bus._port_state, &data, 1);
-        while (result != -1) {
-            aciReceiveHandler(data);
-            result = ::read(_bus._port_state, &data, 1);
-        }
-        aciSynchronizeVars();
-        aciEngine();
-        usleep(time_sleep); // TODO: remove hardcoded
+        _aci_thread_runner_func(); 
+        usleep(time_sleep);  
     }
+    _aci_thread_runner_func();  
+    usleep(time_sleep);
 }
 
 template<class BUS> void
@@ -151,6 +145,19 @@ acc::Engine<BUS>::_add_write(int pck, acc::Cmd key_write) {
     MapCmdItem::iterator it2;
     it2 = _requsted_cmds.find(key_write);
     it2->second.pck = pck;
+}
+
+template<class BUS> void
+acc::Engine<BUS>::_aci_thread_runner_func() {
+    int result = 0;
+    unsigned char data = 0;
+    result = ::read(_bus._port_state, &data, 1);
+    while (result != -1) {
+        aciReceiveHandler(data);
+        result = ::read(_bus._port_state, &data, 1);
+    }
+    aciSynchronizeVars();
+    aciEngine();
 }
 
 template<class BUS> int
