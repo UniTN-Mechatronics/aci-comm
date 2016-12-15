@@ -64,7 +64,6 @@ namespace acc
         UAV(std::string port, int baud_rate, CTRL_MODE mode, bool logger_) : _ctrl_mode(mode) {
             engine = &Engine<SerialBus>::init(port, baud_rate);
             _uav_init();
-
         };
 
         ~UAV() {
