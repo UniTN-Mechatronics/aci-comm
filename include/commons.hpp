@@ -6,7 +6,7 @@ namespace acc
 {
     enum class ACI_COMM_VAR
     {                               // UAV READ CLASSES IMPLEMENTATION
-        UAV_status             = 0, // implemented 
+        UAV_status             = 0, // implemented
         flight_time            ,    // implemented
         battery_voltage        ,    // implemented
         HL_cpu_load            ,    // implemented
@@ -42,12 +42,12 @@ namespace acc
         angle_pitch            ,    // implemented, tested
         angle_roll             ,    // implemented, tested
         angle_yaw              ,    // implemented, tested
-        fusion_latitude        ,    //
-        fusion_longitude       ,    //
-        fusion_dheight         ,    //
-        fusion_height          ,    //
-        fusion_speed_x         ,    //
-        fusion_speed_y         ,    //
+        fusion_latitude        ,    // implemented
+        fusion_longitude       ,    // implemented
+        fusion_dheight         ,    // implemented
+        fusion_height          ,    // implemented
+        fusion_speed_x         ,    // implemented
+        fusion_speed_y         ,    // implemented
         RC_channel_0           ,    // implemented
         RC_channel_1           ,    // implemented
         RC_channel_2           ,    // implemented
