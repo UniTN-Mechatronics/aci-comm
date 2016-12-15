@@ -55,7 +55,7 @@ namespace acc
 
             ReturnType
             read_rad() {
-              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+              return deg2rad(ChannelRead<TP, ReturnType>::read());
             }
 
             Pitch&
@@ -91,7 +91,7 @@ namespace acc
 
             ReturnType
             read_rad() {
-              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+              return deg2rad(ChannelRead<TP, ReturnType>::read());
             }
 
             PitchDot&
@@ -138,7 +138,7 @@ namespace acc
 
             ReturnType
             read_rad() {
-              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+              return deg2rad(ChannelRead<TP, ReturnType>::read());
             }
 
             Roll&
@@ -172,7 +172,7 @@ namespace acc
 
             ReturnType
             read_rad() {
-              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+              return deg2rad(ChannelRead<TP, ReturnType>::read());
             }
 
             RollDot&
@@ -215,7 +215,7 @@ namespace acc
 
             ReturnType
             read_rad() {
-              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+              return deg2rad(ChannelRead<TP, ReturnType>::read());
             }
 
         protected:
@@ -238,7 +238,7 @@ namespace acc
 
             ReturnType
             read_rad() {
-              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+              return deg2rad(ChannelRead<TP, ReturnType>::read());
             }
 
             YawDot&
