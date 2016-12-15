@@ -12,16 +12,14 @@
 #include <atomic>
 #include <assert.h>
 
-#ifndef _ACI_COMM_BUS_HPP_
-    #include "bus.hpp"
-#endif
+#include "bus.hpp"
+#include "commons.hpp"
+#include "map_var_cmd.hpp"
 
-#ifndef _ACI_COMM_COMMONS_HPP_
-    #include "commons.hpp"
-#endif
-#ifndef _ACI_COMM_MAP_VAR_CMD_HPP_
-    #include "map_var_cmd.hpp"
-#endif
+typedef acc::DroneItemVar AtomicVarItem;
+typedef acc::DroneItemCmd AtomicCmdItem;
+typedef std::map<acc::Var, AtomicVarItem> MapVarItem;
+typedef std::map<acc::Cmd, AtomicCmdItem> MapCmdItem;
 
 namespace acc
 {
@@ -134,7 +132,7 @@ namespace acc
         *   Read variables.
         */
         template<class... Args> std::vector<int>
-        read(std::string key_read, Args... args) {
+        read(Var key_read, Args... args) {
             std::vector<int> read_results;
             read_results.push_back( read(key_read) );
             read(read_results, args...);
@@ -143,47 +141,29 @@ namespace acc
 
         template<class... Args> void
         read(std::vector<int>& read_results,
-             acc::ACI_COMM_VAR key_read, Args... args)
+             Var key_read, Args... args)
         {
             read_results.push_back(read(key_read));
             read(read_results, args...);
         }
 
         void
-        read(std::vector<int>& read_results, acc::ACI_COMM_VAR key_read) {
+        read(std::vector<int>& read_results, Var key_read) {
             read_results.push_back(read(key_read));
         }
 
-        int read(acc::ACI_COMM_VAR key_read);
+        int read(Var key_read);
 
         /**
         *   Write variables.
         */
         template<class... Args> void
-        write(acc::ACI_COMM_CMD key_write, int value_write, Args... args) {
+        write(Cmd key_write, int value_write, Args... args) {
             write(key_write, value_write);
             write(args...);
         }
 
-        void write(acc::ACI_COMM_CMD key_write, int value_write);
-
-    protected:
-        /* Ideas */
-        /********************/
-        void get_version(bool version = false);
-        /********************/
-        template<class... Args> void
-        add_read_label(int packet, std::string label, Args... args) {}
-        /********************/
-        template<class... Args> void
-        add_write_label(int packet, std::string label, Args... args) {}
-        /********************/
-        template<class... Args> void
-        read_label(std::string label, Args... args) {}
-        /********************/
-        template<class... Args> void
-        write_label(std::string label, Args... args) {}
-        /********************/
+        void write(Cmd key_write, int value_write);
 
     private:
 
@@ -214,8 +194,8 @@ namespace acc
         /**
         *   The dictionary.
         */
-        std::map<acc::ACI_COMM_VAR, DroneItemVar> _map_var;
-        std::map<acc::ACI_COMM_CMD, DroneItemCmd> _map_cmd;
+        MapVarItem _map_var;
+        MapCmdItem _map_cmd;
 
         void _launch_aci_thread(int time_sleep);
         void _aci_thread_runner(int time_sleep);

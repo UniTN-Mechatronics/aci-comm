@@ -50,24 +50,7 @@ namespace acc
         */
         UAV(std::string port, int baud_rate, CTRL_MODE mode) : _ctrl_mode(mode) {
             engine = &Engine<SerialBus>::init(port, baud_rate);
-            attitude = Attitude(this);
-            motors[0] = Motors(this, ACI_COMM_VAR::motor_rpm_1, ACI_COMM_CMD::DIMC_motor_1);
-            motors[1] = Motors(this, ACI_COMM_VAR::motor_rpm_2, ACI_COMM_CMD::DIMC_motor_2);
-            motors[2] = Motors(this, ACI_COMM_VAR::motor_rpm_3, ACI_COMM_CMD::DIMC_motor_3);
-            motors[3] = Motors(this, ACI_COMM_VAR::motor_rpm_4, ACI_COMM_CMD::DIMC_motor_4);
-
-            magnetometer = MagnetoMeters(this);
-            gps = GPS(this);
-            rc_ch[0] = RCChannels(this, ACI_COMM_VAR::RC_channel_0);
-            rc_ch[1] = RCChannels(this, ACI_COMM_VAR::RC_channel_1);
-            rc_ch[2] = RCChannels(this, ACI_COMM_VAR::RC_channel_2);
-            rc_ch[3] = RCChannels(this, ACI_COMM_VAR::RC_channel_3);
-            rc_ch[4] = RCChannels(this, ACI_COMM_VAR::RC_channel_4);
-            rc_ch[5] = RCChannels(this, ACI_COMM_VAR::RC_channel_5);
-            rc_ch[6] = RCChannels(this, ACI_COMM_VAR::RC_channel_6);
-            rc_ch[7] = RCChannels(this, ACI_COMM_VAR::RC_channel_7);
-
-            _add_write_ctrl();
+            _uav_init();
         };
 
         ~UAV() {
@@ -75,15 +58,15 @@ namespace acc
         }
 
         // Setup
-        void set_port(std::string port_id);
+        UAV& set_port(std::string port_id);
         std::string port();
 
         // Run
-        void start();
-        void stop();
+        UAV& start();
+        UAV& stop();
 
         // Controller setup
-        void control_enable(bool value);
+        UAV& control_enable(bool value);
 
         // Packets
         Attitude attitude;
@@ -110,14 +93,12 @@ namespace acc
         Engine<SerialBus>* engine;
         CTRL_MODE _ctrl_mode;
 
+        void _uav_init();
         void _add_write_ctrl();
         void _write_ctrl();
     };
 
 };
-
-
-
 
 
 #endif // __cplusplus

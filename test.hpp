@@ -125,4 +125,25 @@ testcase2() {
     }
 }
 
+void
+testcase_loop() {
+    using namespace acc;
+    std::string port = "/dev/tty.usbserial-A504DRSI";
+    UAV uav(port, B57600, CTRL_MODE::DIMC);
+    
+    try {
+        uav.motors[0].enable_read(0);
+        uav.motors[0].enable_write(0);
+        
+
+        
+    } catch (std::runtime_error e) {
+        std::cout << "Exception: " << e.what() << std::endl;
+        uav.stop();
+    } catch (...) {
+        std::cout << "!!! Unexpected error !!!" << std::endl;
+        uav.stop();
+    }
+}
+
 

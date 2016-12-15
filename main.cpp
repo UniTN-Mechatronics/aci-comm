@@ -3,7 +3,8 @@
 
 int 
 main() {
-	testcase();
+	//testcase();
 	//testcase2();
+	testcase_loop();
 	return 0;
 }
