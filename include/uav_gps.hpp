@@ -16,35 +16,35 @@ namespace acc
   private:
 
     GPSS(T* uav_ptr) {
-      latitude._update_read_type(uav_ptr);
-      longitude._update_read_type(uav_ptr);
-      height._update_read_type(uav_ptr);
-      x_d._update_read_type(uav_ptr);
-      y_d._update_read_type(uav_ptr);
-      heading._update_read_type(uav_ptr);
-      sat_num._update_read_type(uav_ptr);
-      status._update_read_type(uav_ptr);
-      time_of_week._update_read_type(uav_ptr);
-      week._update_read_type(uav_ptr);
+      latitude._update_read_type(uav_ptr, Var::GPS_latitude);
+      longitude._update_read_type(uav_ptr, Var::GPS_longitude);
+      height._update_read_type(uav_ptr, Var::GPS_height);
+      x_d._update_read_type(uav_ptr, Var::GPS_speed_x);
+      y_d._update_read_type(uav_ptr, Var::GPS_speed_y);
+      heading._update_read_type(uav_ptr, Var::GPS_heading);
+      sat_num._update_read_type(uav_ptr, Var::GPS_sat_num);
+      status._update_read_type(uav_ptr, Var::GPS_status);
+      time_of_week._update_read_type(uav_ptr, Var::GPS_time_of_week);
+      week._update_read_type(uav_ptr, Var::GPS_week);
 
-      accuracy.position._update_read_type(uav_ptr);
-      accuracy.height._update_read_type(uav_ptr);
-      accuracy.speed._update_read_type(uav_ptr);
+      accuracy.position._update_read_type(uav_ptr, Var::GPS_position_accuracy);
+      accuracy.height._update_read_type(uav_ptr, Var::GPS_height_accuracy);
+      accuracy.speed._update_read_type(uav_ptr, Var::GPS_speed_accuracy);
     };
 
-    template<class TP, class ReturnValue>
-    class GPSLatLong : public ChannelRead<TP, ReturnValue>
+    template<class TP, class ReturnType>
+    class GPSLatLong : public ChannelRead<TP, ReturnType>
     {
     public:
-      friend class GPS;
+      friend class GPSS;
 
       GPSLatLong() {};
 
     protected:
       void
       _update_read_type(TP *uav_ptr, Var read_type) {
-        ChannelRead<TP, ReturnValue>::_uav_ptr   = uav_ptr
-        ChannelRead<TP, ReturnValue>::_read_type = read_type
+        ChannelRead<TP, ReturnType>::_uav_ptr   = uav_ptr;
+        ChannelRead<TP, ReturnType>::_read_type = read_type;
       }
 
       ReturnType
@@ -53,19 +53,19 @@ namespace acc
       }
     };
 
-    template<class TP, class ReturnValue>
-    class GPSGeneralConvert : public ChannelRead<TP, ReturnValue>
+    template<class TP, class ReturnType>
+    class GPSGeneralConvert : public ChannelRead<TP, ReturnType>
     {
     public:
-      friend class GPS;
+      friend class GPSS;
 
       GPSGeneralConvert() {};
 
     protected:
       void
       _update_read_type(TP *uav_ptr, Var read_type) {
-        ChannelRead<TP, ReturnValue>::_uav_ptr   = uav_ptr;
-        ChannelRead<TP, ReturnValue>::_read_type = read_type;
+        ChannelRead<TP, ReturnType>::_uav_ptr   = uav_ptr;
+        ChannelRead<TP, ReturnType>::_read_type = read_type;
       }
 
       ReturnType
@@ -74,19 +74,19 @@ namespace acc
       }
     };
 
-    template<class TP, class ReturnValue>
-    class GPSGeneral : public ChannelRead<TP, ReturnValue>
+    template<class TP, class ReturnType>
+    class GPSGeneral : public ChannelRead<TP, ReturnType>
     {
     public:
-      friend class GPS;
+      friend class GPSS;
 
       GPSGeneral() {};
 
     protected:
       void
       _update_read_type(TP *uav_ptr, Var read_type) {
-        ChannelRead<TP, ReturnValue>::_uav_ptr   = uav_ptr;
-        ChannelRead<TP, ReturnValue>::_read_type = read_type;
+        ChannelRead<TP, ReturnType>::_uav_ptr   = uav_ptr;
+        ChannelRead<TP, ReturnType>::_read_type = read_type;
       }
 
       ReturnType
@@ -101,10 +101,10 @@ namespace acc
     GPSLatLong<T, FloatingPointPrecision> latitude;
     GPSLatLong<T, FloatingPointPrecision> longitude;
 
-    GPSGeneralConverts<T, FloatingPointPrecision> height;
-    GPSGeneralConverts<T, FloatingPointPrecision> x_d;
-    GPSGeneralConverts<T, FloatingPointPrecision> y_d;
-    GPSGeneralConverts<T, FloatingPointPrecision> heading;
+    GPSGeneralConvert<T, FloatingPointPrecision> height;
+    GPSGeneralConvert<T, FloatingPointPrecision> x_d;
+    GPSGeneralConvert<T, FloatingPointPrecision> y_d;
+    GPSGeneralConvert<T, FloatingPointPrecision> heading;
     class Accuracy {
     public:
       GPSGeneralConvert<T, FloatingPointPrecision> position;

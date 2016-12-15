@@ -12,24 +12,24 @@ namespace acc
         HL_cpu_load            ,    //
         HL_up_time             ,    //
         motor_rpm_1            ,    // implemented, tested
-        motor_rpm_2            ,    // implemented
-        motor_rpm_3            ,    // implemented
-        motor_rpm_4            ,    // implemented
+        motor_rpm_2            ,    // implemented, tested
+        motor_rpm_3            ,    // implemented, tested
+        motor_rpm_4            ,    // implemented, tested
         motor_rpm_5            ,    // implemented, impossible to test
         motor_rpm_6            ,    // implemented, impossible to test
-        GPS_latitude           ,    //
-        GPS_longitude          ,    //
-        GPS_height             ,    //
-        GPS_speed_x            ,    //
-        GPS_speed_y            ,    //
-        GPS_heading            ,    //
-        GPS_position_accuracy  ,    //
-        GPS_height_accuracy    ,    //
-        GPS_speed_accuracy     ,    //
-        GPS_sat_num            ,    //
-        GPS_status             ,    //
-        GPS_time_of_week       ,    //
-        GPS_week               ,    //
+        GPS_latitude           ,    // implemented
+        GPS_longitude          ,    // implemented
+        GPS_height             ,    // implemented
+        GPS_speed_x            ,    // implemented
+        GPS_speed_y            ,    // implemented
+        GPS_heading            ,    // implemented
+        GPS_position_accuracy  ,    // implemented
+        GPS_height_accuracy    ,    // implemented
+        GPS_speed_accuracy     ,    // implemented
+        GPS_sat_num            ,    // implemented
+        GPS_status             ,    // implemented
+        GPS_time_of_week       ,    // implemented
+        GPS_week               ,    // implemented
         angvel_pitch           ,    // implemented
         angvel_roll            ,    // implemented
         angvel_yaw             ,    // implemented
