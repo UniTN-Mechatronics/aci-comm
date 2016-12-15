@@ -1,0 +1,3 @@
+[submodule "asctec"]
+	path = asctec
+	url = https://bitbucket.org/unitn/ascteccomminterfacec.git
