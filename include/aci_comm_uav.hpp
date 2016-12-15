@@ -9,6 +9,7 @@
 #include "uav_frame.hpp"
 #include "uav_rc_channels.hpp"
 #include "uav_motors.hpp"
+#include "uav_magnetometer.hpp"
 
 namespace acc
 {
@@ -22,7 +23,8 @@ namespace acc
     public:
         friend class Angles<UAV, FLOATING_POINT_PRECISION>;
         friend class Motor<UAV, FLOATING_POINT_PRECISION>;
-        friend class RCChannel <UAV, FLOATING_POINT_PRECISION>;
+        friend class RCChannel<UAV, FLOATING_POINT_PRECISION>;
+        friend class MagnetoMeter<UAV, FLOATING_POINT_PRECISION>;
 
         /* All channels combination */
         friend class Channel<UAV>;
@@ -34,6 +36,7 @@ namespace acc
         using Attitude = Angles<UAV, FLOATING_POINT_PRECISION>;
         using Motors = Motor<UAV, FLOATING_POINT_PRECISION>;
 
+        using MagnetoMeters = MagnetoMeter<UAV, FLOATING_POINT_PRECISION>;
         using RCChannels = RCChannel<UAV, FLOATING_POINT_PRECISION>;
 
         /**
@@ -47,6 +50,7 @@ namespace acc
             motors[2] = Motors(this, ACI_COMM_VAR::motor_rpm_3, ACI_COMM_CMD::DIMC_motor_3);
             motors[3] = Motors(this, ACI_COMM_VAR::motor_rpm_4, ACI_COMM_CMD::DIMC_motor_4);
 
+            magnetometer = MagnetoMeters(this);
             rc_ch[0] = RCChannels(this, ACI_COMM_VAR::RC_channel_0);
             rc_ch[1] = RCChannels(this, ACI_COMM_VAR::RC_channel_1);
             rc_ch[2] = RCChannels(this, ACI_COMM_VAR::RC_channel_2);
@@ -77,6 +81,7 @@ namespace acc
         // Packets
         Attitude attitude;
         std::array<Motors, MOTORS_NUM> motors;
+        MagnetoMeters magnetometer;
         std::array<RCChannels, RC_CHANNELS_NUM> rc_ch;
 
         // Settings
