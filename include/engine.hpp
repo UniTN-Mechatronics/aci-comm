@@ -73,7 +73,8 @@ namespace acc
 
 
         /**
-        *   Add variables.
+        *   Add read variables.
+        *   Variadic template form.
         */
         template<class Key, class... Args> void
         add_read(int pck, Key key_read, Args... args) {
@@ -81,11 +82,20 @@ namespace acc
             add_read(pck, args...);
         }
 
+        /**
+        *   Add read variables.
+        *   Variadic template form.
+        */
         template<class... Args> void
         add_read(int pck, Args... args) {
             add_read(pck, args...);
         }
 
+        /**
+        *   @usage: Add read variable.
+        *   @param
+        *   
+        */
         template<class Key> void
         add_read(int pck, Key key_read) {
             _add_read(pck, key_read);
