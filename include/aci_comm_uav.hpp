@@ -16,11 +16,6 @@
 
 namespace acc
 {
-    enum class UAV_Z : signed int {
-      UPWARD = -1,
-      DOWNWARD = 1
-    };
-
     class UAV
     {
     public:
@@ -51,7 +46,9 @@ namespace acc
         /**
         *   SerialBus UAV constructor.
         */
-        UAV(std::string port, int baud_rate, CTRL_MODE mode) : _ctrl_mode(mode) {
+        UAV(std::string port, int baud_rate, CTRL_MODE mode) :
+          _ctrl_mode(mode),
+          _ctrl_bit(0) {
             engine = &Engine<SerialBus>::init(port, baud_rate);
             _uav_init();
         };
@@ -61,7 +58,9 @@ namespace acc
         *   with Logger
         */
         //template<class LoggerType>
-        UAV(std::string port, int baud_rate, CTRL_MODE mode, bool logger_) : _ctrl_mode(mode) {
+        UAV(std::string port, int baud_rate, CTRL_MODE mode, bool logger_) :
+          _ctrl_mode(mode),
+          _ctrl_bit(0) {
             engine = &Engine<SerialBus>::init(port, baud_rate);
             _uav_init();
 
@@ -106,6 +105,8 @@ namespace acc
     private:
         Engine<SerialBus>* engine;
         CTRL_MODE _ctrl_mode;
+        unsigned int _ctrl_bit;
+
 
         void _uav_init();
         void _add_write_ctrl();
