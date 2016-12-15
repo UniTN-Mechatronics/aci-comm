@@ -19,8 +19,8 @@ namespace acc
       latitude._update_read_type(uav_ptr, Var::GPS_latitude);
       longitude._update_read_type(uav_ptr, Var::GPS_longitude);
       height._update_read_type(uav_ptr, Var::GPS_height);
-      x_d._update_read_type(uav_ptr, Var::GPS_speed_x);
-      y_d._update_read_type(uav_ptr, Var::GPS_speed_y);
+      u_d._update_read_type(uav_ptr, Var::GPS_speed_x);
+      v_d._update_read_type(uav_ptr, Var::GPS_speed_y);
       heading._update_read_type(uav_ptr, Var::GPS_heading);
       sat_num._update_read_type(uav_ptr, Var::GPS_sat_num);
       status._update_read_type(uav_ptr, Var::GPS_status);
@@ -102,8 +102,8 @@ namespace acc
     GPSLatLong<T, FloatingPointPrecision> longitude;
 
     GPSGeneralConvert<T, FloatingPointPrecision> height;
-    GPSGeneralConvert<T, FloatingPointPrecision> x_d;
-    GPSGeneralConvert<T, FloatingPointPrecision> y_d;
+    GPSGeneralConvert<T, FloatingPointPrecision> u_d;
+    GPSGeneralConvert<T, FloatingPointPrecision> v_d;
     GPSGeneralConvert<T, FloatingPointPrecision> heading;
     class Accuracy {
     public:
