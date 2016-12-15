@@ -53,15 +53,28 @@ namespace acc
                 ChannelWrite<TP, ArgsType>::_write_type = ACI_COMM_CMD::CTRL_pitch; // TODO Check map value... DMC_pitch?
             };
 
+            ReturnType
+            read_rad() {
+              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+            }
+
+            Pitch&
+            write_rad(ArgsType val) {
+              ChannelWrite<TP, ArgsType>::write(rad2deg(val));
+              return this;
+            }
+
         protected:
             ReturnType
             _read_conversion(int value) {
-                return angle_read_conv(value);
+                return angle_read_conv(value) *
+                  static_cast<ReturnType>(ChannelRead<TP, ReturnType>::_uav_ptr->orientation);
             }
 
             int
             _write_conversion(ReturnType value) {
-                return CTRL_pitch_roll_write_conv(value);
+                return CTRL_pitch_roll_write_conv(value *
+                  static_cast<ReturnType>(ChannelRead<TP, ReturnType>::_uav_ptr->orientation));
             }
         };
 
@@ -75,6 +88,17 @@ namespace acc
                 ChannelRead<TP, ReturnType>::_read_type = ACI_COMM_VAR::angvel_pitch;
                 ChannelWrite<TP, ArgsType>::_write_type = ACI_COMM_CMD::DMC_pitch; // TODO Check map value... CTRL_pitch?
             };
+
+            ReturnType
+            read_rad() {
+              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+            }
+
+            PitchDot&
+            write_rad(ArgsType val) {
+              ChannelWrite<TP, ArgsType>::write(rad2deg(val));
+              return this;
+            }
 
         protected:
             ReturnType
@@ -112,6 +136,17 @@ namespace acc
                 ChannelWrite<TP, ArgsType>::_write_type = ACI_COMM_CMD::CTRL_roll; // TODO Check map value... DMC_roll?
             };
 
+            ReturnType
+            read_rad() {
+              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+            }
+
+            Roll&
+            write_rad(ArgsType val) {
+              ChannelWrite<TP, ArgsType>::write(rad2deg(val));
+              return this;
+            }
+
         protected:
             ReturnType
             _read_conversion(int value) {
@@ -134,6 +169,17 @@ namespace acc
                 ChannelRead<TP, ReturnType>::_read_type = ACI_COMM_VAR::angvel_roll;
                 ChannelWrite<TP, ArgsType>::_write_type = ACI_COMM_CMD::DMC_roll; // TODO Check map value... CTRL_pitch?
             };
+
+            ReturnType
+            read_rad() {
+              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+            }
+
+            RollDot&
+            write_rad(ArgsType val) {
+              ChannelWrite<TP, ArgsType>::write(rad2deg(val));
+              return this;
+            }
 
         protected:
             ReturnType
@@ -167,6 +213,11 @@ namespace acc
                 ChannelRead<TP, ReturnType>::_read_type = ACI_COMM_VAR::angle_yaw;
             };
 
+            ReturnType
+            read_rad() {
+              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+            }
+
         protected:
             ReturnType
             _read_conversion(int value) {
@@ -184,6 +235,17 @@ namespace acc
             YawDot() {
                 ChannelRead<TP, ReturnType>::_read_type = ACI_COMM_VAR::angvel_yaw;
             };
+
+            ReturnType
+            read_rad() {
+              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+            }
+
+            YawDot&
+            write_rad(ArgsType val) {
+              ChannelWrite<TP, ArgsType>::write(rad2deg(val));
+              return this;
+            }
 
         protected:
             ReturnType

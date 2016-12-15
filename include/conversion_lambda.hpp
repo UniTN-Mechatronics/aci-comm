@@ -8,11 +8,6 @@
 
 #define PI 3.14159265359
 
-// #define ANGLE_UNIT_RAD // if it is defined angle, angvel, ctrl_pitch/yaw/roll are in [rad] or [rad/s]
-
-
-// TODO: for angles return rads not °
-
 template<class T> FLOATING_POINT_PRECISION
 divide_by_1000(T v) {
   return static_cast<FLOATING_POINT_PRECISION>(v)/1000.0;
@@ -65,11 +60,8 @@ divide_by_1000(T v) {
     return divide_by_1000(v);
   };
 
-  auto angvel_read_conv = [] (int v) -> FLOATING_POINT_PRECISION {
-    #ifndef ANGLE_UNIT_RAD
-    return v * 0.0154;            // [°/sec]
-    #endif
-    return v * 0.0154 * PI/180.0; // [rad/sec]
+  auto angvel_read_conv = [] (int v) -> FLOATING_POINT_PRECISION { // [°/sec]
+    return v * 0.0154;
   };
 
   auto acc_read_conv = [] (int v) -> FLOATING_POINT_PRECISION { // [g]
@@ -80,11 +72,8 @@ divide_by_1000(T v) {
     return v / 2500.0;
   };
 
-  auto angle_read_conv = [] (int v) -> FLOATING_POINT_PRECISION { // [rad]
-    #ifndef ANGLE_UNIT_RAD
-    return divide_by_1000(v);            // [°]
-    #endif
-    return divide_by_1000(v) * PI/180.0; // [rad]
+  auto angle_read_conv = [] (int v) -> FLOATING_POINT_PRECISION { // [°]
+    return divide_by_1000(v);
   };
 
   auto fusion_lat_long_read_conv = [] (int v) -> FLOATING_POINT_PRECISION { // [°]
@@ -103,6 +92,14 @@ divide_by_1000(T v) {
     return v / 4095.0;
   };
 
+  auto deg2rad = [] (FLOATING_POINT_PRECISION v) -> FLOATING_POINT_PRECISION { // rad
+    return v * PI/180.0;
+  };
+
+  auto rad2deg = [] (FLOATING_POINT_PRECISION v) -> FLOATING_POINT_PRECISION { // deg
+    return v / (PI/180.0);
+  };
+
   /*_      ______  ________________
   | |     / / __ \/  _/_  __/ ____/
   | | /| / / /_/ // /  / / / __/
@@ -111,10 +108,10 @@ divide_by_1000(T v) {
   */
   auto DIMC_motor_write_conv = [] (FLOATING_POINT_PRECISION v) -> int { // [rpm] (rouds per minute)
     if(v < 1075) {
-      throw std::runtime_error("it is not possible to set RPM lower than 1075");
+      // throw std::runtime_error("it is not possible to set RPM lower than 1075"); // TODO Fix me decide a strategy
       return 0;
     } else if(v > 8600) {
-      throw std::runtime_error("it is not possible to set RPM higher than 8600");
+      throw std::runtime_error("it is not possible to set RPM higher than 8600"); // TODO Fix me
       return 200;
     }
     return (v - 1075) * 1/37.625;
@@ -140,17 +137,14 @@ divide_by_1000(T v) {
     return (v*200)/(max);
   };
 
-  auto CTRL_pitch_roll_write_conv = [] (FLOATING_POINT_PRECISION v) -> int { // [°] or [rad]
+  auto CTRL_pitch_roll_write_conv = [] (FLOATING_POINT_PRECISION v) -> int { // [°]
     FLOATING_POINT_PRECISION max = 51.2; // or 52.0?
     if(v < -max) {
       throw std::runtime_error("it is not possible to set a pitch or roll angle lower than " + std::to_string(-max));
     } else if(v > max) {
       throw std::runtime_error("it is not possible to set a pitch or roll angle higher than " + std::to_string(max));
     }
-    #ifndef ANGLE_UNIT_RAD
     return (v*2047)/max;          // v is [°] here
-    #endif
-    return ((v*180/PI)*2047)/max; // v is [rad] here
   };
 
   auto CTRL_yaw_write_conv = [] (FLOATING_POINT_PRECISION v) -> int { // [°/sec]
@@ -160,10 +154,7 @@ divide_by_1000(T v) {
     } else if(v > max) {
       throw std::runtime_error("it is not possible to set a yaw rate higher than " + std::to_string(max));
     }
-    #ifndef ANGLE_UNIT_RAD
     return (v*2047)/max;          // v is [°/s] here
-    #endif
-    return ((v*180/PI)*2047)/max; // v is [deg/s] here
   };
 
   auto CTRL_thrust_write_conv = [] (FLOATING_POINT_PRECISION v) -> int { // [normalized] (0-1)
