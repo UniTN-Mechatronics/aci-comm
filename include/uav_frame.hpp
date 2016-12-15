@@ -39,10 +39,11 @@ namespace acc
             thrust._update_write_type(uav_ptr);
         };
 
-        //   ___ _ _      _
-        //  | _ (_) |_ __| |_
-        //  |  _/ |  _/ _| ' \
-        //  |_| |_|\__\__|_||_|
+        /*   ___ _ _      _
+         *  | _ (_) |_ __| |_
+         *  |  _/ |  _/ _| ' \
+         *  |_| |_|\__\__|_||_|
+         */
         template<class TP, class ReturnType, class ArgsType>
         class Pitch : public virtual ChannelRead<TP, ReturnType>, public virtual ChannelWrite<TP, ArgsType>
         {
@@ -63,6 +64,15 @@ namespace acc
             write_rad(ArgsType val) {
               ChannelWrite<TP, ArgsType>::write(rad2deg(val));
               return this;
+            }
+
+            Pitch&
+            enable_write(int packet) {
+                ChannelWrite<TP, ArgsType>::_check_null_uav_ptr(ChannelWrite<TP, ArgsType>::_uav_ptr);
+                ChannelWrite<TP, ArgsType>::_ctrl_mode_check();
+                ChannelWrite<TP, ArgsType>::_uav_ptr->engine->add_write(packet, ChannelWrite<TP, ArgsType>::_write_type);
+                ChannelWrite<TP, ArgsType>::_uav_ptr->_ctrl_bit |= static_cast<unsigned int>(CTRL_BIT::Pitch);
+                return *this;
             }
 
         protected:
@@ -122,10 +132,11 @@ namespace acc
         };
 
 
-        //   ___     _ _
-        //  | _ \___| | |
-        //  |   / _ \ | |
-        //  |_|_\___/_|_|
+        /*   ___     _ _
+         *  | _ \___| | |
+         *  |   / _ \ | |
+         *  |_|_\___/_|_|
+         */
         template<class TP, class ReturnType, class ArgsType>
         class Roll : public virtual ChannelRead<TP, ReturnType>, public virtual ChannelWrite<TP, ArgsType>
         {
@@ -146,6 +157,15 @@ namespace acc
             write_rad(ArgsType val) {
               ChannelWrite<TP, ArgsType>::write(rad2deg(val));
               return this;
+            }
+
+            Roll&
+            enable_write(int packet) {
+                ChannelWrite<TP, ArgsType>::_check_null_uav_ptr(ChannelWrite<TP, ArgsType>::_uav_ptr);
+                ChannelWrite<TP, ArgsType>::_ctrl_mode_check();
+                ChannelWrite<TP, ArgsType>::_uav_ptr->engine->add_write(packet, ChannelWrite<TP, ArgsType>::_write_type);
+                ChannelWrite<TP, ArgsType>::_uav_ptr->_ctrl_bit |= static_cast<unsigned int>(CTRL_BIT::Roll);
+                return *this;
             }
 
         protected:
@@ -200,10 +220,11 @@ namespace acc
             }
         };
 
-        //  __   __
-        //  \ \ / /_ ___ __ __
-        //   \ V / _` \ V  V /
-        //    |_|\__,_|\_/\_/
+        /*  __   __
+         *  \ \ / /_ ___ __ __
+         *   \ V / _` \ V  V /
+         *    |_|\__,_|\_/\_/
+         */
         template<class TP, class ReturnType>
         class Yaw : public virtual ChannelRead<TP, ReturnType>
         {
@@ -248,6 +269,17 @@ namespace acc
               return this;
             }
 
+            YawDot&
+            enable_write(int packet) {
+                ChannelWrite<TP, ArgsType>::_check_null_uav_ptr(ChannelWrite<TP, ArgsType>::_uav_ptr);
+                _ctrl_mode_check();
+                ChannelWrite<TP, ArgsType>::_uav_ptr->engine->add_write(packet, ChannelWrite<TP, ArgsType>::_write_type);
+                if (ChannelWrite<TP, ArgsType>::_uav_ptr->_ctrl_mode == CTRL_MODE::CTRL) {
+                  ChannelWrite<TP, ArgsType>::_uav_ptr->_ctrl_bit |= static_cast<unsigned int>(CTRL_BIT::YawDot);
+                }
+                return *this;
+            }
+
         protected:
             ReturnType
             _read_conversion(int value) {
@@ -283,10 +315,11 @@ namespace acc
             }
         };
 
-        //     _             _              _   _
-        //    /_\  __ __ ___| |___ _ _ __ _| |_(_)___ _ _  ___
-        //   / _ \/ _/ _/ -_) / -_) '_/ _` |  _| / _ \ ' \(_-<
-        //  /_/ \_\__\__\___|_\___|_| \__,_|\__|_\___/_||_/__/
+        /*     _             _              _   _
+         *    /_\  __ __ ___| |___ _ _ __ _| |_(_)___ _ _  ___
+         *   / _ \/ _/ _/ -_) / -_) '_/ _` |  _| / _ \ ' \(_-<
+         *  /_/ \_\__\__\___|_\___|_| \__,_|\__|_\___/_||_/__/
+         */
         template<class TP, class ReturnType>
         class XDotDot : public virtual ChannelRead<TP, ReturnType>
         {
@@ -322,10 +355,11 @@ namespace acc
             }
         };
 
-        //   _____ _                _
-        //  |_   _| |_  _ _ _  _ __| |_
-        //    | | | ' \| '_| || (_-<  _|
-        //    |_| |_||_|_|  \_,_/__/\__|
+        /*   _____ _                _
+         *  |_   _| |_  _ _ _  _ __| |_
+         *    | | | ' \| '_| || (_-<  _|
+         *    |_| |_||_|_|  \_,_/__/\__|
+         */
         template<class TP, class ArgsType>
         class Thrust : public virtual ChannelWrite<TP, ArgsType>
         {
@@ -333,6 +367,17 @@ namespace acc
             friend class Frames;
 
             Thrust () {};
+
+            Thrust&
+            enable_write(int packet) {
+                ChannelWrite<TP, ArgsType>::_check_null_uav_ptr(ChannelWrite<TP, ArgsType>::_uav_ptr);
+                _ctrl_mode_check();
+                ChannelWrite<TP, ArgsType>::_uav_ptr->engine->add_write(packet, ChannelWrite<TP, ArgsType>::_write_type);
+                if (ChannelWrite<TP, ArgsType>::_uav_ptr->_ctrl_mode == CTRL_MODE::CTRL) {
+                  ChannelWrite<TP, ArgsType>::_uav_ptr->_ctrl_bit |= static_cast<unsigned int>(CTRL_BIT::Thrust);
+                }
+                return *this;
+            }
 
         protected:
             void
