@@ -10,6 +10,8 @@
 #include "uav_rc_channels.hpp"
 #include "uav_motors.hpp"
 #include "uav_magnetometer.hpp"
+#include "uav_gps.hpp"
+#include "uav_info.hpp"
 
 namespace acc
 {
@@ -25,8 +27,10 @@ namespace acc
         friend class Motor<UAV, FLOATING_POINT_PRECISION>;
         friend class RCChannel<UAV, FLOATING_POINT_PRECISION>;
         friend class MagnetoMeter<UAV, FLOATING_POINT_PRECISION>;
+        friend class GPSS<UAV, FLOATING_POINT_PRECISION>;
+        friend class Infos<UAV, FLOATING_POINT_PRECISION>;
 
-        /* All channels combination */
+        /* All channel combinations */
         friend class Channel<UAV>;
         friend class ChannelRead<UAV, FLOATING_POINT_PRECISION>;
         friend class ChannelRead<UAV, int>;
@@ -37,7 +41,9 @@ namespace acc
         using Motors = Motor<UAV, FLOATING_POINT_PRECISION>;
 
         using MagnetoMeters = MagnetoMeter<UAV, FLOATING_POINT_PRECISION>;
+        using GPS = GPSS<UAV, FLOATING_POINT_PRECISION>;
         using RCChannels = RCChannel<UAV, FLOATING_POINT_PRECISION>;
+        using Info = Infos<UAV, FLOATING_POINT_PRECISION>;
 
         /**
         *   SerialBus UAV constructor.
@@ -51,6 +57,7 @@ namespace acc
             motors[3] = Motors(this, ACI_COMM_VAR::motor_rpm_4, ACI_COMM_CMD::DIMC_motor_4);
 
             magnetometer = MagnetoMeters(this);
+            gps = GPS(this);
             rc_ch[0] = RCChannels(this, ACI_COMM_VAR::RC_channel_0);
             rc_ch[1] = RCChannels(this, ACI_COMM_VAR::RC_channel_1);
             rc_ch[2] = RCChannels(this, ACI_COMM_VAR::RC_channel_2);
@@ -82,6 +89,8 @@ namespace acc
         Attitude attitude;
         std::array<Motors, MOTORS_NUM> motors;
         MagnetoMeters magnetometer;
+        GPS gps;
+        Info info;
         std::array<RCChannels, RC_CHANNELS_NUM> rc_ch;
 
         // Settings

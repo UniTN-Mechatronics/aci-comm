@@ -1,5 +1,5 @@
-#ifndef _ACI_COMM_UAV_GPS_HPP_
-#define _ACI_COMM_UAV_GPS_HPP_
+#ifndef _ACI_COMM_UAV_INFO_HPP_
+#define _ACI_COMM_UAV_INFO_HPP_
 #ifdef __cplusplus
 
 #include "engine.hpp"
@@ -10,23 +10,23 @@
 namespace acc
 {
   template<class T, class FloatingPointPrecision>
-  class GPSS
+  class Infos
   {
 
   private:
 
-    GPSS(T* uav_ptr) {
+    Infos(T* uav_ptr) {
 
     };
 
   public:
     friend class UAV;
 
-    GPSS() {};
+    Infos() {};
 
-  }; /* class GPSS */
+  }; /* class Infos */
 
 } /* namspace acc */
 
 #endif /* ifdef __cplusplus */
-#endif /* define _ACI_COMM_UAV_GPS_HPP_ */
+#endif /* define _ACI_COMM_UAV_INFOS_HPP_ */
