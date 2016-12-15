@@ -2,6 +2,7 @@
 #define _ACI_COMM_UAV_FRAME_HPP_
 #ifdef __cplusplus
 
+#include <cmath>
 #include "engine.hpp"
 #include "aci_comm_uav.hpp"
 #include "conversion_lambda.hpp"
@@ -55,7 +56,7 @@ namespace acc
 
             ReturnType
             read_rad() {
-              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+              return deg2rad(ChannelRead<TP, ReturnType>::read());
             }
 
             Pitch&
@@ -91,7 +92,7 @@ namespace acc
 
             ReturnType
             read_rad() {
-              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+              return deg2rad(ChannelRead<TP, ReturnType>::read());
             }
 
             PitchDot&
@@ -138,7 +139,7 @@ namespace acc
 
             ReturnType
             read_rad() {
-              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+              return deg2rad(ChannelRead<TP, ReturnType>::read());
             }
 
             Roll&
@@ -172,7 +173,7 @@ namespace acc
 
             ReturnType
             read_rad() {
-              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+              return deg2rad(ChannelRead<TP, ReturnType>::read());
             }
 
             RollDot&
@@ -215,7 +216,7 @@ namespace acc
 
             ReturnType
             read_rad() {
-              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+              return deg2rad(ChannelRead<TP, ReturnType>::read());
             }
 
         protected:
@@ -238,7 +239,7 @@ namespace acc
 
             ReturnType
             read_rad() {
-              return deg2rad(ChannelRead<TP, ReturnValue>::read());
+              return deg2rad(ChannelRead<TP, ReturnType>::read());
             }
 
             YawDot&
@@ -378,6 +379,77 @@ namespace acc
         Thrust<T, FloatingPointPrecision> thrust;
 
         Frames() {};
+
+        Frames&
+        enable_read_angles(int packet) {
+            roll.enable_read(packet);
+            pitch.enable_read(packet);
+            yaw.enable_read(packet);
+            return *this;
+        }
+
+        std::array<FloatingPointPrecision, 3>
+        read_angles() { // returns rpy
+            std::array<FloatingPointPrecision, 3> rpy;
+            rpy[0] = roll.read();
+            rpy[1] = pitch.read();
+            rpy[2] = yaw.read();
+            return rpy;
+        }
+
+        Frames&
+        enable_write_angles(int packet) {
+            roll.enable_write(packet);
+            pitch.enable_write(packet);
+            return *this;
+        }
+
+        Frames&
+        write_angles(std::array<FloatingPointPrecision, 3> v) {
+            roll.write(v[0]);
+            pitch.write(v[1]);
+            return *this;
+        }
+
+        Frames&
+        enable_read_angles_d(int packet) {
+            roll_d.enable_read(packet);
+            pitch_d.enable_read(packet);
+            yaw_d.enable_read(packet);
+            return *this;
+        }
+
+        std::array<FloatingPointPrecision, 3>
+        read_angles_d() {
+            std::array<FloatingPointPrecision, 3> rpy_d;
+            rpy_d[0] = roll_d.read();
+            rpy_d[1] = pitch_d.read();
+            rpy_d[2] = yaw_d.read();
+            return rpy_d;
+        }
+
+        Frames&
+        enable_read_acc(int packet) {
+            x_dd.enable_read(packet);
+            y_dd.enable_read(packet);
+            z_dd.enable_read(packet);
+            return *this;
+        }
+
+        std::array<FloatingPointPrecision, 3>
+        read_acc() {
+            std::array<FloatingPointPrecision, 3> acc;
+            acc[0] = x_dd.read();
+            acc[1] = y_dd.read();
+            acc[2] = z_dd.read();
+            return acc;
+        }
+
+        std::array<FloatingPointPrecision, 4>
+        quaternion() {
+            return rpy2quaternion(read_angles());
+        }
+
     };
 
 };

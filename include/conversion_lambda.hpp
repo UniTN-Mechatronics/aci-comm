@@ -13,9 +13,8 @@ divide_by_1000(T v) {
   return static_cast<FLOATING_POINT_PRECISION>(v)/1000.0;
 }
 
-
-#include <iostream>
-
+namespace acc
+{
   auto flight_time_read_conv = [] (int v) -> int { // [s]
     return v;
   };
@@ -166,6 +165,28 @@ divide_by_1000(T v) {
     }
     return (v*4095)/max;
   };
+
+
+  /* _____ ____  ___    ____  ______
+    / ___// __ \/   |  / __ \/ ____/
+    \__ \/ /_/ / /| | / /_/ / __/
+   ___/ / ____/ ___ |/ _, _/ /___
+  /____/_/   /_/  |_/_/ |_/_____/
+  */
+
+  static std::array<FLOATING_POINT_PRECISION, 4>
+  rpy2quaternion(std::array<FLOATING_POINT_PRECISION, 3> rpy) {
+    std::array<FLOATING_POINT_PRECISION, 4> q; // q = [eta, epsilon1, epsilon2, epsilon3]
+    q[0] = cos(rpy[0]/2) * cos(rpy[1]/2) * cos(rpy[2]/2) + sin(rpy[0]/2) * sin(rpy[1]/2) * sin(rpy[2]/2);
+    q[1] = sin(rpy[0]/2) * cos(rpy[1]/2) * cos(rpy[2]/2) - cos(rpy[0]/2) * sin(rpy[1]/2) * sin(rpy[2]/2);
+    q[2] = cos(rpy[0]/2) * sin(rpy[1]/2) * cos(rpy[2]/2) + sin(rpy[0]/2) * cos(rpy[1]/2) * sin(rpy[2]/2);
+    q[3] = cos(rpy[0]/2) * cos(rpy[1]/2) * sin(rpy[2]/2) - sin(rpy[0]/2) * sin(rpy[1]/2) * cos(rpy[2]/2);
+    // normalization
+    auto q_norm = sqrt(pow(q[0], 2) + pow(q[1], 2) + pow(q[2], 2) + pow(q[3], 2));
+    for(auto &qq:q) qq /= q_norm;
+    return q;
+  }
+}
 
 #endif // __cplusplus
 #endif // _ACI_COMM_CONVERSION_LAMBDA_HPP_
