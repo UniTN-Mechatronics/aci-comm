@@ -8,6 +8,9 @@
 #ifndef MOTORS_NUM
 #define MOTORS_NUM 4
 #endif
+#if (MOTORS_NUM != 4 && MOTORS_NUM != 6)
+#error ERROR_MOTOR_NUMBER 
+#endif
 
 #ifndef RC_CHANNELS_NUM
 #define RC_CHANNELS_NUM 8

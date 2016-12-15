@@ -44,24 +44,11 @@ acc::UAV::control_enable(bool value) {
 */
 void
 acc::UAV::_uav_init() {
-    frame       = Frame(this);
-    motors[0]   = Motors(this, ACI_COMM_VAR::motor_rpm_1, ACI_COMM_CMD::DIMC_motor_1);
-    motors[1]   = Motors(this, ACI_COMM_VAR::motor_rpm_2, ACI_COMM_CMD::DIMC_motor_2);
-    motors[2]   = Motors(this, ACI_COMM_VAR::motor_rpm_3, ACI_COMM_CMD::DIMC_motor_3);
-    motors[3]   = Motors(this, ACI_COMM_VAR::motor_rpm_4, ACI_COMM_CMD::DIMC_motor_4);
-
-    rc_ch[0]    = RCChannels(this, ACI_COMM_VAR::RC_channel_0);
-    rc_ch[1]    = RCChannels(this, ACI_COMM_VAR::RC_channel_1);
-    rc_ch[2]    = RCChannels(this, ACI_COMM_VAR::RC_channel_2);
-    rc_ch[3]    = RCChannels(this, ACI_COMM_VAR::RC_channel_3);
-    rc_ch[4]    = RCChannels(this, ACI_COMM_VAR::RC_channel_4);
-    rc_ch[5]    = RCChannels(this, ACI_COMM_VAR::RC_channel_5);
-    rc_ch[6]    = RCChannels(this, ACI_COMM_VAR::RC_channel_6);
-    rc_ch[7]    = RCChannels(this, ACI_COMM_VAR::RC_channel_7);
-
+    frame  = Frame(this);
+    motors = Motors(this, MOTORS_NUM);
+    rc_ch  = RCChannels(this);
     magnetometer = MagnetoMeters(this);
     gps = GPS(this);
-
     _add_write_ctrl();
 }
 
