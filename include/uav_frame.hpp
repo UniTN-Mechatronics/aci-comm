@@ -15,25 +15,24 @@ namespace acc
     private:
 
         Angles(T *uav_ptr) {
-            pitch.ChannelRead<T,  FloatingPointPrecision>::_uav_ptr = uav_ptr;
-            pitch.ChannelWrite<T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
-            roll.ChannelRead<T,   FloatingPointPrecision>::_uav_ptr = uav_ptr;
-            roll.ChannelWrite<T,  FloatingPointPrecision>::_uav_ptr = uav_ptr;
-            yaw.ChannelRead<T,    FloatingPointPrecision>::_uav_ptr = uav_ptr;
+            pitch.ChannelRead   <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
+            pitch.ChannelWrite  <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
+            roll.ChannelRead    <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
+            roll.ChannelWrite   <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
+            yaw.ChannelRead     <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
 
-            d_pitch.ChannelRead<T,  FloatingPointPrecision>::_uav_ptr = uav_ptr;
+            d_pitch.ChannelRead <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
             d_pitch.ChannelWrite<T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
-            d_roll.ChannelRead<T,   FloatingPointPrecision>::_uav_ptr = uav_ptr;
-            d_roll.ChannelWrite<T,  FloatingPointPrecision>::_uav_ptr = uav_ptr;
-            d_yaw.ChannelRead<T,    FloatingPointPrecision>::_uav_ptr = uav_ptr;
+            d_roll.ChannelRead  <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
+            d_roll.ChannelWrite <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
+            d_yaw.ChannelRead   <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
 
-            dd_x.ChannelRead<T,    FloatingPointPrecision>::_uav_ptr = uav_ptr;
-            dd_y.ChannelRead<T,    FloatingPointPrecision>::_uav_ptr = uav_ptr;
-            dd_z.ChannelRead<T,    FloatingPointPrecision>::_uav_ptr = uav_ptr;
+            dd_x.ChannelRead    <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
+            dd_y.ChannelRead    <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
+            dd_z.ChannelRead    <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
 
-            dd_y.YZDotDot<T, FloatingPointPrecision>::_read_type = ACI_COMM_VAR::acc_y; // TODO Check THIS!! To avoid class duplication.
-            dd_z.YZDotDot<T, FloatingPointPrecision>::_read_type = ACI_COMM_VAR::acc_z; // TODO Check THIS!!
-
+            dd_y.YZDotDot       <T, FloatingPointPrecision>::_read_type = ACI_COMM_VAR::acc_y; // TODO Check THIS!! To avoid class duplication.
+            dd_z.YZDotDot       <T, FloatingPointPrecision>::_read_type = ACI_COMM_VAR::acc_z; // TODO Check THIS!!
         };
 
         /*

@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 #include <algorithm>
+#include <cmath>
 #include <atomic>
 #include <assert.h>
 
@@ -216,8 +217,8 @@ namespace acc
         std::map<acc::ACI_COMM_VAR, DroneItemVar> _map_var;
         std::map<acc::ACI_COMM_CMD, DroneItemCmd> _map_cmd;
 
-        void _launch_aci_thread();
-        void _aci_thread_runner();
+        void _launch_aci_thread(int time_sleep);
+        void _aci_thread_runner(int time_sleep);
         void _add_read(int pck,  ACI_COMM_VAR key_read);
         void _add_write(int pck, ACI_COMM_CMD key_write);
 

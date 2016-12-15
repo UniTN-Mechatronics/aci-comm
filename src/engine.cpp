@@ -68,7 +68,7 @@ acc::Engine<BUS>::start(int ep1, int ep2) {
 
         // Set engine and start thread.
         aciSetEngineRate(ep1, ep2);
-        _launch_aci_thread();
+        _launch_aci_thread(std::floor(1000000 / ep1));
 
         // Version
         aciCheckVerConf();
@@ -106,13 +106,13 @@ acc::Engine<BUS>::stop() {
 }
 
 template<class BUS> void
-acc::Engine<BUS>::_launch_aci_thread() {
+acc::Engine<BUS>::_launch_aci_thread(int time_sleep) {
     _aci_thread_run = true;
-    _aci_thread = std::thread(&acc::Engine<BUS>::_aci_thread_runner, this);
+    _aci_thread = std::thread(&acc::Engine<BUS>::_aci_thread_runner, this, time_sleep);
 }
 
 template<class BUS> void
-acc::Engine<BUS>::_aci_thread_runner() {
+acc::Engine<BUS>::_aci_thread_runner(int time_sleep) {
     int result = 0;
     unsigned char data = 0;
     while (_aci_thread_run) {
@@ -123,7 +123,7 @@ acc::Engine<BUS>::_aci_thread_runner() {
         }
         aciSynchronizeVars();
         aciEngine();
-        usleep(1000); // TODO: remove hardcoded
+        usleep(time_sleep); // TODO: remove hardcoded
     }
 }
 
