@@ -4,7 +4,7 @@
 int 
 main() {
 	//testcase();
-	//testcase2();
-	testcase_loop();
+	testcase2();
+	//testcase_loop();
 	return 0;
 }
