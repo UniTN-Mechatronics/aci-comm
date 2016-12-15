@@ -9,59 +9,32 @@
 #include "aci_comm_uav.hpp"
 
 namespace acc 
-{/*
-	class Logger 
+{
+	class Logger
 	{
-	public:
-		friend class UAV;
-
-		Logger(std::ostream *stream) {
-			_stream = stream;
-		}; 
-
-		template<class T, class... Args> Logger&
-		operator<<(T&&t, Args... args) {
-			std::tuple<Args...> argst(args...);
-			_stream << t;
-			_print(argst);
-			_stream << std::endl;
-			return *this;
+	private:
+		using CharType = std::string;
+	
+	public:	
+		CharType separator  = "\t";
+		CharType start_line = "(";
+		CharType end_line 	= ")\n";
+		
+		Logger(std::ostream& stream_) : stream(stream_) {}
+	
+		template<class T, class... Args>
+		void print(T t, Args... args) {
+			print(t);
+			print(args...);
 		}
-
-		template<class T> Logger&
-		operator<<(T&&t) {
-			_stream << t;
-			return *this;
+	
+		template<class T> void
+		print(T val) {
+			stream << val << " ";
 		}
-
-	protected:
-		bool _is_enable = false;
-
-		template<int index, class... Ts>
- 		struct _print_tuple {
-     		void operator() (std::tuple<Ts...>& t) {
-         		_stream << get<index>(t) << " ";
-         		_print_tuple<index - 1, Ts...>{}(t);
-     		}
- 		};
-
- 		template<class... Ts>
- 		struct _print_tuple<0, Ts...> {
-     		void operator() (std::tuple<Ts...>& t) {
-         		_stream << get<0>(t) << " ";
-     		}
- 		};
-
- 		template<class... Ts>
- 		void _print(std::tuple<Ts...>& t) {
-   			const auto size = tuple_size<tuple<Ts...>>::value;
-     		_print_tuple<size - 1, Ts...>{}(t);
- 		}
-
-	private:	
-		std::ostream *_stream = NULL;
-	}; // End Logger
-*/
+	
+		std::ostream &stream;
+	};
 }; // End namespace
 
 #endif // __cplusplus

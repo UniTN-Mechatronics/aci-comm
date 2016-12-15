@@ -78,7 +78,7 @@ namespace acc
         friend class UAV;
         MotorCollection() {};
 
-        Motor<T, FloatingPointPrecision> 
+        Motor<T, FloatingPointPrecision>
         operator[](int index) {
             if (index < 0 || index > (_number_of_motors - 1)) {
                 std::runtime_error("Motors index is or greater than number of motors or less than zero");
@@ -107,7 +107,7 @@ namespace acc
 
         MotorCollection&
         write(std::initializer_list<FloatingPointPrecision> write_values) {
-            if (_number_of_motors == -1 || write_values.size() != _number_of_motors) {
+            if ((_number_of_motors == -1) || (static_cast<int>(write_values.size()) != _number_of_motors)) {
                 throw std::runtime_error("Write motors, number of motors is not FOUR or SIX");
             }
             int i = 0;

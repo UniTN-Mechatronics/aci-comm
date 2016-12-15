@@ -35,12 +35,12 @@ acc::UAV::control_enable(bool value) {
 }
 
 /*
-*    ____       _            _       
-*   |  _ \ _ __(_)_   ____ _| |_ ___ 
+*    ____       _            _
+*   |  _ \ _ __(_)_   ____ _| |_ ___
 *   | |_) | '__| \ \ / / _` | __/ _ \
 *   |  __/| |  | |\ V / (_| | ||  __/
 *   |_|   |_|  |_| \_/ \__,_|\__\___|
-*       
+*
 */
 void
 acc::UAV::_uav_init() {
@@ -55,9 +55,10 @@ acc::UAV::_uav_init() {
 void
 acc::UAV::_add_write_ctrl() {
     if (_ctrl_mode == CTRL_MODE::READ_ONLY) return;
-    engine->add_write(0, ACI_COMM_CMD::ctrl_mode,
-                         ACI_COMM_CMD::ctrl_enabled,
-                         ACI_COMM_CMD::disable_motor_onoff_by_stick);
+    engine->add_write(0, Cmd::ctrl_mode,
+                         Cmd::ctrl_enabled,
+                         Cmd::disable_motor_onoff_by_stick);
+    if (_ctrl_mode == CTRL_MODE::CTRL) engine->add_write(0, Cmd::CTRL_ctrl);
 }
 
 /**
@@ -67,6 +68,8 @@ acc::UAV::_add_write_ctrl() {
 void
 acc::UAV::_write_ctrl() {
     if (_ctrl_mode == CTRL_MODE::READ_ONLY) return;
-    engine->write(ACI_COMM_CMD::ctrl_mode, 0,
-                  ACI_COMM_CMD::disable_motor_onoff_by_stick, 0); 
+    engine->write(Cmd::ctrl_mode, static_cast<int>(_ctrl_mode),
+                  Cmd::disable_motor_onoff_by_stick, 0);
+
+    if (_ctrl_mode == CTRL_MODE::CTRL) engine->write(Cmd::CTRL_ctrl, _ctrl_bit);
 }
