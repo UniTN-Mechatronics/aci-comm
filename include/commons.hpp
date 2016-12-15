@@ -60,24 +60,24 @@ namespace acc
 
     enum class ACI_COMM_CMD
     {
-        DIMC_motor_1                 = 0,
-        DIMC_motor_2                 ,
-        DIMC_motor_3                 ,
-        DIMC_motor_4                 ,
-        DIMC_motor_5                 ,
-        DIMC_motor_6                 ,
-        DMC_pitch                    ,
-        DMC_roll                     ,
-        DMC_yaw                      ,
-        DMC_thrust                   ,
-        CTRL_pitch                   ,
-        CTRL_roll                    ,
-        CTRL_yaw                     ,
-        CTRL_thrust                  ,
-        CTRL_ctrl                    ,
-        ctrl_mode                    ,
-        ctrl_enabled                 ,
-        disable_motor_onoff_by_stick
+        DIMC_motor_1                 = 0, // implemented, tested
+        DIMC_motor_2                 ,    // implemented
+        DIMC_motor_3                 ,    // implemented
+        DIMC_motor_4                 ,    // implemented
+        DIMC_motor_5                 ,    //
+        DIMC_motor_6                 ,    //
+        DMC_pitch                    ,    // implemented
+        DMC_roll                     ,    // implemented
+        DMC_yaw                      ,    // implemented
+        DMC_thrust                   ,    // implemented
+        CTRL_pitch                   ,    // implemented
+        CTRL_roll                    ,    // implemented
+        CTRL_yaw                     ,    // implemented
+        CTRL_thrust                  ,    // implemented
+        CTRL_ctrl                    ,    // implemented
+        ctrl_mode                    ,    // implemented
+        ctrl_enabled                 ,    // implemented
+        disable_motor_onoff_by_stick      // implemented
     };
 
     typedef acc::ACI_COMM_VAR Var;
