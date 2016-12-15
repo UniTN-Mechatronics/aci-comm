@@ -1,7 +1,7 @@
 #include "engine.hpp"
 #include "aci_comm_uav.hpp"
 
-void 
+void
 testcase() {
     using namespace acc;
     Engine<SerialBus>* ae;
@@ -9,7 +9,7 @@ testcase() {
     try {
         std::string port = "/dev/tty.usbserial-A504DRSI";
         //std::string port = "/dev/tty.usbserial-AL00XNUW";
-        
+
         // Create an Engine with a SerialBus.
         // The init arguments are the SerialBus
         // args. *ae* is a pointer to the singleton
@@ -17,11 +17,11 @@ testcase() {
         ae = &Engine<SerialBus>::init(port, B57600);
 
         // Add variables to read, to packet 1.
-        ae->add_read(0, Var::motor_rpm_1, Var::motor_rpm_2, Var::motor_rpm_3, Var::motor_rpm_4); 
-        
+        ae->add_read(0, Var::motor_rpm_1, Var::motor_rpm_2, Var::motor_rpm_3, Var::motor_rpm_4);
+
         // Add commands to write, packet 0.
-        ae->add_write(0, Cmd::DIMC_motor_1, 
-                         Cmd::DIMC_motor_2, 
+        ae->add_write(0, Cmd::DIMC_motor_1,
+                         Cmd::DIMC_motor_2,
                          Cmd::DIMC_motor_3,
                          Cmd::DIMC_motor_4,
                          Cmd::ctrl_mode,
@@ -46,13 +46,13 @@ testcase() {
         ae->write(Cmd::DIMC_motor_1, 10);
         std::cout << "ACC" << std::endl;
         sleep(2);
-        
+
         /*int i = 0;
         while(i < 1000) {
             // auto yaw = uav.attitude.yaw.read();
             // auto pitch = uav.attitude.pitch.read();
             // auto roll = uav.attitude.roll.read();
-            
+
             // std::cout << yaw << " " << pitch << " " << roll << std::endl;
             //ae->write(Cmd::DIMC_motor_1, 10);
 
@@ -94,7 +94,7 @@ testcase2() {
         uav.start();
 
         uav.control_enable(true);
-    
+
         // Write
         //uav.angles.pitch.write(30.0);
         //uav.angles.roll.write(30.0);
@@ -130,13 +130,13 @@ testcase_loop() {
     using namespace acc;
     std::string port = "/dev/tty.usbserial-A504DRSI";
     UAV uav(port, B57600, CTRL_MODE::DIMC);
-    
+
     try {
         uav.motors[0].enable_read(0);
         uav.motors[0].enable_write(0);
-        
 
-        
+
+
     } catch (std::runtime_error e) {
         std::cout << "Exception: " << e.what() << std::endl;
         uav.stop();
@@ -147,3 +147,23 @@ testcase_loop() {
 }
 
 
+void
+testcase_loop_beaglebone() {
+    using namespace acc;
+    std::string port = "/dev/ttyUSB0";
+    UAV uav(port, B57600, CTRL_MODE::DIMC);
+
+    try {
+        uav.motors[0].enable_read(0);
+        uav.motors[0].enable_write(0);
+
+
+
+    } catch (std::runtime_error e) {
+        std::cout << "Exception: " << e.what() << std::endl;
+        uav.stop();
+    } catch (...) {
+        std::cout << "!!! Unexpected error !!!" << std::endl;
+        uav.stop();
+    }
+}
