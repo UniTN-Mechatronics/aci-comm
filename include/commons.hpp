@@ -55,9 +55,9 @@ namespace acc
         GPS_status             ,    // implemented
         GPS_time_of_week       ,    // implemented
         GPS_week               ,    // implemented
-        angvel_pitch           ,    // implemented
-        angvel_roll            ,    // implemented
-        angvel_yaw             ,    // implemented
+        angvel_pitch           ,    // implemented, tested
+        angvel_roll            ,    // implemented, tested
+        angvel_yaw             ,    // implemented, tested
         acc_x                  ,    // implemented
         acc_y                  ,    // implemented
         acc_z                  ,    // implemented

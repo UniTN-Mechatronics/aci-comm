@@ -31,6 +31,10 @@
 #define FLOATING_POINT_PRECISION double
 #endif
 
+#ifndef MOTOR_MIN_ROTATION_SPEED
+#define MOTOR_MIN_ROTATION_SPEED 1075
+#endif
+
 #define PI 3.14159265359
 
 template<class T> FLOATING_POINT_PRECISION
@@ -131,22 +135,24 @@ namespace acc
   |__/|__/_/ |_/___/ /_/ /_____/
   */
   auto DIMC_motor_write_conv = [] (FLOATING_POINT_PRECISION v) -> int { // [rpm] (rouds per minute)
-    if(v < 1075) {
+    if(v < MOTOR_MIN_ROTATION_SPEED) {
       // throw std::runtime_error("it is not possible to set RPM lower than 1075"); // TODO Fix me decide a strategy
       return 0;
     } else if(v > 8600) {
-      throw std::runtime_error("it is not possible to set RPM higher than 8600"); // TODO Fix me
+      // throw std::runtime_error("it is not possible to set RPM higher than 8600"); // TODO Fix me
       return 200;
     }
-    return (v - 1075) * 1/37.625;
+    return (v - MOTOR_MIN_ROTATION_SPEED) * 1/37.625;
   };
 
   auto DMC_angles_write_conv = [] (FLOATING_POINT_PRECISION v) -> int { // [normalized] (-1-1)
     FLOATING_POINT_PRECISION max = 1.0; //
     if(v < -max) {
-      throw std::runtime_error("it is not possible to set a DMC pithc or roll lower than " + std::to_string(-max));
+      // throw std::runtime_error("it is not possible to set a DMC pithc or roll lower than " + std::to_string(-max));
+      return 0;
     } else if(v > max) {
-      throw std::runtime_error("it is not possible to set a DMC pithc or roll higher than " + std::to_string(max));
+      // throw std::runtime_error("it is not possible to set a DMC pithc or roll higher than " + std::to_string(max));
+      return 200;
     }
     return (v*100+100)/(max);
   };
@@ -154,9 +160,11 @@ namespace acc
   auto DMC_thrust_write_conv = [] (FLOATING_POINT_PRECISION v) -> int { // [normalized] (0-1)
     FLOATING_POINT_PRECISION max = 1.0;
     if(v < 0) {
-      throw std::runtime_error("it is not possible to set a DMC thrust lower than " + std::to_string(0));
+      // throw std::runtime_error("it is not possible to set a DMC thrust lower than " + std::to_string(0));
+      return 0;
     } else if(v > max) {
-      throw std::runtime_error("it is not possible to set a DMC thrust higher than " + std::to_string(max));
+      // throw std::runtime_error("it is not possible to set a DMC thrust higher than " + std::to_string(max));
+      return 200;
     }
     return (v*200)/(max);
   };
@@ -164,9 +172,11 @@ namespace acc
   auto CTRL_pitch_roll_write_conv = [] (FLOATING_POINT_PRECISION v) -> int { // [°]
     FLOATING_POINT_PRECISION max = 51.2; // or 52.0?
     if(v < -max) {
-      throw std::runtime_error("it is not possible to set a pitch or roll angle lower than " + std::to_string(-max));
+      // throw std::runtime_error("it is not possible to set a pitch or roll angle lower than " + std::to_string(-max));
+      return(-2047);
     } else if(v > max) {
-      throw std::runtime_error("it is not possible to set a pitch or roll angle higher than " + std::to_string(max));
+      // throw std::runtime_error("it is not possible to set a pitch or roll angle higher than " + std::to_string(max));
+      return(2047);
     }
     return (v*2047)/max;          // v is [°] here
   };
@@ -174,9 +184,11 @@ namespace acc
   auto CTRL_yaw_write_conv = [] (FLOATING_POINT_PRECISION v) -> int { // [°/sec]
     FLOATING_POINT_PRECISION max = 200.0; //
     if(v < -max) {
-      throw std::runtime_error("it is not possible to set a yaw rate lower than " + std::to_string(-max));
+      // throw std::runtime_error("it is not possible to set a yaw rate lower than " + std::to_string(-max));
+      return(-2047);
     } else if(v > max) {
-      throw std::runtime_error("it is not possible to set a yaw rate higher than " + std::to_string(max));
+      // throw std::runtime_error("it is not possible to set a yaw rate higher than " + std::to_string(max));
+      return(2047);
     }
     return (v*2047)/max;          // v is [°/s] here
   };
@@ -184,9 +196,11 @@ namespace acc
   auto CTRL_thrust_write_conv = [] (FLOATING_POINT_PRECISION v) -> int { // [normalized] (0-1)
     FLOATING_POINT_PRECISION max = 1.0;
     if(v < 0) {
-      throw std::runtime_error("it is not possible to set a thrust lower than " + std::to_string(0));
+      // throw std::runtime_error("it is not possible to set a thrust lower than " + std::to_string(0));
+      return(0);
     } else if(v > max) {
-      throw std::runtime_error("it is not possible to set a thrust higher than " + std::to_string(max));
+      // throw std::runtime_error("it is not possible to set a thrust higher than " + std::to_string(max));
+      return(4095);
     }
     return (v*4095)/max;
   };

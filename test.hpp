@@ -145,25 +145,36 @@ void
 testcase_read() {
     using namespace acc;
     using namespace std;
-    std::string port = "/dev/ttyUSB0";
+    // std::string port = "/dev/ttyUSB0";
+    std::string port = "/dev/tty.usbserial-A504DRSI";
 
     UAV uav(port, B57600, CTRL_MODE::DIMC);
-    uav.orientation(UAV_Z::DOWNWARD);
+    uav.orientation = UAV_Z::UPWARD;
 
     Logger lg(std::cout);
-    lg.floating_point_digits = 1;
+    lg.floating_point_digits = 2;
 
     try {
         // frame read test
-        uav.frame.enable_read_angles(0);
+        // uav.frame.enable_read_angles(0);
+        uav.frame.enable_read_angles_d(1);
+        // uav.frame.enable_read_acc(1);
 
         uav.start();
 
-        double freq = 50;
+        double freq = 60;
 
         lg.reset_start_time(); // set timer in logger to 0
-        while(lg.time() < 60*1000) {
-            lg.log(lg.time()/1000.0, uav.frame.roll.read(), uav.frame.pitch.read(), uav.frame.yaw.read());
+        // while(lg.time() < 10.0) {
+        while(true) {
+            // print angles
+            // lg.log(lg.time(), uav.frame.roll.read(), uav.frame.pitch.read(), uav.frame.yaw.read());
+            // print angles dot
+            lg.log(lg.time(), uav.frame.roll_d.read(), uav.frame.pitch_d.read(), uav.frame.yaw_d.read());
+            // print acc
+            // lg.log(lg.time(), uav.frame.x_dd.read(), uav.frame.y_dd.read(), uav.frame.z_dd.read());
+
+
             usleep(1E6/freq);
         }
         
