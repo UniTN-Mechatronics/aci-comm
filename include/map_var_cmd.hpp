@@ -29,6 +29,7 @@
 
 #include <map>
 #include <string>
+#include <stdint.h>
 #include "drone_items.hpp"
 
 namespace acc

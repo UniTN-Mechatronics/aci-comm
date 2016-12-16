@@ -166,16 +166,16 @@ namespace acc
         /**
         *   Read variables.
         */
-        template<class... Args> std::vector<int>
+        template<class... Args> std::vector<long>
         read(Var key_read, Args... args) {
-            std::vector<int> read_results;
+            std::vector<long> read_results;
             read_results.push_back( read(key_read) );
             read(read_results, args...);
             return read_results;
         }
 
         template<class... Args> void
-        read(std::vector<int>& read_results,
+        read(std::vector<long>& read_results,
              Var key_read, Args... args)
         {
             read_results.push_back(read(key_read));
@@ -183,11 +183,11 @@ namespace acc
         }
 
         void
-        read(std::vector<int>& read_results, Var key_read) {
+        read(std::vector<long>& read_results, Var key_read) {
             read_results.push_back(read(key_read));
         }
 
-        int read(Var key_read);
+        long read(Var key_read);
 
         /**
         *   Write variables.
