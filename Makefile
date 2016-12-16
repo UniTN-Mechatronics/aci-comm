@@ -4,7 +4,7 @@ CXX=g++ -O1 -pthread
 INCPATH=-Iinclude -Iasctec
 SRCPATH=src/
 SRCPATHASCTEC=asctec/
-CFLAGS=-c -ansi -std=c99
+CFLAGS=-c -ansi -std=c99 -fPIC
 CXXFLAGS=-Wall -std=c++11
 
 # Aci C object
@@ -16,10 +16,11 @@ LIBS=-lm
 
 # Source
 CSOURCES=$(SRCPATHASCTEC)asctecCommIntf.c
-CXXSOURCES=main.cpp $(SRCPATH)engine.cpp $(SRCPATH)bus.cpp $(SRCPATH)map_var_cmd.cpp $(SRCPATH)aci_comm_uav.cpp
+CXXSOURCES=$(SRCPATH)engine.cpp $(SRCPATH)bus.cpp $(SRCPATH)map_var_cmd.cpp $(SRCPATH)aci_comm_uav.cpp
 
 all: aci_engine
-
+shared: acic
+	$(CXX) $(CXXFLAGS) $(INCPATH) $(CXXSOURCES) $(OBJECTC) $(OBJECTCXX) $(LIBS) -fPIC -shared -o lib_aci.so
 
 .PHONY: force-all
 .PHONY: force
@@ -37,9 +38,9 @@ acic:
 	$(CC) $(CSOURCES) $(CFLAGS) -o $(OBJECTC)
 
 aci_engine: acic
-	$(CXX) $(CXXFLAGS) $(INCPATH) $(CXXSOURCES) $(OBJECTC) $(OBJECTCXX) $(LIBS) -o aci_engine
+	$(CXX) $(CXXFLAGS) $(INCPATH) main.cpp  $(CXXSOURCES) $(OBJECTC) $(OBJECTCXX) $(LIBS) -o aci_engine
 
-bbb_aci_engine: 
+bbb_aci_engine:
 	bbbxc arm-linux-gnueabihf-gcc -O1 -pthread $(CSOURCES) $(CFLAGS) -o $(OBJECTC)
 	bbbxc arm-linux-gnueabihf-g++ -O1 -pthread $(CXXFLAGS) $(INCPATH) $(CXXSOURCES) $(OBJECTC) $(OBJECTCXX) $(LIBS) -o aci_engine
 
