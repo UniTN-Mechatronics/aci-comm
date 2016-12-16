@@ -182,13 +182,13 @@ acc::Engine<BUS>::_aci_thread_runner_func() {
     aciEngine();
 }
 
-template<class BUS> int
+template<class BUS> long
 acc::Engine<BUS>::read(acc::Var key_read) {
     for (MapVarItem::iterator it=_requsted_vars.begin();
         it!=_requsted_vars.end(); ++it)
     {
         if (it->first == key_read) {
-            return static_cast<int>(*it->second.value_ptr());
+            return it->second.get_cast_value();
         }
     }
     throw std::runtime_error("This entry read key not exist: ");

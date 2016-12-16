@@ -44,15 +44,19 @@ namespace acc
     public:
         DroneItem(T id, 
             int num_id, 
+            std::function<int(int)> cast_func,
             DIP rw = DIP::READ, 
             int def_val = 0) : 
         _id(id),
         _num_id(num_id),
+        cast(cast_func),
         _rw(rw),
         _value(def_val) {};
+        
         DroneItem(const DroneItem& SB) {
             _id = SB._id;
             _num_id = SB._num_id;
+            cast = SB.cast;
             _rw = SB._rw;
             _value = SB._value;
             pck = SB.pck;
@@ -69,13 +73,13 @@ namespace acc
             return _num_id;
         }
 
-        int*
+        long*
         value_ptr() {
             return &_value;
         }
 
         void
-        set_value(int value) {
+        set_value(long value) {
             _value = value;
         }
 
@@ -89,13 +93,19 @@ namespace acc
             return _rw == DIP::WRITE;
         }
 
+        int 
+        get_cast_value() {
+            return cast(_value);
+        }
+
         int pck = 0;
         
     protected:
         T _id;
         int _num_id;
+        std::function<int(int)> cast; 
         DIP _rw;
-        int _value;
+        long _value;
     };
 };
 
