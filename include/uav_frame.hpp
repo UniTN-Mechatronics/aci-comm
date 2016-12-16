@@ -35,17 +35,27 @@
 
 namespace acc
 {
+    /**
+    *   Frames
+    *
+    *   A class for read and command
+    *   the drone attitude.
+    *   Contains nested classes: 
+    *   Yaw, Pitch, Roll, 
+    *   YawDot, PitchDot, RollDot,
+    *   XDotDot, YZDotDot,
+    *   Thrust
+    */
     template<class T, class FloatingPointPrecision>
     class Frames
     {
     private:
-
         Frames(T *uav_ptr) {
             pitch.ChannelRead   <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
             pitch.ChannelWrite  <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
             roll.ChannelRead    <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
             roll.ChannelWrite   <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
-            yaw.ChannelRead    <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
+            yaw.ChannelRead     <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
 
             pitch_d.ChannelRead <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
             pitch_d.ChannelWrite<T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
@@ -63,6 +73,14 @@ namespace acc
 
             thrust._update_write_type(uav_ptr);
         };
+
+        /*
+        *   __   __             ____  _ _       _     ____       _ _ 
+        *   \ \ / /_ ___      _|  _ \(_) |_ ___| |__ |  _ \ ___ | | |
+        *    \ V / _` \ \ /\ / / |_) | | __/ __| '_ \| |_) / _ \| | |
+        *     | | (_| |\ V  V /|  __/| | || (__| | | |  _ < (_) | | |
+        *     |_|\__,_| \_/\_/ |_|   |_|\__\___|_| |_|_| \_\___/|_|_|
+        */    
 
         /*   ___ _ _      _
          *  | _ (_) |_ __| |_
@@ -112,8 +130,15 @@ namespace acc
                 return CTRL_pitch_roll_write_conv(value *
                   static_cast<ReturnType>(ChannelRead<TP, ReturnType>::_uav_ptr->orientation));
             }
-        };
+        }; // END CLASS PITCH
 
+
+        /*
+        *    ___ _ _      _    ___      _   
+        *   | _ (_) |_ __| |_ |   \ ___| |_ 
+        *   |  _/ |  _/ _| ' \| |) / _ \  _|
+        *   |_| |_|\__\__|_||_|___/\___/\__|
+        */                           
         template<class TP, class ReturnType, class ArgsType>
         class PitchDot : public virtual ChannelRead<TP, ReturnType>, public virtual ChannelWrite<TP, ArgsType>
         {
@@ -154,7 +179,7 @@ namespace acc
                 if (ChannelWrite<TP, ArgsType>::_uav_ptr->_ctrl_mode == CTRL_MODE::DMC) return;
                 throw std::runtime_error("Pitch rate can be controlled only in DMC mode");
             }
-        };
+        }; // END CLASS PITCHDOT
 
 
         /*   ___     _ _
@@ -203,8 +228,15 @@ namespace acc
             _write_conversion(ArgsType value) {
                 return CTRL_pitch_roll_write_conv(value); // TODO Check if correct
             }
-        };
+        }; // END CLASS ROLL
 
+
+        /*
+        *    ___     _ _ ___      _   
+        *   | _ \___| | |   \ ___| |_ 
+        *   |   / _ \ | | |) / _ \  _|
+        *   |_|_\___/_|_|___/\___/\__|
+        */                     
         template<class TP, class ReturnType, class ArgsType>
         class RollDot : public virtual ChannelRead<TP, ReturnType>, public virtual ChannelWrite<TP, ArgsType>
         {
@@ -243,7 +275,8 @@ namespace acc
                 if (ChannelWrite<TP, ArgsType>::_uav_ptr->_ctrl_mode == CTRL_MODE::DMC) return;
                 throw std::runtime_error("Roll rate can be controlled only in DMC mode");
             }
-        };
+        }; // END CLASS ROLLDOT
+
 
         /*  __   __
          *  \ \ / /_ ___ __ __
@@ -271,8 +304,15 @@ namespace acc
                 return angle_read_conv(value) *
                   static_cast<ReturnType>(ChannelRead<TP, ReturnType>::_uav_ptr->orientation); // TODO check if correct
             }
-        };
+        }; // END CLASS YAW
 
+
+        /*
+        *   __   __           ___      _   
+        *   \ \ / /_ ___ __ _|   \ ___| |_ 
+        *    \ V / _` \ V  V / |) / _ \  _|
+        *     |_|\__,_|\_/\_/|___/\___/\__|
+        */                               
         template<class TP, class ReturnType, class ArgsType>
         class YawDot : public virtual ChannelRead<TP, ReturnType>, public virtual ChannelWrite<TP, ArgsType>
         {
@@ -338,13 +378,16 @@ namespace acc
                   return DMC_thrust_write_conv(value);
                 }
             }
-        };
+        }; // END CLASS YAWDOT
 
-        /*     _             _              _   _
-         *    /_\  __ __ ___| |___ _ _ __ _| |_(_)___ _ _  ___
-         *   / _ \/ _/ _/ -_) / -_) '_/ _` |  _| / _ \ ' \(_-<
-         *  /_/ \_\__\__\___|_\___|_| \__,_|\__|_\___/_||_/__/
-         */
+        /*
+        *       _                _                _   _                 
+        *      / \   ___ ___ ___| | ___ _ __ __ _| |_(_) ___  _ __  ___ 
+        *     / _ \ / __/ __/ _ \ |/ _ \ '__/ _` | __| |/ _ \| '_ \/ __|
+        *    / ___ \ (_| (_|  __/ |  __/ | | (_| | |_| | (_) | | | \__ \
+        *   /_/   \_\___\___\___|_|\___|_|  \__,_|\__|_|\___/|_| |_|___/
+        *                                                               
+        */
         template<class TP, class ReturnType>
         class XDotDot : public virtual ChannelRead<TP, ReturnType>
         {
@@ -360,7 +403,7 @@ namespace acc
             _read_conversion(int value) {
                 return acc_read_conv(value);
             }
-        };
+        }; // END CLASS XDotDot
 
         template<class TP, class ReturnType>
         class YZDotDot : public virtual ChannelRead<TP, ReturnType>
@@ -378,7 +421,7 @@ namespace acc
                 return acc_read_conv(value) *
                   static_cast<ReturnType>(ChannelRead<TP, ReturnType>::_uav_ptr->orientation); // TODO check if correct
             }
-        };
+        }; // END CLASS YZDotDot
 
         /*   _____ _                _
          *  |_   _| |_  _ _ _  _ __| |_
@@ -434,15 +477,15 @@ namespace acc
 
     public:
         friend class UAV;
-        Yaw<T, FloatingPointPrecision> yaw;
-        Roll<T, FloatingPointPrecision, FloatingPointPrecision> roll;
-        Pitch<T, FloatingPointPrecision, FloatingPointPrecision> pitch;
+        Yaw     <T, FloatingPointPrecision> yaw;
+        Roll    <T, FloatingPointPrecision, FloatingPointPrecision> roll;
+        Pitch   <T, FloatingPointPrecision, FloatingPointPrecision> pitch;
 
-        YawDot<T, FloatingPointPrecision, FloatingPointPrecision> yaw_d;
-        RollDot<T, FloatingPointPrecision, FloatingPointPrecision> roll_d;
+        YawDot  <T, FloatingPointPrecision, FloatingPointPrecision> yaw_d;
+        RollDot <T, FloatingPointPrecision, FloatingPointPrecision> roll_d;
         PitchDot<T, FloatingPointPrecision, FloatingPointPrecision> pitch_d;
 
-        XDotDot<T, FloatingPointPrecision> x_dd;
+        XDotDot <T, FloatingPointPrecision> x_dd;
         YZDotDot<T, FloatingPointPrecision> y_dd;
         YZDotDot<T, FloatingPointPrecision> z_dd;
 

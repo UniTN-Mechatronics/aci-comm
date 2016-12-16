@@ -36,6 +36,11 @@
 
 namespace acc
 {
+    /**
+    *   Single motor class.
+    *   Write: enter the number of rpm of the motor.
+    *   Read: get the motor rpm.
+    */
     template<class T, class FloatingPointPrecision>
     class Motor: public virtual ChannelRead<T, int>, public virtual ChannelWrite<T, FloatingPointPrecision>
     {
@@ -70,8 +75,36 @@ namespace acc
         template<class K, class KK> friend class MotorCollection;
         Motor() {};
 
+        /**
+        *   Set motor to the min
+        *   rpm. Min speed is defined
+        *   in macro: MOTOR_MIN_ROTATION_SPEED
+        */  
+        void
+        start() {
+            ChannelWrite<T, FloatingPointPrecision>::write(MOTOR_MIN_ROTATION_SPEED + 1);
+        }
+
+        /**
+        *   Set motor rpm to zero.
+        */
+        void
+        stop() {
+            ChannelWrite<T, FloatingPointPrecision>::write(0);
+        }
+
     };
 
+    /**
+    *   Class for command all the motors.
+    *   Contains an array of motors: you can
+    *   access every single motor with operator[],
+    *   or you can write and read values for all the motors
+    *   with the helper methods.
+    *
+    *   Number of motors can be only FOUR or SIX:
+    *   this number is defined in the macro: MOTORS_NUM
+    */
     template<class T, class FloatingPointPrecision>
     class MotorCollection {
     private:
@@ -103,6 +136,10 @@ namespace acc
         friend class UAV;
         MotorCollection() {};
 
+        /**
+        *   Access to the single motor
+        *   in the array of motors.
+        */
         Motor<T, FloatingPointPrecision>
         operator[](int index) {
             if (index < 0 || index > (_number_of_motors - 1)) {
@@ -123,13 +160,34 @@ namespace acc
             return *this;
         }
 
+        /**
+        *   Write to the motors the rpm
+        *   specified in the array:
+        *
+        *   instance.write({val1, val2, val3, val4});
+        *
+        *   FOUR motors version
+        */
         MotorCollection&
         write(std::array<FloatingPointPrecision, 4> write_values) {
             if (_number_of_motors != 4) throw std::runtime_error("Write motors, number of motors is not FOUR");
             for (int i = 0; i < 4; ++i) _motors[i].write(write_values[i]);
             return *this;
         }
+        /** For SIX motors */
+        MotorCollection&
+        write(std::array<FloatingPointPrecision, 6> write_values) {
+            if (_number_of_motors != 6) throw std::runtime_error("Write motors, number of motors is not SIX");
+            for (int i = 0; i < 6; ++i) _motors[i].write(write_values[i]);
+            return *this;
+        }
 
+        /**
+        *   Write to the motors the rpm
+        *   specified in the initializer list:
+        *
+        *   instance.write({val1, val2, val3, val4});
+        */
         MotorCollection&
         write(std::initializer_list<FloatingPointPrecision> write_values) {
             if ((_number_of_motors == -1) || (static_cast<int>(write_values.size()) != _number_of_motors)) {
@@ -143,13 +201,34 @@ namespace acc
             return *this;
         }
 
+        /**
+        *   Read all the motors rpm and
+        *   return these values in an vector.
+        */
         std::vector<FloatingPointPrecision>
         read() {
             std::vector<FloatingPointPrecision> read_m;
-            for (auto &m : _motors) {
-                read_m.push_back(m.read());
-            }
+            for (auto &m : _motors) read_m.push_back(m.read());
             return read_m;
+        }
+
+        /**
+        *   Set all motors to the minimium
+        *   rotational speed. 
+        *   Min rpm defined in macro:
+        *   MOTOR_MIN_ROTATION_SPEED
+        */
+        void
+        start() {
+            for (auto &m : _motors) m.start();
+        }
+
+        /**
+        *   Stop all motors.
+        */
+        void
+        stop() {
+            for (auto &m : _motors) m.stop();
         }
 
     }; // End MotorCollection

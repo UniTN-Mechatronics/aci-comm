@@ -41,11 +41,6 @@
 #include "commons.hpp"
 #include "map_var_cmd.hpp"
 
-typedef acc::DroneItemVar AtomicVarItem;
-typedef acc::DroneItemCmd AtomicCmdItem;
-typedef std::map<acc::Var, AtomicVarItem> MapVarItem;
-typedef std::map<acc::Cmd, AtomicCmdItem> MapCmdItem;
-
 namespace acc
 {
 

@@ -118,17 +118,17 @@ namespace acc
     };
 
     enum class UAV_Z : int {
-      UPWARD = -1,
-      DOWNWARD = 1
+        UPWARD = -1,
+        DOWNWARD = 1
     };
 
     enum class CTRL_BIT {
-      Pitch  = 0b000001,
-      Roll   = 0b000010,
-      YawDot = 0b000100,
-      Thrust = 0b001000,
-      Height = 0b010000,
-      GPS    = 0b100000
+        Pitch  = 0b000001,
+        Roll   = 0b000010,
+        YawDot = 0b000100,
+        Thrust = 0b001000,
+        Height = 0b010000,
+        GPS    = 0b100000
     };
 }
 

@@ -30,6 +30,11 @@
 #include "aci_comm_uav.hpp"
 #include "conversion_lambda.hpp"
 
+/** 
+*   Drone's number of motors.
+*   Can be only FOUR or SIX.
+*   Default: 4
+*/
 #ifndef MOTORS_NUM
 #define MOTORS_NUM 4
 #endif
@@ -47,6 +52,14 @@
 
 namespace acc
 {
+    /**
+    *   Base class for all the 
+    *   write and read properties.
+    *   Contains a pointer to the UAV
+    *   instance.
+    *   Both ChannelRead and ChannelWrite
+    *   inherit from this.
+    */
     template<class TP>
     class Channel
     {
@@ -61,6 +74,13 @@ namespace acc
         }
     };
 
+    /**
+    *   Base read class. 
+    *   Inherit from Channel.
+    *   Contains methods for enable a
+    *   read property, and for read
+    *   this property.
+    */
     template<class TP, class ReturnType>
     class ChannelRead: public Channel<TP>
     {
@@ -80,7 +100,7 @@ namespace acc
             return _read_conversion(Channel<TP>::_uav_ptr->engine->read(_read_type));
         }
 
-        ACI_COMM_VAR
+        Var
         get_read_id() {
             return _read_type;
         }
@@ -91,9 +111,16 @@ namespace acc
             return (ReturnType)value;
         }
 
-        ACI_COMM_VAR _read_type;
+        Var _read_type;
     };
 
+    /**
+    *   Base write class. 
+    *   Inherit from Channel.
+    *   Contains methods for enable a
+    *   write property, and for write
+    *   this property.
+    */
     template<class TP, class ArgType>
     class ChannelWrite: public Channel<TP>
     {
@@ -116,13 +143,13 @@ namespace acc
             return *this;
         }
 
-        ACI_COMM_CMD
+        Cmd
         get_write_id() {
             return _write_type;
         }
 
     protected:
-        ACI_COMM_CMD _write_type;
+        Cmd _write_type;
 
         virtual int
         _write_conversion(ArgType value) {
