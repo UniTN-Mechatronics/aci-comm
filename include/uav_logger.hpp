@@ -38,6 +38,17 @@
 
 namespace acc 
 {
+	class Timer
+	{
+	public:
+		Timer() {};
+		virtual ~Timer() {};
+
+	private:
+		std::chrono::high_resolution_clock::time_point _start_time;
+
+	};
+
 	class Logger
 	{	
 	public:	
@@ -50,11 +61,11 @@ namespace acc
 		Logger(std::ostream& stream) : _stream(stream), _mutex() {
 			_start_time = _set_start_time();
 		}
-		~Logger() {};
+		virtual ~Logger() {};
 	
 		template<class T, class... Args> Logger& 
 		log(T t, Args... args) {
-			std::unique_lock<std::mutex> lock(_mutex);
+			//std::unique_lock<std::mutex> lock(_mutex);
 			const int n = sizeof...(Args);
 			_args_size = n + 1;
 			_args_size_init = _args_size;
@@ -65,27 +76,27 @@ namespace acc
 	
 		template<class T> Logger&
 		log(T val) {
-			std::unique_lock<std::mutex> lock(_mutex);
+			//std::unique_lock<std::mutex> lock(_mutex);
 			_stream << start_line << val << end_line;	
 			return *this;
 		}
 
 		Logger&
 		reset_start_time() {
-			std::unique_lock<std::mutex> lock(_mutex);
+			//std::unique_lock<std::mutex> lock(_mutex);
 			_start_time = _set_start_time();
 			return *this;
 		}
 
 		double 
 		time() {
-			std::unique_lock<std::mutex> lock(_mutex);
+			//std::unique_lock<std::mutex> lock(_mutex);
 			return (_time_since(_start_time) / 1000.0f);
 		}
 
 		int 
 		time_ms() {
-			std::unique_lock<std::mutex> lock(_mutex);
+			//std::unique_lock<std::mutex> lock(_mutex);
 			return static_cast<int>(_time_since(_start_time));
 		}
 
