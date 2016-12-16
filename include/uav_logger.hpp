@@ -79,6 +79,7 @@ namespace acc
 
 		double 
 		time() {
+			std::unique_lock<std::mutex> lock(_mutex);
 			return _time_since(_start_time);
 		}
 
