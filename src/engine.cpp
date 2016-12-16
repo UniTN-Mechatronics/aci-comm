@@ -80,6 +80,10 @@ acc::Engine<BUS>::start(int ep1, int ep2) {
         throw std::runtime_error("Neither reads or writes are set!");
 
     try {
+        // Used for return if callbacks don't comes.
+        Timer timer;
+
+        // Open bus.
         _bus.open();
         _bus_port = &_bus._port_state;
         aciInit();
@@ -96,20 +100,13 @@ acc::Engine<BUS>::start(int ep1, int ep2) {
         _launch_aci_thread(std::floor(1000000 / ep1));
 
         // Version
-        aciCheckVerConf();
-        while(!_version_callback) usleep(1000);
+        _wait_on_version_callback(timer);
 
         // Read
-        if (!_requsted_vars.empty()) {
-            aciGetDeviceVariablesList();
-            while(!_reads_callback) usleep(1000);
-        }
+        _wait_on_read_callback(timer);
 
         // Write
-        if (!_requsted_cmds.empty()) {
-            aciGetDeviceCommandsList();
-            while(!_writes_callback) usleep(1000);
-        }
+        _wait_on_write_callback(timer);
 
     } catch (std::runtime_error e) {
         throw e;
@@ -191,7 +188,7 @@ acc::Engine<BUS>::read(acc::Var key_read) {
         it!=_requsted_vars.end(); ++it)
     {
         if (it->first == key_read) {
-            return *it->second.value_ptr();
+            return static_cast<int>(*it->second.value_ptr());
         }
     }
     throw std::runtime_error("This entry read key not exist: ");
@@ -210,6 +207,37 @@ acc::Engine<BUS>::write(acc::Cmd key_write, int value_write) {
     }
     int value = static_cast<std::underlying_type<acc::Cmd>::type>(key_write);
     throw std::runtime_error("WRITE: This entry write key not exist: " + std::to_string(value) );
+}
+
+template<class BUS> void 
+acc::Engine<BUS>::_wait_on_version_callback(Timer &timer) {
+    aciCheckVerConf();
+    while(!_version_callback) {
+        if (timer.time() > _max_wait_time_seconds) return;
+        usleep(1000);
+    }
+}
+
+template<class BUS> void 
+acc::Engine<BUS>::_wait_on_read_callback(Timer &timer) {
+    if (!_requsted_vars.empty()) {
+        aciGetDeviceVariablesList();
+        while(!_reads_callback) {
+            if (timer.time() > _max_wait_time_seconds) return;
+            usleep(1000);
+        }
+    }
+}
+
+template<class BUS> void 
+acc::Engine<BUS>::_wait_on_write_callback(Timer &timer) {
+    if (!_requsted_cmds.empty()) {
+        aciGetDeviceCommandsList();
+        while(!_writes_callback) {
+            if (timer.time() > _max_wait_time_seconds) return;
+            usleep(1000);
+        }
+    }
 }
 
 
