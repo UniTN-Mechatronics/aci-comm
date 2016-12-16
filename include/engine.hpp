@@ -40,6 +40,7 @@
 #include "bus.hpp"
 #include "commons.hpp"
 #include "map_var_cmd.hpp"
+#include "uav_logger.hpp"
 
 namespace acc
 {
@@ -149,6 +150,10 @@ namespace acc
         *   * bus cannot be opened
         *   * the port confs cannot be applied
         *   * the packet is not setted
+        *
+        *   Return if time reach the 
+        *   operation is done or
+        *   *_max_wait_time_seconds* is reached.
         */
         void start(int ep1 = 100, int ep2 = 10);
 
@@ -196,11 +201,10 @@ namespace acc
         void write(Cmd key_write, int value_write);
 
     private:
+        int _max_wait_time_seconds = 20;
 
-        Engine(BUS&& bus_) :
-            _bus(bus_),
-            _aci_thread_run(false) {
-                MapVarCmd::init(_map_var, _map_cmd);
+        Engine(BUS&& bus_) : _bus(bus_), _aci_thread_run(false) {
+            MapVarCmd::init(_map_var, _map_cmd);
         };
 
         ~Engine() { 
@@ -229,6 +233,9 @@ namespace acc
         void _launch_aci_thread(int time_sleep);
         void _aci_thread_runner(int time_sleep);
         void _aci_thread_runner_func();
+        void _wait_on_version_callback(Timer &timer);
+        void _wait_on_read_callback(Timer &timer);
+        void _wait_on_write_callback(Timer &timer);
         void _add_read(int pck,  ACI_COMM_VAR key_read);
         void _add_write(int pck, ACI_COMM_CMD key_write);
 
