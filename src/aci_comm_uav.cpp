@@ -72,8 +72,9 @@ acc::UAV::_uav_init() {
     frame  = Frame(this);
     motors = Motors(this, MOTORS_NUM);
     rc_ch  = RCChannels(this);
+    info   = Info(this);    
+    gps    = GPS(this);
     magnetometer = MagnetoMeters(this);
-    gps = GPS(this);
     _add_write_ctrl();
 }
 

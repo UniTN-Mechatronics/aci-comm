@@ -17,16 +17,17 @@ testcase() {
         ae = &Engine<SerialBus>::init(port, B57600);
 
         // Add variables to read, to packet 1.
-        ae->add_read(0, Var::motor_rpm_1, Var::motor_rpm_2, Var::motor_rpm_3, Var::motor_rpm_4); 
+        // ae->add_read(0, Var::motor_rpm_1, Var::motor_rpm_2, Var::motor_rpm_3, Var::motor_rpm_4); 
+        ae->add_read(0, Var::acc_x, Var::acc_y, Var::acc_z); 
         
         // Add commands to write, packet 0.
-        ae->add_write(0, Cmd::DIMC_motor_1, 
-                         Cmd::DIMC_motor_2, 
-                         Cmd::DIMC_motor_3,
-                         Cmd::DIMC_motor_4,
-                         Cmd::ctrl_mode,
-                         Cmd::ctrl_enabled,
-                         Cmd::disable_motor_onoff_by_stick);
+        // ae->add_write(0, Cmd::DIMC_motor_1, 
+        //                  Cmd::DIMC_motor_2, 
+        //                  Cmd::DIMC_motor_3,
+        //                  Cmd::DIMC_motor_4,
+        //                  Cmd::ctrl_mode,
+        //                  Cmd::ctrl_enabled,
+        //                  Cmd::disable_motor_onoff_by_stick);
 
 
         // Start the engine.
@@ -37,30 +38,30 @@ testcase() {
 
         // For each key_write, write the
         // specified value.
-        ae->write(Cmd::ctrl_mode,                    0);
-        ae->write(Cmd::ctrl_enabled,                 1);
-        ae->write(Cmd::disable_motor_onoff_by_stick, 1);
+        // ae->write(Cmd::ctrl_mode,                    0);
+        // ae->write(Cmd::ctrl_enabled,                 1);
+        // ae->write(Cmd::disable_motor_onoff_by_stick, 1);
 
-        sleep(5);
+        // sleep(5);
         std::cout << "READY TO ACC" << std::endl;
-        ae->write(Cmd::DIMC_motor_1, 10);
-        std::cout << "ACC" << std::endl;
+        // ae->write(Cmd::DIMC_motor_1, 10);
+        // std::cout << "ACC" << std::endl;
         sleep(2);
         
-        /*int i = 0;
+        int i = 0;
         while(i < 1000) {
             // auto yaw = uav.attitude.yaw.read();
             // auto pitch = uav.attitude.pitch.read();
             // auto roll = uav.attitude.roll.read();
             
-            // std::cout << yaw << " " << pitch << " " << roll << std::endl;
+            std::cout <<  ae->read(Var::acc_x) << "\t" << ae->read(Var::acc_y) << "\t" << ae->read(Var::acc_z) << std::endl;
             //ae->write(Cmd::DIMC_motor_1, 10);
 
             i++;
             usleep(10000);
-        }*/
-        std::cout << "READY TO STOP" << std::endl;
-        ae->write(Cmd::DIMC_motor_1, 0);
+        }
+        std::cout << "STOP" << std::endl;
+        // ae->write(Cmd::DIMC_motor_1, 0);
         //std::cout << "STOP" << std::endl;
         //sleep(5);
 
@@ -149,7 +150,8 @@ testcase_read() {
     std::string port = "/dev/tty.usbserial-A504DRSI";
 
     UAV uav(port, B57600, CTRL_MODE::DIMC);
-    uav.orientation = UAV_Z::UPWARD;
+    // uav.orientation = UAV_Z::UPWARD;
+    uav.orientation = UAV_Z::DOWNWARD;
 
     Logger lg(std::cout);
     lg.floating_point_digits = 2;
@@ -157,8 +159,14 @@ testcase_read() {
     try {
         // frame read test
         // uav.frame.enable_read_angles(0);
-        uav.frame.enable_read_angles_d(1);
-        // uav.frame.enable_read_acc(1);
+        // uav.frame.enable_read_angles_d(1);
+        uav.frame.enable_read_acc(1);
+        
+        // uav.info.status.enable_read(1);
+        // uav.info.flight_time.enable_read(1);
+        // uav.info.battery_voltage.enable_read(1);
+        // uav.info.cpu_load.enable_read(1);
+        // uav.info.up_time.enable_read(1);
 
         uav.start();
 
@@ -170,10 +178,11 @@ testcase_read() {
             // print angles
             // lg.log(lg.time(), uav.frame.roll.read(), uav.frame.pitch.read(), uav.frame.yaw.read());
             // print angles dot
-            lg.log(lg.time(), uav.frame.roll_d.read(), uav.frame.pitch_d.read(), uav.frame.yaw_d.read());
+            // lg.log(lg.time(), uav.frame.roll_d.read(), uav.frame.pitch_d.read(), uav.frame.yaw_d.read());
             // print acc
-            // lg.log(lg.time(), uav.frame.x_dd.read(), uav.frame.y_dd.read(), uav.frame.z_dd.read());
-
+            lg.log(lg.time(), uav.frame.x_dd.read(), uav.frame.y_dd.read(), uav.frame.z_dd.read());
+            // print infos
+            // lg.log(lg.time(), uav.info.status.read(), uav.info.flight_time.read(), uav.info.battery_voltage.read(), uav.info.cpu_load.read(), uav.info.up_time.read());
 
             usleep(1E6/freq);
         }
@@ -187,16 +196,22 @@ testcase_read() {
     }
 }
 
-
-
 void
-testcaselogger() {
+testcase_motors_start_stop() {
     using namespace acc;
     std::string port = "/dev/tty.usbserial-A504DRSI";
 
-    UAV uav(port, B57600, CTRL_MODE::DIMC, 6767);
+    UAV uav(port, B57600, CTRL_MODE::DIMC);
     try {
-        
+        uav.motors.enable_write(0);
+        uav.start().control_enable(true);
+
+        sleep(2);
+        std::cout << "START" << std::endl;
+        uav.motors.start();
+        sleep(4);
+        std::cout << "STOP" << std::endl;
+        uav.motors.stop();
         
     } catch (std::runtime_error e) {
         std::cout << "Exception: " << e.what() << std::endl;

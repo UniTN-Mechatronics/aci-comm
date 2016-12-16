@@ -36,6 +36,10 @@
 #define MOTOR_MIN_ROTATION_SPEED 1075
 #endif
 
+#ifndef MOTOR_MAX_ROTATION_SPEED
+#define MOTOR_MAX_ROTATION_SPEED 8600
+#endif
+
 #define PI 3.14159265359
 
 template<class T> FLOATING_POINT_PRECISION
@@ -136,14 +140,14 @@ namespace acc
   |__/|__/_/ |_/___/ /_/ /_____/
   */
   auto DIMC_motor_write_conv = [] (FLOATING_POINT_PRECISION v) -> int { // [rpm] (rouds per minute)
-    if(v < MOTOR_MIN_ROTATION_SPEED) {
+    if(v <= MOTOR_MIN_ROTATION_SPEED) {
       // throw std::runtime_error("it is not possible to set RPM lower than 1075"); // TODO Fix me decide a strategy
       return 0;
-    } else if(v > 8600) {
+    } else if(v > MOTOR_MAX_ROTATION_SPEED) {
       // throw std::runtime_error("it is not possible to set RPM higher than 8600"); // TODO Fix me
       return 200;
     }
-    return (v - MOTOR_MIN_ROTATION_SPEED) * 1/37.625;
+    return std::ceil((v - MOTOR_MIN_ROTATION_SPEED) / 37.625);
   };
 
   auto DMC_angles_write_conv = [] (FLOATING_POINT_PRECISION v) -> int { // [normalized] (-1-1)

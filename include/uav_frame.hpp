@@ -68,8 +68,8 @@ namespace acc
             y_dd.ChannelRead    <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
             z_dd.ChannelRead    <T, FloatingPointPrecision>::_uav_ptr = uav_ptr;
 
-            y_dd.YZDotDot       <T, FloatingPointPrecision>::_read_type = ACI_COMM_VAR::acc_y; // TODO Check THIS!! To avoid class duplication.
-            z_dd.YZDotDot       <T, FloatingPointPrecision>::_read_type = ACI_COMM_VAR::acc_z; // TODO Check THIS!!
+            y_dd.YZDotDot       <T, FloatingPointPrecision>::_read_type = Var::acc_y; // TODO Check THIS!! To avoid class duplication.
+            z_dd.YZDotDot       <T, FloatingPointPrecision>::_read_type = Var::acc_z; // TODO Check THIS!!
 
             thrust._update_write_type(uav_ptr);
         };

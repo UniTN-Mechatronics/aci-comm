@@ -72,7 +72,7 @@ acc::MapVarCmd::_alloc_map_var(MapVarItem& _map_var) {
     INSERT_VAR(acc::Var::GPS_sat_num,           0x010F);
     INSERT_VAR(acc::Var::GPS_status,            0x0110);
     INSERT_VAR(acc::Var::GPS_time_of_week,      0x0111);
-    INSERT_VAR(acc::ACI_COMM_VAR::GPS_week,              0x0112);
+    INSERT_VAR(acc::ACI_COMM_VAR::GPS_week,     0x0112);
     // 0x02xx Sensor calibrated values
     INSERT_VAR(acc::Var::angvel_pitch,          0x0200);
     INSERT_VAR(acc::Var::angvel_roll,           0x0201);
