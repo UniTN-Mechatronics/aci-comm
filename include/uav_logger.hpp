@@ -30,35 +30,69 @@
 #include <fstream>
 #include <iostream>
 #include <ostream>
-#include <tuple>
+#include <utility>
 #include "aci_comm_uav.hpp"
 
 namespace acc 
 {
 	class Logger
-	{
-	private:
-		using CharType = std::string;
-	
+	{	
 	public:	
+		using CharType = std::string;
 		CharType separator  = "\t";
 		CharType start_line = "(";
 		CharType end_line 	= ")\n";
 		
-		Logger(std::ostream& stream_) : stream(stream_) {}
+		Logger(std::ostream& stream) : _stream(stream) {}
+
+		~Logger() {};
 	
-		template<class T, class... Args>
-		void print(T t, Args... args) {
-			print(t);
-			print(args...);
+		template<class T, class... Args> Logger& 
+		log(T t, Args... args) {
+			const int n = sizeof...(Args);
+			_args_size = n + 1;
+			_args_size_init = _args_size;
+			_print(t);
+			_print(args...);
+			return *this;
+		}
+	
+		template<class T> Logger&
+		log(T val) {
+			_stream << start_line << val << end_line;	
+			return *this;
+		}
+
+		template<class T> Logger&
+		operator<<(T t) {
+			log(t);
+			return *this;
+		}
+
+	private:
+		//std::vector<std::ostream> &_streams; 
+		std::ostream &_stream;
+		int _args_size = 0;
+		int _args_size_init = 0;
+
+		template<class T, class... Args> void
+		_print(T t, Args... args) {
+			_print(t);
+			_print(args...);
 		}
 	
 		template<class T> void
-		print(T val) {
-			stream << val << " ";
+		_print(T val) {
+			--_args_size;
+			if (_args_size == 0) {
+				_stream << val << end_line;	
+			} else if ((_args_size + 1) == (_args_size_init)) {
+				_stream << start_line << val << separator;	
+			} else {
+				_stream << val << separator;
+			}
 		}
-	
-		std::ostream &stream;
+		
 	};
 }; // End namespace
 

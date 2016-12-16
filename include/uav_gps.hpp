@@ -130,12 +130,14 @@ namespace acc
     GPSGeneralConvert<T, FloatingPointPrecision> u_d;
     GPSGeneralConvert<T, FloatingPointPrecision> v_d;
     GPSGeneralConvert<T, FloatingPointPrecision> heading;
+    
     class Accuracy {
     public:
       GPSGeneralConvert<T, FloatingPointPrecision> position;
       GPSGeneralConvert<T, FloatingPointPrecision> height;
       GPSGeneralConvert<T, FloatingPointPrecision> speed;
     };
+
     Accuracy accuracy;
     GPSGeneral<T, int> sat_num;
     GPSGeneral<T, int> status;
@@ -143,7 +145,6 @@ namespace acc
     GPSGeneral<T, int> week;
 
     GPSS() {};
-
   }; /* class GPSS */
 
 } /* namspace acc */

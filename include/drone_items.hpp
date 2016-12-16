@@ -27,7 +27,6 @@
 #define _ACI_COMM_DRONE_ITEMS_HPP_   
 #ifdef __cplusplus
 
-
 #include <map>
 #include "commons.hpp"
 
@@ -219,8 +218,6 @@ namespace acc
     };
 
 };
-
-
 
 #endif // __cplusplus
 #endif // _ACI_COMM_DRONE_ITEMS_HPP_ 
