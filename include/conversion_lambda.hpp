@@ -26,24 +26,21 @@
 #ifndef _ACI_COMM_CONVERSION_LAMBDA_HPP_
 #define _ACI_COMM_CONVERSION_LAMBDA_HPP_
 #ifdef __cplusplus
+#include <cmath>
 
 #ifndef FLOATING_POINT_PRECISION
 #define FLOATING_POINT_PRECISION double
 #endif
 
-<<<<<<< HEAD
 #ifndef MOTOR_MIN_ROTATION_SPEED
 #define MOTOR_MIN_ROTATION_SPEED 1075
 #endif
-=======
-#include <cmath>
->>>>>>> master
 
 #define PI 3.14159265359
 
 template<class T> FLOATING_POINT_PRECISION
 divide_by_1000(T v) {
-  return static_cast<FLOATING_POINT_PRECISION>(v)/1000.0;
+  return static_cast<FLOATING_POINT_PRECISION>(v) / 1000.0;
 }
 
 namespace acc
@@ -139,7 +136,6 @@ namespace acc
   |__/|__/_/ |_/___/ /_/ /_____/
   */
   auto DIMC_motor_write_conv = [] (FLOATING_POINT_PRECISION v) -> int { // [rpm] (rouds per minute)
-<<<<<<< HEAD
     if(v < MOTOR_MIN_ROTATION_SPEED) {
       // throw std::runtime_error("it is not possible to set RPM lower than 1075"); // TODO Fix me decide a strategy
       return 0;
@@ -148,16 +144,6 @@ namespace acc
       return 200;
     }
     return (v - MOTOR_MIN_ROTATION_SPEED) * 1/37.625;
-=======
-    if(v <= 1075) {
-      // throw std::runtime_error("it is not possible to set RPM lower than 1075"); // TODO Fix me decide a strategy
-      return 0;
-    } else if(v > 8600) {
-      throw std::runtime_error("it is not possible to set RPM higher than 8600"); // TODO Fix me
-      return 200; // TODO
-    }
-    return std::ceil((v - 1075) / 37.625);
->>>>>>> master
   };
 
   auto DMC_angles_write_conv = [] (FLOATING_POINT_PRECISION v) -> int { // [normalized] (-1-1)
