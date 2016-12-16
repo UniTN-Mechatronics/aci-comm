@@ -31,6 +31,9 @@
 #include <iostream>
 #include <ostream>
 #include <utility>
+#include <iomanip>
+#include <mutex>
+#include <chrono>
 #include "aci_comm_uav.hpp"
 
 namespace acc 
@@ -42,13 +45,16 @@ namespace acc
 		CharType separator  = "\t";
 		CharType start_line = "(";
 		CharType end_line 	= ")\n";
+		int floating_point_digits = 3;
 		
-		Logger(std::ostream& stream) : _stream(stream) {}
-
+		Logger(std::ostream& stream) : _stream(stream), _mutex() {
+			_start_time = _set_start_time();
+		}
 		~Logger() {};
 	
 		template<class T, class... Args> Logger& 
 		log(T t, Args... args) {
+			std::unique_lock<std::mutex> lock(_mutex);
 			const int n = sizeof...(Args);
 			_args_size = n + 1;
 			_args_size_init = _args_size;
@@ -59,14 +65,21 @@ namespace acc
 	
 		template<class T> Logger&
 		log(T val) {
+			std::unique_lock<std::mutex> lock(_mutex);
 			_stream << start_line << val << end_line;	
 			return *this;
 		}
 
-		template<class T> Logger&
-		operator<<(T t) {
-			log(t);
+		Logger&
+		reset_start_time() {
+			std::unique_lock<std::mutex> lock(_mutex);
+			_start_time = _set_start_time();
 			return *this;
+		}
+
+		double 
+		time() {
+			return _time_since(_start_time);
 		}
 
 	private:
@@ -74,6 +87,8 @@ namespace acc
 		std::ostream &_stream;
 		int _args_size = 0;
 		int _args_size_init = 0;
+		std::mutex _mutex;
+		std::chrono::high_resolution_clock::time_point _start_time;
 
 		template<class T, class... Args> void
 		_print(T t, Args... args) {
@@ -85,15 +100,27 @@ namespace acc
 		_print(T val) {
 			--_args_size;
 			if (_args_size == 0) {
-				_stream << val << end_line;	
+				_stream << std::fixed << std::setprecision(floating_point_digits) << val << end_line;	
 			} else if ((_args_size + 1) == (_args_size_init)) {
-				_stream << start_line << val << separator;	
+				_stream << std::fixed << std::setprecision(floating_point_digits) << start_line << val << separator;	
 			} else {
-				_stream << val << separator;
+				_stream << std::fixed << std::setprecision(floating_point_digits) << val << separator;
 			}
 		}
-		
-	};
+
+    	std::chrono::high_resolution_clock::time_point 
+    	_set_start_time() {
+    		return std::chrono::high_resolution_clock::now();
+    	}
+
+    	double 
+    	_time_since(std::chrono::high_resolution_clock::time_point t1) {
+    	  	auto t2 = std::chrono::high_resolution_clock::now();
+    	  	auto time_span = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+    	  	return time_span.count();
+    	}
+
+	}; // End Logger
 }; // End namespace
 
 #endif // __cplusplus
