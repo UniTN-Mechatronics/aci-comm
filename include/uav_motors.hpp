@@ -70,6 +70,16 @@ namespace acc
         template<class K, class KK> friend class MotorCollection;
         Motor() {};
 
+        void
+        start() {
+            DIMC_motor_write_conv(value);
+        }
+
+        void
+        stop() {
+            DIMC_motor_write_conv(value);
+        }
+
     };
 
     template<class T, class FloatingPointPrecision>

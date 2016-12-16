@@ -31,7 +31,6 @@
 #include <string>
 #include "drone_items.hpp"
 
-
 namespace acc
 {
     
@@ -47,10 +46,10 @@ namespace acc
     class MapVarCmd
     {
     public:
-
+        
         static MapVarCmd& init(
-            std::map<acc::ACI_COMM_VAR, DroneItemVar>& _map_var,
-            std::map<acc::ACI_COMM_CMD, DroneItemCmd>& _map_cmd
+            MapVarItem& _map_var,
+            MapCmdItem& _map_cmd
         ) {
             static MapVarCmd mapVarCmd(_map_var, _map_cmd);
             return mapVarCmd;
@@ -62,8 +61,8 @@ namespace acc
         *   Private constructor.
         */
         MapVarCmd(
-            std::map<acc::ACI_COMM_VAR, DroneItemVar>& _map_var,
-            std::map<acc::ACI_COMM_CMD, DroneItemCmd>& _map_cmd
+            MapVarItem& _map_var,
+            MapCmdItem& _map_cmd
         ) { 
             _alloc_map_var(_map_var);
             _alloc_map_cmd(_map_cmd);
@@ -74,8 +73,8 @@ namespace acc
         */
         ~MapVarCmd() {};
         
-        void _alloc_map_var(std::map<acc::ACI_COMM_VAR, DroneItemVar>& _map_var);
-        void _alloc_map_cmd(std::map<acc::ACI_COMM_CMD, DroneItemCmd>& _map_cmd);
+        void _alloc_map_var(MapVarItem& _map_var);
+        void _alloc_map_cmd(MapCmdItem& _map_cmd);
 
         /*  Maybe we will need them in future.
         *   std::map<std::string, DroneItem> _internal_map_var;

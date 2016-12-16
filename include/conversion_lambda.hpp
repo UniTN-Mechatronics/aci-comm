@@ -31,6 +31,8 @@
 #define FLOATING_POINT_PRECISION double
 #endif
 
+#include <cmath>
+
 #define PI 3.14159265359
 
 template<class T> FLOATING_POINT_PRECISION
@@ -131,14 +133,14 @@ namespace acc
   |__/|__/_/ |_/___/ /_/ /_____/
   */
   auto DIMC_motor_write_conv = [] (FLOATING_POINT_PRECISION v) -> int { // [rpm] (rouds per minute)
-    if(v < 1075) {
+    if(v <= 1075) {
       // throw std::runtime_error("it is not possible to set RPM lower than 1075"); // TODO Fix me decide a strategy
       return 0;
     } else if(v > 8600) {
       throw std::runtime_error("it is not possible to set RPM higher than 8600"); // TODO Fix me
-      return 200;
+      return 200; // TODO
     }
-    return (v - 1075) * 1/37.625;
+    return std::ceil((v - 1075) / 37.625);
   };
 
   auto DMC_angles_write_conv = [] (FLOATING_POINT_PRECISION v) -> int { // [normalized] (-1-1)
