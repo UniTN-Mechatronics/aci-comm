@@ -80,9 +80,9 @@ namespace acc
     friend class UAV;
     InfoElement<T, int> status;
     InfoElement<T, int> flight_time;
-    InfoElement<T, int> battery_voltage;
+    InfoElement<T, FloatingPointPrecision> battery_voltage;
     InfoElement<T, int> cpu_load;
-    InfoElement<T, int> up_time;
+    InfoElement<T, FloatingPointPrecision> up_time;
 
     Infos() {};
 
