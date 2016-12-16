@@ -172,7 +172,7 @@ testcase_read() {
 
         double freq = 60;
 
-        lg.reset_start_time(); // set timer in logger to 0
+        lg.timer.reset_start_time(); // set timer in logger to 0
         // while(lg.time() < 10.0) {
         while(true) {
             // print angles
@@ -180,7 +180,7 @@ testcase_read() {
             // print angles dot
             // lg.log(lg.time(), uav.frame.roll_d.read(), uav.frame.pitch_d.read(), uav.frame.yaw_d.read());
             // print acc
-            lg.log(lg.time(), uav.frame.x_dd.read(), uav.frame.y_dd.read(), uav.frame.z_dd.read());
+            lg.log(lg.timer.time(), uav.frame.x_dd.read(), uav.frame.y_dd.read(), uav.frame.z_dd.read());
             // print infos
             // lg.log(lg.time(), uav.info.status.read(), uav.info.flight_time.read(), uav.info.battery_voltage.read(), uav.info.cpu_load.read(), uav.info.up_time.read());
 
