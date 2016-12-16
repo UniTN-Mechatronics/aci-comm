@@ -160,29 +160,43 @@ testcase_read() {
         // frame read test
         // uav.frame.enable_read_angles(0);
         // uav.frame.enable_read_angles_d(1);
-        uav.frame.enable_read_acc(1);
+        // uav.frame.enable_read_acc(1);
         
+        // enable read info
         // uav.info.status.enable_read(1);
         // uav.info.flight_time.enable_read(1);
         // uav.info.battery_voltage.enable_read(1);
         // uav.info.cpu_load.enable_read(1);
         // uav.info.up_time.enable_read(1);
 
+        // enable read RC channels
+        uav.rc_ch[0].enable_read(1);
+        uav.rc_ch[1].enable_read(1);
+        uav.rc_ch[2].enable_read(1);
+        uav.rc_ch[3].enable_read(1);
+        uav.rc_ch[4].enable_read(1);
+        uav.rc_ch[5].enable_read(1);
+        uav.rc_ch[6].enable_read(1);
+        uav.rc_ch[7].enable_read(1);
+
         uav.start();
 
         double freq = 60;
 
         lg.timer.reset_start_time(); // set timer in logger to 0
-        // while(lg.time() < 10.0) {
+        // while(lg.timer.time() < 10.0) {
         while(true) {
             // print angles
             // lg.log(lg.time(), uav.frame.roll.read(), uav.frame.pitch.read(), uav.frame.yaw.read());
             // print angles dot
             // lg.log(lg.time(), uav.frame.roll_d.read(), uav.frame.pitch_d.read(), uav.frame.yaw_d.read());
             // print acc
-            lg.log(lg.timer.time(), uav.frame.x_dd.read(), uav.frame.y_dd.read(), uav.frame.z_dd.read());
+            // lg.log(lg.timer.time(), uav.frame.x_dd.read(), uav.frame.y_dd.read(), uav.frame.z_dd.read());
             // print infos
             // lg.log(lg.time(), uav.info.status.read(), uav.info.flight_time.read(), uav.info.battery_voltage.read(), uav.info.cpu_load.read(), uav.info.up_time.read());
+            // print RC channels
+            lg.log(lg.timer.time(), uav.rc_ch[0].read(), uav.rc_ch[1].read(), uav.rc_ch[2].read(), uav.rc_ch[3].read(), uav.rc_ch[4].read(), uav.rc_ch[5].read(), uav.rc_ch[6].read(), uav.rc_ch[7].read());
+
 
             usleep(1E6/freq);
         }
