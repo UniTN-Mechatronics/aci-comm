@@ -142,20 +142,30 @@ testcase3() {
 }
 
 void
-testcase4() {
+testcase_read() {
     using namespace acc;
-    std::string port = "/dev/tty.usbserial-A504DRSI";
+    using namespace std;
+    std::string port = "/dev/ttyUSB0";
 
     UAV uav(port, B57600, CTRL_MODE::DIMC);
-    try {
-        uav.motors.enable_read(0);
-        uav.start().control_enable(true);
+    uav.orientation(UAV_Z::DOWNWARD);
 
-        sleep(2);
-        std::cout << "READY" << std::endl;
-        uav.motors.write({1500, 1500, 1500, 1500});
-        sleep(3);
-        uav.motors.write(std::array<FLOATING_POINT_PRECISION, 4>{{1075, 1075, 1075, 1075}});
+    Logger lg(std::cout);
+    lg.floating_point_digits = 1;
+
+    try {
+        // frame read test
+        uav.frame.enable_read_angles(0);
+
+        uav.start();
+
+        double freq = 50;
+
+        lg.reset_start_time(); // set timer in logger to 0
+        while(lg.time() < 60*1000) {
+            lg.log(lg.time()/1000.0, uav.frame.roll.read(), uav.frame.pitch.read(), uav.frame.yaw.read());
+            usleep(1E6/freq);
+        }
         
     } catch (std::runtime_error e) {
         std::cout << "Exception: " << e.what() << std::endl;
@@ -165,6 +175,7 @@ testcase4() {
         uav.stop();
     }
 }
+
 
 
 void
