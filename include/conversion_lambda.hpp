@@ -199,7 +199,7 @@ namespace acc
   /____/_/   /_/  |_/_/ |_/_____/
   */
 
-  static std::array<FLOATING_POINT_PRECISION, 4>
+  inline std::array<FLOATING_POINT_PRECISION, 4>
   rpy2quaternion(std::array<FLOATING_POINT_PRECISION, 3> rpy) {
     std::array<FLOATING_POINT_PRECISION, 4> q; // q = [eta, epsilon1, epsilon2, epsilon3]
     q[0] = cos(rpy[0]/2) * cos(rpy[1]/2) * cos(rpy[2]/2) + sin(rpy[0]/2) * sin(rpy[1]/2) * sin(rpy[2]/2);

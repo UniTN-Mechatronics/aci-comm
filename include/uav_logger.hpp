@@ -43,8 +43,8 @@ namespace acc
 	public:	
 		using CharType = std::string;
 		CharType separator  = "\t";
-		CharType start_line = "(";
-		CharType end_line 	= ")\n";
+		CharType start_line = "";
+		CharType end_line 	= "\n";
 		int floating_point_digits = 3;
 		
 		Logger(std::ostream& stream) : _stream(stream), _mutex() {
@@ -80,7 +80,13 @@ namespace acc
 		double 
 		time() {
 			std::unique_lock<std::mutex> lock(_mutex);
-			return _time_since(_start_time);
+			return (_time_since(_start_time) / 1000.0f);
+		}
+
+		int 
+		time_ms() {
+			std::unique_lock<std::mutex> lock(_mutex);
+			return static_cast<int>(_time_since(_start_time));
 		}
 
 	private:
