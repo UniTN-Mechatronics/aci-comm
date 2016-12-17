@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-#include "bus.hpp"
+#include "aci_comm_engine_bus.hpp"
 
 
 void 

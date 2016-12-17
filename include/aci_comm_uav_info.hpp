@@ -23,39 +23,40 @@
  * SOFTWARE.
  */
 
-#ifndef _ACI_COMM_UAV_FUSION_HPP_
-#define _ACI_COMM_UAV_FUSION_HPP_
+#ifndef _ACI_COMM_UAV_INFO_HPP_
+#define _ACI_COMM_UAV_INFO_HPP_
 #ifdef __cplusplus
 
-#include "engine.hpp"
+#include <functional>
+
+#include "aci_comm_engine.hpp"
 #include "aci_comm_uav.hpp"
-#include "conversion_lambda.hpp"
-#include "uav_commons.hpp"
+#include "aci_comm_misc_conversion_lambda.hpp"
+#include "aci_comm_uav_commons.hpp"
 
 namespace acc
 {
   template<class T, class FloatingPointPrecision>
-  class Fusion
+  class Infos
   {
 
   private:
 
-    Fusion(T* uav_ptr) {
-      latitude._update_read_type(uav_ptr, Var::fusion_latitude, fusion_lat_long_read_conv);
-      longitude._update_read_type(uav_ptr, Var::fusion_longitude, fusion_lat_long_read_conv);
-      height_d._update_read_type(uav_ptr, Var::fusion_dheight, fusion_h_dh_read_conv);
-      height._update_read_type(uav_ptr, Var::fusion_height, fusion_h_dh_read_conv);
-      u_d._update_read_type(uav_ptr, Var::fusion_speed_x, fusion_speed_read_conv);
-      v_d._update_read_type(uav_ptr, Var::fusion_speed_y, fusion_speed_read_conv);
+    Infos(T* uav_ptr) {
+      status._update_read_type(uav_ptr, Var::UAV_status, [](int v) -> int { return v; });
+      flight_time._update_read_type(uav_ptr, Var::flight_time, flight_time_read_conv);
+      battery_voltage._update_read_type(uav_ptr, Var::battery_voltage, battery_voltage_read_conv);
+      cpu_load._update_read_type(uav_ptr, Var::HL_cpu_load, hl_cpu_load_read_conv);
+      up_time._update_read_type(uav_ptr, Var::HL_up_time, hl_up_time_read_conv);
     };
 
     template<class TP, class ReturnType>
-    class FusionElement : public ChannelRead<TP, ReturnType>
+    class InfoElement : public ChannelRead<TP, ReturnType>
     {
     public:
-      friend class Fusion;
+      friend class Infos;
 
-      FusionElement() {};
+      InfoElement() {};
 
     protected:
 
@@ -75,22 +76,25 @@ namespace acc
       std::function<ReturnType(int)> _conv_func;
     };
 
-
   public:
     friend class UAV;
+    InfoElement<T, int> status;
+    InfoElement<T, int> flight_time;
+    InfoElement<T, FloatingPointPrecision> battery_voltage;
+    InfoElement<T, int> cpu_load;
+    InfoElement<T, FloatingPointPrecision> up_time;
 
-    FusionElement<T, FloatingPointPrecision> latitude;
-    FusionElement<T, FloatingPointPrecision> longitude;
-    FusionElement<T, FloatingPointPrecision> height_d;
-    FusionElement<T, FloatingPointPrecision> height;
-    FusionElement<T, FloatingPointPrecision> u_d;
-    FusionElement<T, FloatingPointPrecision> v_d;
+    Infos() {};
 
-    Fusion() {};
-
-  }; /* class Fusion */
+  }; /* class Infos */
 
 } /* namspace acc */
-
+/*
+UAV_status             = 0, //
+flight_time            ,    //
+battery_voltage        ,    //
+HL_cpu_load            ,    //
+HL_up_time             ,    //
+*/
 #endif /* ifdef __cplusplus */
-#endif /* define _ACI_COMM_UAV_FUSION_HPP_ */
+#endif /* define _ACI_COMM_UAV_INFOS_HPP_ */

@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-#ifndef _ACI_COMM_UAV_LOGGER_HPP_
-#define _ACI_COMM_UAV_LOGGER_HPP_
+#ifndef _ACI_COMM_MISC_LOGGER_HPP_
+#define _ACI_COMM_MISC_LOGGER_HPP_
 #ifdef __cplusplus
 
 #include <fstream>
@@ -134,4 +134,4 @@ namespace acc
 }; // End namespace
 
 #endif // __cplusplus
-#endif // _ACI_COMM_UAV_LOGGER_HPP_
+#endif // _ACI_COMM_MISC_LOGGER_HPP_

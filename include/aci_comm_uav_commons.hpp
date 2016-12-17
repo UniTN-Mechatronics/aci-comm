@@ -28,7 +28,7 @@
 #ifdef __cplusplus
 
 #include "aci_comm_uav.hpp"
-#include "conversion_lambda.hpp"
+#include "aci_comm_misc_conversion_lambda.hpp"
 
 /** 
 *   Drone's number of motors.

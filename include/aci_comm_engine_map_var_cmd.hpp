@@ -29,8 +29,8 @@
 
 #include <map>
 #include <string>
-#include "integer_conversions.hpp"
-#include "drone_items.hpp"
+#include "aci_comm_misc_integer_conversions.hpp"
+#include "aci_comm_engine_drone_items.hpp"
 
 namespace acc
 {

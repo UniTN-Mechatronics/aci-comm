@@ -27,6 +27,7 @@
 #define _ACI_COMM_CONVERSION_LAMBDA_HPP_
 #ifdef __cplusplus
 #include <cmath>
+#include <array>
 
 #ifndef FLOATING_POINT_PRECISION
 #define FLOATING_POINT_PRECISION double

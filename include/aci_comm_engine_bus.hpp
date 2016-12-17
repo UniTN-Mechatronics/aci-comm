@@ -39,7 +39,7 @@
 #endif
 
 #ifndef _ACI_COMM_COMMONS_HPP_
-    #include "commons.hpp"
+    #include "aci_comm_engine_commons.hpp"
 #endif
 
 namespace acc 

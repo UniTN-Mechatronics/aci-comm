@@ -23,10 +23,12 @@
  * SOFTWARE.
  */
 
-#include "engine.hpp"
+#include "aci_comm_engine.hpp"
 
 /*
 *   C API Callbacks
+*   They must be global, in order to be 
+*   set in the API-C.
 */
 static void c_api_transmit_callback(void*, unsigned short);
 static void c_api_versions_callback(struct ACI_INFO);
@@ -326,7 +328,7 @@ c_api_params_callback() {}
 *   MUST be kept at the end of this file,
 *   don't move!
 */
-#include "explicits_templates.hpp"
+#include "aci_comm_misc_explicits_templates.hpp"
 
 
 //aciGetVarPacketRateFromDevice();

@@ -37,10 +37,10 @@
 #include <atomic>
 #include <assert.h>
 
-#include "bus.hpp"
-#include "commons.hpp"
-#include "map_var_cmd.hpp"
-#include "uav_logger.hpp"
+#include "aci_comm_engine_bus.hpp"
+#include "aci_comm_engine_commons.hpp"
+#include "aci_comm_engine_map_var_cmd.hpp"
+#include "aci_comm_misc_logger.hpp"
 
 namespace acc
 {

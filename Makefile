@@ -16,7 +16,7 @@ LIBS=-lm
 
 # Source
 CSOURCES=$(SRCPATHASCTEC)asctecCommIntf.c
-CXXSOURCES=$(SRCPATH)engine.cpp $(SRCPATH)bus.cpp $(SRCPATH)map_var_cmd.cpp $(SRCPATH)aci_comm_uav.cpp
+CXXSOURCES=$(SRCPATH)aci_comm_engine.cpp $(SRCPATH)aci_comm_engine_bus.cpp $(SRCPATH)aci_comm_engine_map_var_cmd.cpp $(SRCPATH)aci_comm_uav.cpp
 
 all: aci_engine
 shared: acic

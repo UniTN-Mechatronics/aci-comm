@@ -27,17 +27,15 @@
 #define _ACI_COMM_UAV_HPP_
 #ifdef __cplusplus
 
-#include <array>
-
-#include "engine.hpp"
-#include "uav_commons.hpp"
-#include "uav_frame.hpp"
-#include "uav_rc_channels.hpp"
-#include "uav_motors.hpp"
-#include "uav_magnetometer.hpp"
-#include "uav_gps.hpp"
-#include "uav_info.hpp"
-#include "uav_logger.hpp"
+#include "aci_comm_engine.hpp"
+#include "aci_comm_uav_commons.hpp"
+#include "aci_comm_uav_frame.hpp"
+#include "aci_comm_uav_rc_channels.hpp"
+#include "aci_comm_uav_motors.hpp"
+#include "aci_comm_uav_magnetometer.hpp"
+#include "aci_comm_uav_gps.hpp"
+#include "aci_comm_uav_info.hpp"
+#include "aci_comm_misc_logger.hpp"
 
 namespace acc
 {
@@ -72,18 +70,6 @@ namespace acc
         *   SerialBus UAV constructor.
         */
         UAV(std::string port, int baud_rate, CTRL_MODE mode) :
-          _ctrl_mode(mode),
-          _ctrl_bit(0) {
-            engine = &Engine<SerialBus>::init(port, baud_rate);
-            _uav_init();
-        };
-
-        /**
-        *   SerialBus UAV constructor
-        *   with Logger
-        */
-        //template<class LoggerType>
-        UAV(std::string port, int baud_rate, CTRL_MODE mode, bool logger_) :
           _ctrl_mode(mode),
           _ctrl_bit(0) {
             engine = &Engine<SerialBus>::init(port, baud_rate);
@@ -130,7 +116,6 @@ namespace acc
         Engine<SerialBus>* engine;
         CTRL_MODE _ctrl_mode;
         unsigned int _ctrl_bit;
-
 
         void _uav_init();
         void _add_write_ctrl();

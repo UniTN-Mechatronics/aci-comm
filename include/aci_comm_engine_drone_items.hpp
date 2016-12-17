@@ -28,7 +28,7 @@
 #ifdef __cplusplus
 
 #include <map>
-#include "commons.hpp"
+#include "aci_comm_engine_commons.hpp"
 
 namespace acc
 {
