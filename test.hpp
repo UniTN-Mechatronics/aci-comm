@@ -197,7 +197,6 @@ testcase_read() {
             // print RC channels
             lg.log(lg.timer.time(), uav.rc_ch[0].read(), uav.rc_ch[1].read(), uav.rc_ch[2].read(), uav.rc_ch[3].read(), uav.rc_ch[4].read(), uav.rc_ch[5].read(), uav.rc_ch[6].read(), uav.rc_ch[7].read());
 
-
             usleep(1E6/freq);
         }
         

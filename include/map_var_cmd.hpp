@@ -29,7 +29,7 @@
 
 #include <map>
 #include <string>
-#include <stdint.h>
+#include "integer_conversions.hpp"
 #include "drone_items.hpp"
 
 namespace acc
@@ -57,7 +57,6 @@ namespace acc
         }
 
     private:
-
         /**
         *   Private constructor.
         */
@@ -76,20 +75,14 @@ namespace acc
         
         void _alloc_map_var(MapVarItem& _map_var);
         void _alloc_map_cmd(MapCmdItem& _map_cmd);
-
-        /*  Maybe we will need them in future.
-        *   std::map<std::string, DroneItem> _internal_map_var;
-        *   std::map<std::string, DroneItem> _internal_map_cmd;
-        */
-
+        
     public:
-
         /**
         *   Deleted copy constructor and
         *   copy operator.
         */
-        //MapVarCmd(MapVarCmd const&) delete;
-        //void operator(MapVarCmd const&) delete;
+        MapVarCmd(MapVarCmd const&) = delete;
+        void operator=(MapVarCmd const&) = delete;
     };
 };
 

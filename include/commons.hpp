@@ -58,9 +58,9 @@ namespace acc
         angvel_pitch          ,    // implemented, tested
         angvel_roll           ,    // implemented, tested
         angvel_yaw            ,    // implemented, tested
-        acc_x                 ,    // implemented
-        acc_y                 ,    // implemented
-        acc_z                 ,    // implemented
+        acc_x                 ,    // implemented, tested
+        acc_y                 ,    // implemented, tested
+        acc_z                 ,    // implemented, tested
         Hx                    ,    // implemented
         Hy                    ,    // implemented
         Hz                    ,    // implemented
@@ -73,24 +73,24 @@ namespace acc
         fusion_height         ,    // implemented
         fusion_speed_x        ,    // implemented
         fusion_speed_y        ,    // implemented
-        RC_channel_0          ,    // implemented
-        RC_channel_1          ,    // implemented
-        RC_channel_2          ,    // implemented
-        RC_channel_3          ,    // implemented
-        RC_channel_4          ,    // implemented
-        RC_channel_5          ,    // implemented
-        RC_channel_6          ,    // implemented
-        RC_channel_7               // implemented
+        RC_channel_0          ,    // implemented, tested
+        RC_channel_1          ,    // implemented, tested
+        RC_channel_2          ,    // implemented, tested
+        RC_channel_3          ,    // implemented, tested
+        RC_channel_4          ,    // implemented, tested
+        RC_channel_5          ,    // implemented, tested
+        RC_channel_6          ,    // implemented, tested
+        RC_channel_7               // implemented, tested
     };
 
     enum class ACI_COMM_CMD
     {
         DIMC_motor_1                 = 0, // implemented, tested
-        DIMC_motor_2                 ,    // implemented
-        DIMC_motor_3                 ,    // implemented
-        DIMC_motor_4                 ,    // implemented
-        DIMC_motor_5                 ,    //
-        DIMC_motor_6                 ,    //
+        DIMC_motor_2                 ,    // implemented, tested
+        DIMC_motor_3                 ,    // implemented, tested
+        DIMC_motor_4                 ,    // implemented, tested
+        DIMC_motor_5                 ,    // implemented
+        DIMC_motor_6                 ,    // implemented
         DMC_pitch                    ,    // implemented
         DMC_roll                     ,    // implemented
         DMC_yaw                      ,    // implemented
