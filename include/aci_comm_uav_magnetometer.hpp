@@ -37,7 +37,6 @@ namespace acc
   template<class T, class FloatingPointPrecision>
   class MagnetoMeter
   {
-
   private:
 
     MagnetoMeter(T *uav_ptr) {

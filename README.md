@@ -37,6 +37,31 @@ int main() {
 }
 ```
 
+### UAV Frame
+The Frame class contained in the UAV class, allow
+the user to know about attitude and acceleration
+of the drone.
+
+```C++
+
+// Pitch
+uav.frame.pitch.enable_read(int packet);
+uav.frame.pitch.enable_write(int packet);
+FLOATING_POINT_PRECISION val = uav.frame.pitch.read();
+uav.frame.pitch.write(FLOATING_POINT_PRECISION value);
+
+// Roll
+uav.frame.roll.enable_read(int packet);
+uav.frame.roll.enable_write(int packet);
+FLOATING_POINT_PRECISION val = uav.frame.roll.read();
+uav.frame.roll.write(FLOATING_POINT_PRECISION value);
+
+// Yaw
+uav.frame.yaw.enable_read(int packet);
+FLOATING_POINT_PRECISION val = uav.frame.yaw.read();
+
+```
+
 ## aci-comm design
 ![aci-comm-design](doc_images/aci_comm_design.png)
 
