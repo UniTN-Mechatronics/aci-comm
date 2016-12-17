@@ -40,7 +40,7 @@ int main() {
 
 ## aci-comm design
 The aci-comm design is show in the following picture.
-As you can see, there are to different interfaces in order to control the drone. 
+As you can see, there are two different interfaces in order to control the drone. 
 
 The UAV is an high livel interface that manage
 under the hood the Engine interface. 
