@@ -82,7 +82,7 @@ Engine controls the Asctec API C, providing an abstraction layer that allow you 
 
 You construct the Engine with a comunication bus: the only one that we provide is a SerialBus.
 
-Than you add the propertys that you want to 
+Than you add the properties that you want to 
 read and write, contained in two specific enums, and
 start the Engine. 
 
