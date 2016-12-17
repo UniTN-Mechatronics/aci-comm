@@ -42,14 +42,14 @@ int main() {
 The aci-comm design is show in the following picture.
 As you can see, there are two different interfaces in order to control the drone. 
 
-The UAV is an high livel interface that manage
+The UAV is an high level interface that manage
 under the hood the Engine interface. 
 Engine manage directly the original API C provided
 by Asctec. 
 
 One of the main differences between the two interfaces is that in the Engine interface the read and written values are raw, as the original API C.
 
-The UAV interface convert the property values directly with their physical meaning. 
+The UAV interface instead properly converts raw values into with their physical units. 
 
 Both the interfaces throws errors when you insert 
 wrong data or when you try to do illegal operations,
@@ -57,17 +57,50 @@ so you should wrap all the code in a try and catch block.
 ![aci-comm-design](doc_images/aci_comm_design.png)
 
 ## UAV Interface
+There are read-only subclasses, write-only subclasses and read-write subclasses.
+Before using every of the following subclass of UAV, it has to be activated:
+    * to enable the reading, the method `.enable_read(i)` has to be called, where `i` is the number of packet.
+    * to enable the writing, the method `.enable_write(i)` has to be called, where `i` is the number of packet.
 
 ### UAV Frame
 The Frame class contained in the UAV class, allow
-the user to know about attitude and acceleration
-of the drone.
+the user to get informations related to the UAV frame as:
+
+* Attitude: 
+    * Roll angle: `uav.frame.roll.read()`
+    * Pitch angle: `uav.frame.pitch.read()`
+    * Yaw angle: `uav.frame.yaw.read()`
+    * Quaternion: `uav.frame.quaternion()`
+* Angular Rates:
+    * Roll angle rate: `uav.frame.roll_d.read()`
+    * Pitch angle rate: `uav.frame.pitch_d.read()`
+    * Yaw angle rate: `uav.frame.yaw_d.read()`
+* Accelerations (readings from the accelerometer):
+    * x: `uav.frame.x_dd.read()`
+    * y: `uav.frame.y_dd.read()`
+    * z: `uav.frame.z_dd.read()`
+
+Moreover, the Frame subclass contains some write fields, which are interpreted by th UAV as commands.
+
+* Attitude: 
+    * Roll angle: `uav.frame.roll.write(value)` (value in degrees)
+    * Pitch angle: `uav.frame.pitch.write(value)` (value in degrees)
+* Angular Rates:
+    * Yaw angle rate: `uav.frame.yaw_d.write(value)` (value in degrees/second)
+* Thrust: `uav.frame.thrust.write(value)`
 
 ### UAV Motors
 The Motors class allow the user to control the 
-motors of the drone: you can have only four or six motors. You set and read these values in RPM.
+motors speed of the UAV. The number of motors depends on your UAV (four or six) and can be setted defining the macro `MOTORS_NUM` to four or six (default is four). The speed of the motors is expressed in RPM (round per minute). The i-th motor can be accesed via the following sintax:
+```
+uav.motors[i]
+```
 
-### UAV MagnetoMeters
+### UAV MagnetoMeter
+This subclass contains only-read informations regarding the readings from the on-board magnetometer. The readings are normalized w.r.t. the Earth magnetic field strength:
+    * x: `uav.magnetometer.x.read()`
+    * y: `uav.magnetometer.y.read()`
+    * z: `uav.magnetometer.z.read()`
 
 ### UAV GPS
 
@@ -78,9 +111,9 @@ motors of the drone: you can have only four or six motors. You set and read thes
 ### UAV Methods
 
 ## Engine Interface
-Engine controls the Asctec API C, providing an abstraction layer that allow you to forget about the creation of the transmit thread, or to remember the exadecimal code for each read and write property.
+Engine controls the Asctec API C, providing an abstraction layer that allow you to forget about the creation of the transmit thread, or to remember the hexadecimal code for each read and write property.
 
-You construct the Engine with a comunication bus: the only one that we provide is a SerialBus.
+You construct the Engine with a communication bus: the only one that we provide is a SerialBus.
 
 Than you add the properties that you want to 
 read and write, contained in two specific enums, and
@@ -92,7 +125,7 @@ you have requested.
 When all the jobs are done, you stop the engine.
 
 ```C++
-#include "engine.hpp"
+#include "aci_comm_engine.hpp"
 
 int main() {
     using namespace acc; 
@@ -146,7 +179,7 @@ You can find a lot of usage examples in the *test.hpp*
 file.
 
 ## Compile
-We provide a Makefile that can compile the provided examples, or that build a shared library, or crosscompile on the Beaglebone Black.
+We provide a Makefile that can compile the provided examples, or that build a shared library, or cross-compile on the BeagleBone Black.
 
 You MUST add the original Asctec files in a folder
 called *asctec*.
