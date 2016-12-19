@@ -61,9 +61,9 @@ namespace acc
         acc_x                 ,    // implemented, tested
         acc_y                 ,    // implemented, tested
         acc_z                 ,    // implemented, tested
-        Hx                    ,    // implemented
-        Hy                    ,    // implemented
-        Hz                    ,    // implemented
+        Hx                    ,    // implemented, tested
+        Hy                    ,    // implemented, tested
+        Hz                    ,    // implemented, tested
         angle_pitch           ,    // implemented, tested
         angle_roll            ,    // implemented, tested
         angle_yaw             ,    // implemented, tested

@@ -91,6 +91,23 @@ namespace acc
 
     MagnetoMeter() {};
 
+    MagnetoMeter&
+    enable_read(int packet) {
+        x.enable_read(packet);
+        y.enable_read(packet);
+        z.enable_read(packet);
+        return *this;
+    }
+
+    std::array<FloatingPointPrecision, 3>
+    read() { // returns xyz
+        std::array<FloatingPointPrecision, 3> xyz;
+        xyz[0] = x.read();
+        xyz[1] = y.read();
+        xyz[2] = z.read();
+        return xyz;
+    }
+
   }; /* classMagnetoMeter */
 
 } /* namspace acc */

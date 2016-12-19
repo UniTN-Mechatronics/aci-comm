@@ -149,9 +149,9 @@ testcase_read() {
     // std::string port = "/dev/ttyUSB0";
     std::string port = "/dev/tty.usbserial-A504DRSI";
 
-    UAV uav(port, B57600, CTRL_MODE::DIMC);
-    // uav.orientation = UAV_Z::UPWARD;
+    UAV uav(port, B57600, CTRL_MODE::READ_ONLY);
     uav.orientation = UAV_Z::DOWNWARD;
+    // uav.orientation = UAV_Z::UPWARD;
 
     Logger lg(std::cout);
     lg.floating_point_digits = 2;
@@ -161,23 +161,26 @@ testcase_read() {
         // uav.frame.enable_read_angles(0);
         // uav.frame.enable_read_angles_d(1);
         // uav.frame.enable_read_acc(1);
+
+        //magnetometer
+        // uav.magnetometer.enable_read(0);
         
         // enable read info
-        // uav.info.status.enable_read(1);
-        // uav.info.flight_time.enable_read(1);
-        // uav.info.battery_voltage.enable_read(1);
-        // uav.info.cpu_load.enable_read(1);
-        // uav.info.up_time.enable_read(1);
+        uav.info.status.enable_read(1);
+        uav.info.flight_time.enable_read(1);
+        uav.info.battery_voltage.enable_read(1);
+        uav.info.cpu_load.enable_read(1);
+        uav.info.up_time.enable_read(1);
 
         // enable read RC channels
-        uav.rc_ch[0].enable_read(1);
-        uav.rc_ch[1].enable_read(1);
-        uav.rc_ch[2].enable_read(1);
-        uav.rc_ch[3].enable_read(1);
-        uav.rc_ch[4].enable_read(1);
-        uav.rc_ch[5].enable_read(1);
-        uav.rc_ch[6].enable_read(1);
-        uav.rc_ch[7].enable_read(1);
+        // uav.rc_ch[0].enable_read(1);
+        // uav.rc_ch[1].enable_read(1);
+        // uav.rc_ch[2].enable_read(1);
+        // uav.rc_ch[3].enable_read(1);
+        // uav.rc_ch[4].enable_read(1);
+        // uav.rc_ch[5].enable_read(1);
+        // uav.rc_ch[6].enable_read(1);
+        // uav.rc_ch[7].enable_read(1);
 
         uav.start();
 
@@ -192,10 +195,12 @@ testcase_read() {
             // lg.log(lg.time(), uav.frame.roll_d.read(), uav.frame.pitch_d.read(), uav.frame.yaw_d.read());
             // print acc
             // lg.log(lg.timer.time(), uav.frame.x_dd.read(), uav.frame.y_dd.read(), uav.frame.z_dd.read());
+            // print magentometer
+            // lg.log(lg.timer.time(), uav.magnetometer.x.read(), uav.magnetometer.y.read(), uav.magnetometer.z.read());
             // print infos
-            // lg.log(lg.time(), uav.info.status.read(), uav.info.flight_time.read(), uav.info.battery_voltage.read(), uav.info.cpu_load.read(), uav.info.up_time.read());
+            lg.log(lg.time(), uav.info.status.read(), uav.info.flight_time.read(), uav.info.battery_voltage.read(), uav.info.cpu_load.read(), uav.info.up_time.read());
             // print RC channels
-            lg.log(lg.timer.time(), uav.rc_ch[0].read(), uav.rc_ch[1].read(), uav.rc_ch[2].read(), uav.rc_ch[3].read(), uav.rc_ch[4].read(), uav.rc_ch[5].read(), uav.rc_ch[6].read(), uav.rc_ch[7].read());
+            // lg.log(lg.timer.time(), uav.rc_ch[0].read(), uav.rc_ch[1].read(), uav.rc_ch[2].read(), uav.rc_ch[3].read(), uav.rc_ch[4].read(), uav.rc_ch[5].read(), uav.rc_ch[6].read(), uav.rc_ch[7].read());
 
             usleep(1E6/freq);
         }
