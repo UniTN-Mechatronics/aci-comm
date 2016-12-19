@@ -31,11 +31,11 @@ namespace acc
 {
     enum class ACI_COMM_VAR
     {                               // UAV READ CLASSES IMPLEMENTATION
-        UAV_status            = 0, // implemented
-        flight_time           ,    // implemented
-        battery_voltage       ,    // implemented
-        HL_cpu_load           ,    // implemented
-        HL_up_time            ,    // implemented
+        UAV_status            = 0, // implemented, tested
+        flight_time           ,    // implemented, tested
+        battery_voltage       ,    // implemented, tested
+        HL_cpu_load           ,    // implemented, tested
+        HL_up_time            ,    // implemented, tested
         motor_rpm_1           ,    // implemented, tested
         motor_rpm_2           ,    // implemented, tested
         motor_rpm_3           ,    // implemented, tested

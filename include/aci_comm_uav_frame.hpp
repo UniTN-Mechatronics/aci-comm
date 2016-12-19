@@ -510,6 +510,15 @@ namespace acc
             return rpy;
         }
 
+        std::array<FloatingPointPrecision, 3>
+        read_rad_angles() { // returns rpy
+            std::array<FloatingPointPrecision, 3> rpy;
+            rpy[0] = roll.read_rad();
+            rpy[1] = pitch.read_rad();
+            rpy[2] = yaw.read_rad();
+            return rpy;
+        }
+
         Frames&
         enable_write_angles(int packet) {
             roll.enable_write(packet);
@@ -560,7 +569,7 @@ namespace acc
 
         std::array<FloatingPointPrecision, 4>
         quaternion() {
-            return rpy2quaternion(read_angles());
+            return rpy2quaternion(read_rad_angles());
         }
 
     };

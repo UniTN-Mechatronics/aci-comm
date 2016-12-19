@@ -127,11 +127,14 @@ testcase3() {
         uav.motors.enable_read(0).enable_write(0);
         uav.start().control_enable(true);
 
-        sleep(2);
-        std::cout << "READY" << std::endl;
-        uav.motors.write({1500, 1500, 1500, 1500});
+        // sleep(2);
+        // uav.motors.write({1500, 1500, 1500, 1500});
+        std::cout << "START" << std::endl;
+        uav.motors.start();
         sleep(3);
-        uav.motors.write(std::array<FLOATING_POINT_PRECISION, 4>{{1075, 1075, 1075, 1075}});
+        uav.motors.stop();
+        std::cout << "STOP" << std::endl;
+        // uav.motors.write(std::array<FLOATING_POINT_PRECISION, 4>{{1075, 1075, 1075, 1075}});
         
     } catch (std::runtime_error e) {
         std::cout << "Exception: " << e.what() << std::endl;
@@ -156,9 +159,16 @@ testcase_read() {
     Logger lg(std::cout);
     lg.floating_point_digits = 2;
 
+    std::ofstream myfile;
+    myfile.open ("./utilities/data.csv");
+    Logger lg_file(myfile);
+    lg_file.separator  = ",\t";
+    lg_file.log("time", "roll", "pitch", "yaw", "eta", "eps1", "eps2", "eps3", "norm");
+
+
     try {
         // frame read test
-        // uav.frame.enable_read_angles(0);
+        uav.frame.enable_read_angles(0);
         // uav.frame.enable_read_angles_d(1);
         // uav.frame.enable_read_acc(1);
 
@@ -166,11 +176,11 @@ testcase_read() {
         // uav.magnetometer.enable_read(0);
         
         // enable read info
-        uav.info.status.enable_read(1);
-        uav.info.flight_time.enable_read(1);
-        uav.info.battery_voltage.enable_read(1);
-        uav.info.cpu_load.enable_read(1);
-        uav.info.up_time.enable_read(1);
+        // uav.info.status.enable_read(1);
+        // uav.info.flight_time.enable_read(1);
+        // uav.info.battery_voltage.enable_read(1);
+        // uav.info.cpu_load.enable_read(1);
+        // uav.info.up_time.enable_read(1);
 
         // enable read RC channels
         // uav.rc_ch[0].enable_read(1);
@@ -184,13 +194,15 @@ testcase_read() {
 
         uav.start();
 
-        double freq = 60;
+        double freq = 100;
 
         lg.timer.reset_start_time(); // set timer in logger to 0
         // while(lg.timer.time() < 10.0) {
         while(true) {
             // print angles
-            // lg.log(lg.time(), uav.frame.roll.read(), uav.frame.pitch.read(), uav.frame.yaw.read());
+            lg.log(lg.timer.time(), uav.frame.roll.read(), uav.frame.pitch.read(), uav.frame.yaw.read());
+            auto q = uav.frame.quaternion();
+            lg_file.log(lg.timer.time(), uav.frame.roll.read(), uav.frame.pitch.read(), uav.frame.yaw.read(), q[0], q[1], q[2], q[3], sqrt(pow(q[0], 2) + pow(q[1], 2) + pow(q[2], 2) + pow(q[3], 2)));
             // print angles dot
             // lg.log(lg.time(), uav.frame.roll_d.read(), uav.frame.pitch_d.read(), uav.frame.yaw_d.read());
             // print acc
@@ -198,7 +210,7 @@ testcase_read() {
             // print magentometer
             // lg.log(lg.timer.time(), uav.magnetometer.x.read(), uav.magnetometer.y.read(), uav.magnetometer.z.read());
             // print infos
-            lg.log(lg.timer.time(), uav.info.status.read(), uav.info.flight_time.read(), uav.info.battery_voltage.read(), uav.info.cpu_load.read(), uav.info.up_time.read());
+            // lg.log(lg.timer.time(), uav.info.status.read(), uav.info.flight_time.read(), uav.info.battery_voltage.read(), uav.info.cpu_load.read(), uav.info.up_time.read());
             // print RC channels
             // lg.log(lg.timer.time(), uav.rc_ch[0].read(), uav.rc_ch[1].read(), uav.rc_ch[2].read(), uav.rc_ch[3].read(), uav.rc_ch[4].read(), uav.rc_ch[5].read(), uav.rc_ch[6].read(), uav.rc_ch[7].read());
 
