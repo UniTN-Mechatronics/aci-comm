@@ -36,6 +36,7 @@
 #include <cmath>
 #include <atomic>
 #include <assert.h>
+#include <mutex>
 
 #include "aci_comm_engine_bus.hpp"
 #include "aci_comm_engine_commons.hpp"
@@ -115,7 +116,7 @@ namespace acc
         /**
         *   @usage: Add read variable.
         *   @param
-        *   
+        *
         */
         template<class Key> void
         add_read(int pck, Key key_read) {
@@ -151,7 +152,7 @@ namespace acc
         *   * the port confs cannot be applied
         *   * the packet is not setted
         *
-        *   Return if time reach the 
+        *   Return if time reach the
         *   operation is done or
         *   *_max_wait_time_seconds* is reached.
         */
@@ -207,8 +208,8 @@ namespace acc
             MapVarCmd::init(_map_var, _map_cmd);
         };
 
-        ~Engine() { 
-            stop(); 
+        ~Engine() {
+            stop();
         }
 
         BUS _bus;
