@@ -82,7 +82,7 @@ namespace acc
     InfoElement<T, int> flight_time;
     InfoElement<T, FloatingPointPrecision> battery_voltage;
     InfoElement<T, int> cpu_load;
-    InfoElement<T, FloatingPointPrecision> up_time;
+    InfoElement<T, int> up_time;
 
     Infos() {};
 

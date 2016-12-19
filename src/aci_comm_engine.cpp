@@ -56,8 +56,8 @@ namespace
     int _reads_callback     = 0;
     int _writes_callback    = 0;
     int _reads_update_val   = 1; // TODO the upd freq is 1000/_reads_update_val
-    MapVarItem _requsted_vars;
-    MapCmdItem _requsted_cmds;
+    MapVarItem _requested_vars;
+    MapCmdItem _requested_cmds;
 }
 
 
@@ -78,7 +78,7 @@ acc::Engine<BUS>::start(int ep1, int ep2) {
     if (ep1 < 0 || ep2 < 0)
         throw std::runtime_error("Ep1 and Ep2 must be positive integers!");
 
-    if (_requsted_vars.empty() && _requsted_cmds.empty())
+    if (_requested_vars.empty() && _requested_cmds.empty())
         throw std::runtime_error("Neither reads or writes are set!");
 
     try {
@@ -122,8 +122,8 @@ acc::Engine<BUS>::stop() {
 
     _aci_thread_run = false;
     _aci_thread.join();
-    _requsted_vars.clear();
-    _requsted_cmds.clear();
+    _requested_vars.clear();
+    _requested_cmds.clear();
     _version_callback = 0;
     _reads_callback   = 0;
     _writes_callback  = 0;
@@ -150,14 +150,14 @@ acc::Engine<BUS>::_add_read(int pck, acc::Var key_read) {
     if (_aci_thread_run) throw std::runtime_error("Engine is running, you cannot add reads");
     MapVarItem::iterator it;
     it = _map_var.find(key_read);
-    if (it == _map_var.end()) throw std::runtime_error("This entry read key not exist: ");
-    // Check if key_read is already in the 
-    // requested vars
     MapVarItem::iterator it2;
-    it2 = _requsted_vars.find(key_read);
-    if (it2 != _requsted_vars.end()) throw std::runtime_error("This entry read key is already requested");
-    _requsted_vars.insert(std::make_pair(key_read, it->second));
-    it2 = _requsted_vars.find(key_read);
+    it2 = _requested_vars.find(key_read);
+    if (it2 != _requested_vars.end()) {
+        int key_read_index = static_cast<std::underlying_type<acc::Var>::type>(key_read);
+        throw std::runtime_error("This entry read key is already requested: " + DroneVarCmdToString::string_for_var_at_index(key_read_index));
+    }
+    _requested_vars.insert(std::make_pair(key_read, it->second));
+    it2 = _requested_vars.find(key_read);
     it2->second.pck = pck;
 }
 
@@ -166,12 +166,14 @@ acc::Engine<BUS>::_add_write(int pck, acc::Cmd key_write) {
     if (_aci_thread_run) throw std::runtime_error("Engine is running, you cannot add writes");
     MapCmdItem::iterator it;
     it = _map_cmd.find(key_write);
-    if (it == _map_cmd.end()) throw std::runtime_error("ADD: This entry write key not exist: ");
     MapCmdItem::iterator it2;
-    it2 = _requsted_cmds.find(key_write);
-    if (it2 != _requsted_cmds.end()) throw std::runtime_error("This entry write key is already requested");
-    _requsted_cmds.insert(std::make_pair(key_write, it->second));
-    it2 = _requsted_cmds.find(key_write);
+    it2 = _requested_cmds.find(key_write);
+    if (it2 != _requested_cmds.end()) {
+        int write_read_index = static_cast<std::underlying_type<acc::Var>::type>(key_write);
+        throw std::runtime_error("This entry write key not exist: " + DroneVarCmdToString::string_for_cmd_at_index(write_read_index));
+    }
+    _requested_cmds.insert(std::make_pair(key_write, it->second));
+    it2 = _requested_cmds.find(key_write);
     it2->second.pck = pck;
 }
 
@@ -190,8 +192,8 @@ acc::Engine<BUS>::_aci_thread_runner_func() {
 
 template<class BUS> long
 acc::Engine<BUS>::read(acc::Var key_read) {
-    for (MapVarItem::iterator it=_requsted_vars.begin();
-        it!=_requsted_vars.end(); ++it)
+    for (MapVarItem::iterator it=_requested_vars.begin();
+        it!=_requested_vars.end(); ++it)
     {
         if (it->first == key_read) {
             return it->second.get_cast_value();
@@ -202,8 +204,8 @@ acc::Engine<BUS>::read(acc::Var key_read) {
 
 template<class BUS> void
 acc::Engine<BUS>::write(acc::Cmd key_write, int value_write) {
-    for (MapCmdItem::iterator it=_requsted_cmds.begin();
-        it!=_requsted_cmds.end(); ++it)
+    for (MapCmdItem::iterator it=_requested_cmds.begin();
+        it!=_requested_cmds.end(); ++it)
     {
         if (it->first == key_write) {
             it->second.set_value(value_write);
@@ -226,7 +228,7 @@ acc::Engine<BUS>::_wait_on_version_callback(Timer &timer) {
 
 template<class BUS> void 
 acc::Engine<BUS>::_wait_on_read_callback(Timer &timer) {
-    if (!_requsted_vars.empty()) {
+    if (!_requested_vars.empty()) {
         aciGetDeviceVariablesList();
         while(!_reads_callback) {
             if (timer.time() > _max_wait_time_seconds) return;
@@ -237,7 +239,7 @@ acc::Engine<BUS>::_wait_on_read_callback(Timer &timer) {
 
 template<class BUS> void 
 acc::Engine<BUS>::_wait_on_write_callback(Timer &timer) {
-    if (!_requsted_cmds.empty()) {
+    if (!_requested_cmds.empty()) {
         aciGetDeviceCommandsList();
         while(!_writes_callback) {
             if (timer.time() > _max_wait_time_seconds) return;
@@ -281,8 +283,8 @@ c_api_versions_callback(struct ACI_INFO aciInfo) {
 static void
 c_api_reads_callback() {
     std::vector<int> pkc_idx;
-    for (MapVarItem::iterator it=_requsted_vars.begin();
-        it!=_requsted_vars.end(); ++it)
+    for (MapVarItem::iterator it=_requested_vars.begin();
+        it!=_requested_vars.end(); ++it)
     {
         pkc_idx.push_back(it->second.pck);
         aciAddContentToVarPacket(it->second.pck, it->second.num_id(), it->second.value_ptr());
@@ -300,8 +302,8 @@ c_api_reads_callback() {
 static void
 c_api_writes_callback() {
     std::vector<int> pkc_idx;
-    for (MapCmdItem::iterator it=_requsted_cmds.begin();
-        it!=_requsted_cmds.end(); ++it)
+    for (MapCmdItem::iterator it=_requested_cmds.begin();
+        it!=_requested_cmds.end(); ++it)
     {
         pkc_idx.push_back(it->second.pck);
         aciAddContentToCmdPacket(it->second.pck, it->second.num_id(), it->second.value_ptr());

@@ -40,8 +40,8 @@ namespace acc
     *
     *   A class for read and command
     *   the drone attitude.
-    *   Contains nested classes: 
-    *   Yaw, Pitch, Roll, 
+    *   Contains nested classes:
+    *   Yaw, Pitch, Roll,
     *   YawDot, PitchDot, RollDot,
     *   XDotDot, YZDotDot,
     *   Thrust
@@ -75,12 +75,12 @@ namespace acc
         };
 
         /*
-        *   __   __             ____  _ _       _     ____       _ _ 
+        *   __   __             ____  _ _       _     ____       _ _
         *   \ \ / /_ ___      _|  _ \(_) |_ ___| |__ |  _ \ ___ | | |
         *    \ V / _` \ \ /\ / / |_) | | __/ __| '_ \| |_) / _ \| | |
         *     | | (_| |\ V  V /|  __/| | || (__| | | |  _ < (_) | | |
         *     |_|\__,_| \_/\_/ |_|   |_|\__\___|_| |_|_| \_\___/|_|_|
-        */    
+        */
 
         /*   ___ _ _      _
          *  | _ (_) |_ __| |_
@@ -106,7 +106,7 @@ namespace acc
             Pitch&
             write_rad(ArgsType val) {
               ChannelWrite<TP, ArgsType>::write(rad2deg(val));
-              return this;
+              return *this;
             }
 
             Pitch&
@@ -134,11 +134,11 @@ namespace acc
 
 
         /*
-        *    ___ _ _      _    ___      _   
-        *   | _ (_) |_ __| |_ |   \ ___| |_ 
+        *    ___ _ _      _    ___      _
+        *   | _ (_) |_ __| |_ |   \ ___| |_
         *   |  _/ |  _/ _| ' \| |) / _ \  _|
         *   |_| |_|\__\__|_||_|___/\___/\__|
-        */                           
+        */
         template<class TP, class ReturnType, class ArgsType>
         class PitchDot : public virtual ChannelRead<TP, ReturnType>, public virtual ChannelWrite<TP, ArgsType>
         {
@@ -158,7 +158,7 @@ namespace acc
             PitchDot&
             write_rad(ArgsType val) {
               ChannelWrite<TP, ArgsType>::write(rad2deg(val));
-              return this;
+              return *this;
             }
 
         protected:
@@ -206,7 +206,7 @@ namespace acc
             Roll&
             write_rad(ArgsType val) {
               ChannelWrite<TP, ArgsType>::write(rad2deg(val));
-              return this;
+              return *this;
             }
 
             Roll&
@@ -232,11 +232,11 @@ namespace acc
 
 
         /*
-        *    ___     _ _ ___      _   
-        *   | _ \___| | |   \ ___| |_ 
+        *    ___     _ _ ___      _
+        *   | _ \___| | |   \ ___| |_
         *   |   / _ \ | | |) / _ \  _|
         *   |_|_\___/_|_|___/\___/\__|
-        */                     
+        */
         template<class TP, class ReturnType, class ArgsType>
         class RollDot : public virtual ChannelRead<TP, ReturnType>, public virtual ChannelWrite<TP, ArgsType>
         {
@@ -256,7 +256,7 @@ namespace acc
             RollDot&
             write_rad(ArgsType val) {
               ChannelWrite<TP, ArgsType>::write(rad2deg(val));
-              return this;
+              return *this;
             }
 
         protected:
@@ -308,11 +308,11 @@ namespace acc
 
 
         /*
-        *   __   __           ___      _   
-        *   \ \ / /_ ___ __ _|   \ ___| |_ 
+        *   __   __           ___      _
+        *   \ \ / /_ ___ __ _|   \ ___| |_
         *    \ V / _` \ V  V / |) / _ \  _|
         *     |_|\__,_|\_/\_/|___/\___/\__|
-        */                               
+        */
         template<class TP, class ReturnType, class ArgsType>
         class YawDot : public virtual ChannelRead<TP, ReturnType>, public virtual ChannelWrite<TP, ArgsType>
         {
@@ -331,7 +331,7 @@ namespace acc
             YawDot&
             write_rad(ArgsType val) {
               ChannelWrite<TP, ArgsType>::write(rad2deg(val));
-              return this;
+              return *this;
             }
 
             YawDot&
@@ -381,12 +381,12 @@ namespace acc
         }; // END CLASS YAWDOT
 
         /*
-        *       _                _                _   _                 
-        *      / \   ___ ___ ___| | ___ _ __ __ _| |_(_) ___  _ __  ___ 
+        *       _                _                _   _
+        *      / \   ___ ___ ___| | ___ _ __ __ _| |_(_) ___  _ __  ___
         *     / _ \ / __/ __/ _ \ |/ _ \ '__/ _` | __| |/ _ \| '_ \/ __|
         *    / ___ \ (_| (_|  __/ |  __/ | | (_| | |_| | (_) | | | \__ \
         *   /_/   \_\___\___\___|_|\___|_|  \__,_|\__|_|\___/|_| |_|___/
-        *                                                               
+        *
         */
         template<class TP, class ReturnType>
         class XDotDot : public virtual ChannelRead<TP, ReturnType>
