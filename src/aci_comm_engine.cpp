@@ -151,9 +151,12 @@ acc::Engine<BUS>::_add_read(int pck, acc::Var key_read) {
     MapVarItem::iterator it;
     it = _map_var.find(key_read);
     if (it == _map_var.end()) throw std::runtime_error("This entry read key not exist: ");
-    if (!it->second.can_be_read()) throw std::runtime_error("This entry read cannot be read: ");
-    _requsted_vars.insert(std::make_pair(key_read, it->second));
+    // Check if key_read is already in the 
+    // requested vars
     MapVarItem::iterator it2;
+    it2 = _requsted_vars.find(key_read);
+    if (it2 != _requsted_vars.end()) throw std::runtime_error("This entry read key is already requested");
+    _requsted_vars.insert(std::make_pair(key_read, it->second));
     it2 = _requsted_vars.find(key_read);
     it2->second.pck = pck;
 }
@@ -164,9 +167,10 @@ acc::Engine<BUS>::_add_write(int pck, acc::Cmd key_write) {
     MapCmdItem::iterator it;
     it = _map_cmd.find(key_write);
     if (it == _map_cmd.end()) throw std::runtime_error("ADD: This entry write key not exist: ");
-    if (!it->second.can_be_written()) throw std::runtime_error("This entry write cannot be written: ");
-    _requsted_cmds.insert(std::make_pair(key_write, it->second));
     MapCmdItem::iterator it2;
+    it2 = _requsted_cmds.find(key_write);
+    if (it2 != _requsted_cmds.end()) throw std::runtime_error("This entry write key is already requested");
+    _requsted_cmds.insert(std::make_pair(key_write, it->second));
     it2 = _requsted_cmds.find(key_write);
     it2->second.pck = pck;
 }

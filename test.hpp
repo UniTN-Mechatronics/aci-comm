@@ -198,7 +198,7 @@ testcase_read() {
             // print magentometer
             // lg.log(lg.timer.time(), uav.magnetometer.x.read(), uav.magnetometer.y.read(), uav.magnetometer.z.read());
             // print infos
-            lg.log(lg.time(), uav.info.status.read(), uav.info.flight_time.read(), uav.info.battery_voltage.read(), uav.info.cpu_load.read(), uav.info.up_time.read());
+            lg.log(lg.timer.time(), uav.info.status.read(), uav.info.flight_time.read(), uav.info.battery_voltage.read(), uav.info.cpu_load.read(), uav.info.up_time.read());
             // print RC channels
             // lg.log(lg.timer.time(), uav.rc_ch[0].read(), uav.rc_ch[1].read(), uav.rc_ch[2].read(), uav.rc_ch[3].read(), uav.rc_ch[4].read(), uav.rc_ch[5].read(), uav.rc_ch[6].read(), uav.rc_ch[7].read());
 
