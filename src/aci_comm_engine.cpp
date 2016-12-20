@@ -52,10 +52,10 @@ namespace
     *   variable.
     */
     int *_bus_port          = NULL;
+    int *_reads_update_val  = NULL; // TODO the upd freq is 1000/_reads_update_val 
     int _version_callback   = 0;
     int _reads_callback     = 0;
     int _writes_callback    = 0;
-    int _reads_update_val   = 1; // TODO the upd freq is 1000/_reads_update_val
     MapVarItem _requested_vars;
     MapCmdItem _requested_cmds;
 }
@@ -71,12 +71,12 @@ namespace
 *
 */
 template<class BUS> void
-acc::Engine<BUS>::start(int ep1, int ep2) {
+acc::Engine<BUS>::start(int e_freq, 
+                        int e_heartbeat,
+                        int th_sleep_us, 
+                        int read_update) {
     if (_aci_thread_run)
         throw std::runtime_error("Engine is already started!");
-
-    if (ep1 < 0 || ep2 < 0)
-        throw std::runtime_error("Ep1 and Ep2 must be positive integers!");
 
     if (_requested_vars.empty() && _requested_cmds.empty())
         throw std::runtime_error("Neither reads or writes are set!");
@@ -84,10 +84,11 @@ acc::Engine<BUS>::start(int ep1, int ep2) {
     try {
         // Used for return if callbacks don't comes.
         Timer timer;
-
-        // Open bus.
+        // Open bus and set global variables pointers.
         _bus.open();
         _bus_port = &_bus._port_state;
+        *_reads_update_val = read_update;
+
         aciInit();
 
         // Callbacks
@@ -98,8 +99,8 @@ acc::Engine<BUS>::start(int ep1, int ep2) {
         aciSetParamListUpdateFinishedCallback(&c_api_params_callback); // Params
 
         // Set engine and start thread.
-        aciSetEngineRate(ep1, ep2);
-        _launch_aci_thread(std::floor(1000000 / ep1));
+        aciSetEngineRate(e_freq, e_heartbeat);
+        _launch_aci_thread(th_sleep_us);
 
         // Version
         _wait_on_version_callback(timer);
@@ -292,7 +293,7 @@ c_api_reads_callback() {
     std::sort(pkc_idx.begin(), pkc_idx.end());
     pkc_idx.erase(std::unique(pkc_idx.begin(), pkc_idx.end()), pkc_idx.end());
     for (auto &i : pkc_idx) {
-        aciSetVarPacketTransmissionRate(i, _reads_update_val);
+        aciSetVarPacketTransmissionRate(i, *_reads_update_val);
         aciVarPacketUpdateTransmissionRates();
         aciSendVariablePacketConfiguration(i);
     }

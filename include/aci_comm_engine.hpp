@@ -156,7 +156,10 @@ namespace acc
         *   operation is done or
         *   *_max_wait_time_seconds* is reached.
         */
-        void start(int ep1 = 100, int ep2 = 10);
+        void start(int e_freq      = 1000, 
+                   int e_heartbeat = 10,
+                   int th_sleep_us = 1000, 
+                   int read_update = 1);
 
         /**
         *   Join the aci_thread to the
@@ -231,6 +234,7 @@ namespace acc
         MapVarItem _map_var;
         MapCmdItem _map_cmd;
 
+        void _set_engine_conf();
         void _launch_aci_thread(int time_sleep);
         void _aci_thread_runner(int time_sleep);
         void _aci_thread_runner_func();

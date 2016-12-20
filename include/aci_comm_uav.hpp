@@ -85,7 +85,10 @@ namespace acc
         std::string port();
 
         // Run
-        UAV& start();
+        UAV& start(int e_freq      = 1000, 
+                   int e_heartbeat = 10,
+                   int th_sleep_us = 1000, 
+                   int read_update = 1);
         UAV& stop();
 
         // Controller setup
