@@ -287,7 +287,8 @@ testcase_motors_dynamics() {
     try {
         uav.motors.enable_read(0);
         uav.motors.enable_write(0);
-        uav.start().control_enable(true);
+        uav.start();
+        uav.control_enable(true);
 
         uav.motors.stop();
 
@@ -307,7 +308,7 @@ testcase_motors_dynamics() {
 
             int motor_read = uav.motors[0].read();
 
-            lg_file.log(lg_file.timer.time(), rpm_d, static_cast<double>(uav.motors[0].read()));
+            lg_file.log(lg_file.timer.time(), rpm_d, motor_read);
             lg_console.log(lg_file.timer.time(), rpm_d, motor_read);
         
             syncro.stop();
@@ -359,7 +360,10 @@ testcase_motors_dynamics_engine() {
 
         ae->add_read(0, Var::motor_rpm_1); 
         
-        ae->add_write(0, Cmd::DIMC_motor_1, 
+        ae->add_write(0, Cmd::DIMC_motor_1,
+                         Cmd::DIMC_motor_2,
+                         Cmd::DIMC_motor_3,
+                         Cmd::DIMC_motor_4, 
                          Cmd::ctrl_mode,
                          Cmd::ctrl_enabled,
                          Cmd::disable_motor_onoff_by_stick);
@@ -368,10 +372,13 @@ testcase_motors_dynamics_engine() {
 
         ae->write(Cmd::ctrl_mode,                    0);
         ae->write(Cmd::ctrl_enabled,                 1);
-        ae->write(Cmd::disable_motor_onoff_by_stick, 1);
-        
-        ae->write(Cmd::disable_motor_onoff_by_stick, 1);
+        ae->write(Cmd::disable_motor_onoff_by_stick, 0);
 
+        ae->write(Cmd::DIMC_motor_1, 0,
+                  Cmd::DIMC_motor_2, 0,
+                  Cmd::DIMC_motor_3, 0,
+                  Cmd::DIMC_motor_4, 0); // motors stop
+        
         sleep(2);
         std::cout << "START MOTORS" << std::endl;
         ae->write(Cmd::DIMC_motor_1, 1);
@@ -391,9 +398,9 @@ testcase_motors_dynamics_engine() {
             lg_file.log(lg_file.timer.time(), rpm_d, motor_read);
             lg_console.log(lg_file.timer.time(), rpm_d, motor_read);
 
-
             syncro.stop();
         }
+        
         std::cout << "EXIT WHILE" << std::endl;
         ae->write(Cmd::DIMC_motor_1, 1);
 
