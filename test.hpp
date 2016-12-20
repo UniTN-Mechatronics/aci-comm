@@ -279,15 +279,16 @@ testcase_motors_dynamics() {
 
     Logger lg_console(std::cout);
 
-    double freq = 500;
+    double freq = 300;
     mb::Syncronizer syncro(freq);
 
     double rpm_d = 0.0;
 
     try {
         uav.motors[0].enable_read(0);
+        // uav.motors[1].enable_read(0);
         uav.motors.enable_write(0);
-        uav.start(900, 1950, 2000, 2);
+        uav.start(900, 1000, 3000, 2);
         uav.control_enable(true);
 
         sleep(1);
@@ -297,18 +298,21 @@ testcase_motors_dynamics() {
         sleep(2);
         std::cout << "START MOTORS" << std::endl;
         uav.motors[0].start();
+        // uav.motors[1].start();
         sleep(4);
 
         lg_file.timer.reset_start_time(); // set timer in logger to 0
 
         std::cout << "START WHILE" << std::endl;
-        while(lg_file.timer.time() < 10.0) {
+        while(lg_file.timer.time() < 60.0) {
             syncro.start();
 
             rpm_d = mb::signal_builder(lg_file.timer.time());
             uav.motors[0].write(rpm_d);
+            // uav.motors[1].write(rpm_d);
 
             int motor_read = uav.motors[0].read();
+            // int motor_read2 = uav.motors[1].read();
 
             lg_file.log(lg_file.timer.time(), rpm_d, motor_read);
             // lg_console.log(lg_file.timer.time(), rpm_d, motor_read);
@@ -318,11 +322,13 @@ testcase_motors_dynamics() {
 
         std::cout << "EXIT WHILE" << std::endl;
         uav.motors[0].start(); //  to take the motor to the min speed
+        // uav.motors[1].start(); //  to take the motor to the min speed
 
         sleep(2);
 
         std::cout << "STOP" << std::endl;
         uav.motors[0].stop();
+        // uav.motors[1].stop();
 
         
     } catch (std::runtime_error e) {

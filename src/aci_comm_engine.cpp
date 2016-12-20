@@ -222,7 +222,9 @@ template<class BUS> void
 acc::Engine<BUS>::_wait_on_version_callback(Timer &timer) {
     aciCheckVerConf();
     while(!_version_callback) {
-        if (timer.time() > _max_wait_time_seconds) return;
+        if (timer.time() > _max_wait_time_seconds)  {
+                throw std::runtime_error("Max Time Reach waiting Version Callback");
+            }
         usleep(1000);
     }
 }
@@ -232,7 +234,9 @@ acc::Engine<BUS>::_wait_on_read_callback(Timer &timer) {
     if (!_requested_vars.empty()) {
         aciGetDeviceVariablesList();
         while(!_reads_callback) {
-            if (timer.time() > _max_wait_time_seconds) return;
+            if (timer.time() > _max_wait_time_seconds) {
+                throw std::runtime_error("Max Time Reach waiting Read Callback");
+            }
             usleep(1000);
         }
     }
@@ -243,7 +247,9 @@ acc::Engine<BUS>::_wait_on_write_callback(Timer &timer) {
     if (!_requested_cmds.empty()) {
         aciGetDeviceCommandsList();
         while(!_writes_callback) {
-            if (timer.time() > _max_wait_time_seconds) return;
+            if (timer.time() > _max_wait_time_seconds)  {
+                throw std::runtime_error("Max Time Reach waiting Write Callback");
+            }
             usleep(1000);
         }
     }
