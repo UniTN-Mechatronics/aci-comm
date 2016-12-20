@@ -279,17 +279,19 @@ testcase_motors_dynamics() {
 
     Logger lg_console(std::cout);
 
-    double freq = 50;
+    double freq = 150;
     mb::Syncronizer syncro(freq);
 
     double rpm_d = 0.0;
 
     try {
-        uav.motors.enable_read(0);
+        uav.motors[0].enable_read(0);
         uav.motors.enable_write(0);
         uav.start();
         uav.control_enable(true);
 
+        sleep(1);
+        std::cout << "STOP MOTORS" << std::endl;
         uav.motors.stop();
 
         sleep(2);
@@ -313,7 +315,7 @@ testcase_motors_dynamics() {
         
             syncro.stop();
         }    
-        
+
         std::cout << "EXIT WHILE" << std::endl;
         uav.motors[0].start(); //  to take the motor to the min speed
 
@@ -350,7 +352,7 @@ testcase_motors_dynamics_engine() {
 
     Logger lg_console(std::cout);
 
-    double freq = 50;
+    double freq = 200;
     mb::Syncronizer syncro(freq);
 
     double rpm_d = 0.0;
@@ -368,12 +370,14 @@ testcase_motors_dynamics_engine() {
                          Cmd::ctrl_enabled,
                          Cmd::disable_motor_onoff_by_stick);
 
-        ae->start(1000, 100);
+        ae->start(1000, 10);
 
         ae->write(Cmd::ctrl_mode,                    0);
         ae->write(Cmd::ctrl_enabled,                 1);
         ae->write(Cmd::disable_motor_onoff_by_stick, 0);
 
+        sleep(1);
+        std::cout << "STOP MOTORS" << std::endl;
         ae->write(Cmd::DIMC_motor_1, 0,
                   Cmd::DIMC_motor_2, 0,
                   Cmd::DIMC_motor_3, 0,
@@ -400,7 +404,7 @@ testcase_motors_dynamics_engine() {
 
             syncro.stop();
         }
-        
+
         std::cout << "EXIT WHILE" << std::endl;
         ae->write(Cmd::DIMC_motor_1, 1);
 
