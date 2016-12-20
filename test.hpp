@@ -1,6 +1,9 @@
 #include "aci_comm_engine.hpp"
 #include "aci_comm_uav.hpp"
 
+#include "utilities/synchronizer.hpp"
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
 void 
 testcase() {
     using namespace acc;
@@ -17,17 +20,17 @@ testcase() {
         ae = &Engine<SerialBus>::init(port, B57600);
 
         // Add variables to read, to packet 1.
-        // ae->add_read(0, Var::motor_rpm_1, Var::motor_rpm_2, Var::motor_rpm_3, Var::motor_rpm_4); 
-        ae->add_read(0, Var::acc_x, Var::acc_y, Var::acc_z); 
+        ae->add_read(0, Var::motor_rpm_1, Var::motor_rpm_2, Var::motor_rpm_3, Var::motor_rpm_4); 
+        // ae->add_read(0, Var::acc_x, Var::acc_y, Var::acc_z); 
         
         // Add commands to write, packet 0.
-        // ae->add_write(0, Cmd::DIMC_motor_1, 
-        //                  Cmd::DIMC_motor_2, 
-        //                  Cmd::DIMC_motor_3,
-        //                  Cmd::DIMC_motor_4,
-        //                  Cmd::ctrl_mode,
-        //                  Cmd::ctrl_enabled,
-        //                  Cmd::disable_motor_onoff_by_stick);
+        ae->add_write(0, Cmd::DIMC_motor_1, 
+                         Cmd::DIMC_motor_2, 
+                         Cmd::DIMC_motor_3,
+                         Cmd::DIMC_motor_4,
+                         Cmd::ctrl_mode,
+                         Cmd::ctrl_enabled,
+                         Cmd::disable_motor_onoff_by_stick);
 
 
         // Start the engine.
@@ -38,13 +41,13 @@ testcase() {
 
         // For each key_write, write the
         // specified value.
-        // ae->write(Cmd::ctrl_mode,                    0);
-        // ae->write(Cmd::ctrl_enabled,                 1);
-        // ae->write(Cmd::disable_motor_onoff_by_stick, 1);
+        ae->write(Cmd::ctrl_mode,                    0);
+        ae->write(Cmd::ctrl_enabled,                 1);
+        ae->write(Cmd::disable_motor_onoff_by_stick, 1);
 
         // sleep(5);
         std::cout << "READY TO ACC" << std::endl;
-        // ae->write(Cmd::DIMC_motor_1, 10);
+        ae->write(Cmd::DIMC_motor_1, DIMC_motor_write_conv(1100));
         // std::cout << "ACC" << std::endl;
         sleep(2);
         
@@ -54,16 +57,20 @@ testcase() {
             // auto pitch = uav.attitude.pitch.read();
             // auto roll = uav.attitude.roll.read();
             
-            std::cout <<  ae->read(Var::acc_x) << "\t" << ae->read(Var::acc_y) << "\t" << ae->read(Var::acc_z) << std::endl;
-            //ae->write(Cmd::DIMC_motor_1, 10);
+            // std::cout <<  ae->read(Var::acc_x) << "\t" << ae->read(Var::acc_y) << "\t" << ae->read(Var::acc_z) << std::endl;
+            // ae->write(Cmd::DIMC_motor_1, 10);
+
+            if(i == 500) ae->write(Cmd::DIMC_motor_1, DIMC_motor_write_conv(2000));
+
+            std::cout <<  motor_rpm_read_conv(ae->read(Var::motor_rpm_1)) << std::endl;
 
             i++;
             usleep(10000);
         }
         std::cout << "STOP" << std::endl;
-        // ae->write(Cmd::DIMC_motor_1, 0);
-        //std::cout << "STOP" << std::endl;
-        //sleep(5);
+        ae->write(Cmd::DIMC_motor_1, 0);
+        std::cout << "STOP" << std::endl;
+        sleep(5);
 
     } catch (std::runtime_error e) {
         std::cout << "Exception: " << e.what() << std::endl;
@@ -73,7 +80,8 @@ testcase() {
         ae->stop();
     }
 }
-
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
 void
 testcase2() {
     using namespace acc;
@@ -116,7 +124,8 @@ testcase2() {
         uav.stop();
     }
 }
-
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
 void
 testcase3() {
     using namespace acc;
@@ -144,7 +153,8 @@ testcase3() {
         uav.stop();
     }
 }
-
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
 void
 testcase_read() {
     using namespace acc;
@@ -153,8 +163,8 @@ testcase_read() {
     std::string port = "/dev/tty.usbserial-A504DRSI";
 
     UAV uav(port, B57600, CTRL_MODE::READ_ONLY);
-    uav.orientation = UAV_Z::DOWNWARD;
-    // uav.orientation = UAV_Z::UPWARD;
+    // uav.orientation = UAV_Z::DOWNWARD;
+    uav.orientation = UAV_Z::UPWARD;
 
     Logger lg(std::cout);
     lg.floating_point_digits = 2;
@@ -225,7 +235,8 @@ testcase_read() {
         uav.stop();
     }
 }
-
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
 void
 testcase_motors_start_stop() {
     using namespace acc;
@@ -251,5 +262,152 @@ testcase_motors_start_stop() {
         uav.stop();
     }
 }
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+void
+testcase_motors_dynamics() {
+    using namespace acc;
+    std::string port = "/dev/tty.usbserial-A504DRSI";
+
+    UAV uav(port, B57600, CTRL_MODE::DIMC);
+
+    std::ofstream myfile;
+    myfile.open ("./utilities/motors_dynamics_log.csv");
+    Logger lg_file(myfile);
+    lg_file.separator  = ",\t";
+    lg_file.log("time", "rpm_d", "rmp");
+
+    Logger lg_console(std::cout);
+
+    double freq = 50;
+    mb::Syncronizer syncro(freq);
+
+    double rpm_d = 0.0;
+
+    try {
+        uav.motors.enable_read(0);
+        uav.motors.enable_write(0);
+        uav.start().control_enable(true);
+
+        uav.motors.stop();
+
+        sleep(2);
+        std::cout << "START MOTORS" << std::endl;
+        uav.motors[0].start();
+        sleep(4);
+
+        lg_file.timer.reset_start_time(); // set timer in logger to 0
+
+        std::cout << "START WHILE" << std::endl;
+        while(lg_file.timer.time() < 10.0) {
+            syncro.start();
+
+            rpm_d = mb::signal_builder(lg_file.timer.time());
+            uav.motors[0].write(rpm_d);
+
+            int motor_read = uav.motors[0].read();
+
+            lg_file.log(lg_file.timer.time(), rpm_d, static_cast<double>(uav.motors[0].read()));
+            lg_console.log(lg_file.timer.time(), rpm_d, motor_read);
+        
+            syncro.stop();
+        }    
+        
+        std::cout << "EXIT WHILE" << std::endl;
+        uav.motors[0].start(); //  to take the motor to the min speed
+
+        sleep(2);
+
+        std::cout << "STOP" << std::endl;
+        uav.motors[0].stop();
+
+        
+    } catch (std::runtime_error e) {
+        std::cout << "Exception: " << e.what() << std::endl;
+        uav.stop();
+    } catch (...) {
+        std::cout << "!!! Unexpected error !!!" << std::endl;
+        uav.stop();
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+
+void
+testcase_motors_dynamics_engine() {
+    using namespace acc;
+    std::string port = "/dev/tty.usbserial-A504DRSI";
+
+    Engine<SerialBus>* ae;
+
+    std::ofstream myfile;
+    myfile.open ("./utilities/motors_dynamics_log.csv");
+    Logger lg_file(myfile);
+    lg_file.separator  = ",\t";
+    lg_file.log("time", "rpm_d", "rmp");
+
+    Logger lg_console(std::cout);
+
+    double freq = 50;
+    mb::Syncronizer syncro(freq);
+
+    double rpm_d = 0.0;
+
+    try {
+        ae = &Engine<SerialBus>::init(port, B57600);
+
+        ae->add_read(0, Var::motor_rpm_1); 
+        
+        ae->add_write(0, Cmd::DIMC_motor_1, 
+                         Cmd::ctrl_mode,
+                         Cmd::ctrl_enabled,
+                         Cmd::disable_motor_onoff_by_stick);
+
+        ae->start(1000, 100);
+
+        ae->write(Cmd::ctrl_mode,                    0);
+        ae->write(Cmd::ctrl_enabled,                 1);
+        ae->write(Cmd::disable_motor_onoff_by_stick, 1);
+        
+        ae->write(Cmd::disable_motor_onoff_by_stick, 1);
+
+        sleep(2);
+        std::cout << "START MOTORS" << std::endl;
+        ae->write(Cmd::DIMC_motor_1, 1);
+        sleep(4);
+
+        lg_file.timer.reset_start_time(); // set timer in logger to 0
+
+        std::cout << "START WHILE" << std::endl;
+        while(lg_file.timer.time() < 10.0) {
+            syncro.start();
+
+            rpm_d = mb::signal_builder(lg_file.timer.time());
+            ae->write(Cmd::DIMC_motor_1, DIMC_motor_write_conv(rpm_d));
+
+            int motor_read = motor_rpm_read_conv(ae->read(Var::motor_rpm_1));
+
+            lg_file.log(lg_file.timer.time(), rpm_d, motor_read);
+            lg_console.log(lg_file.timer.time(), rpm_d, motor_read);
 
 
+            syncro.stop();
+        }
+        std::cout << "EXIT WHILE" << std::endl;
+        ae->write(Cmd::DIMC_motor_1, 1);
+
+        sleep(2);
+
+        std::cout << "STOP" << std::endl;
+        ae->write(Cmd::DIMC_motor_1, 0);
+
+
+    } catch (std::runtime_error e) {
+        std::cout << "Exception: " << e.what() << std::endl;
+        ae->stop();
+    } catch (...) {
+        std::cout << "!!! Unexpected error !!!" << std::endl;
+        ae->stop();
+    }
+}

@@ -36,3 +36,5 @@ aci_engine
 # Aci C
 /asctec/*.c
 /asctec/*.h
+/utilities/*
+!/utilities/synchronizer.hpp
