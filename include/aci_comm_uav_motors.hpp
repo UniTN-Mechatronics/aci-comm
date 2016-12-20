@@ -54,12 +54,12 @@ namespace acc
         };
 
     protected:
-        int
+        virtual int
         _read_conversion(int value) {
             return motor_rpm_read_conv(value);
         }
 
-        int
+        virtual int
         _write_conversion(FloatingPointPrecision value) {
             return DIMC_motor_write_conv(value);
         }
@@ -108,9 +108,9 @@ namespace acc
     template<class T, class FloatingPointPrecision>
     class MotorCollection {
     private:
-        using Motor_ = Motor<T, FLOATING_POINT_PRECISION>;
+        using Motor_ = Motor<T, FloatingPointPrecision>;
         int _number_of_motors = -1;
-        std::vector<Motor<T, FloatingPointPrecision>> _motors;
+        std::vector<Motor_> _motors;
 
         MotorCollection(T *uav_ptr, int number_of_motors) {
             if (number_of_motors == 4) {
@@ -140,7 +140,7 @@ namespace acc
         *   Access to the single motor
         *   in the array of motors.
         */
-        Motor<T, FloatingPointPrecision>
+        Motor_&
         operator[](int index) {
             if (index < 0 || index > (_number_of_motors - 1)) {
                 std::runtime_error("Motors index is or greater than number of motors or less than zero");
