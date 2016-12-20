@@ -279,7 +279,7 @@ testcase_motors_dynamics() {
 
     Logger lg_console(std::cout);
 
-    double freq = 150;
+    double freq = 500;
     mb::Syncronizer syncro(freq);
 
     double rpm_d = 0.0;
@@ -287,7 +287,7 @@ testcase_motors_dynamics() {
     try {
         uav.motors[0].enable_read(0);
         uav.motors.enable_write(0);
-        uav.start();
+        uav.start(900, 1950, 2000, 2);
         uav.control_enable(true);
 
         sleep(1);
@@ -311,7 +311,7 @@ testcase_motors_dynamics() {
             int motor_read = uav.motors[0].read();
 
             lg_file.log(lg_file.timer.time(), rpm_d, motor_read);
-            lg_console.log(lg_file.timer.time(), rpm_d, motor_read);
+            // lg_console.log(lg_file.timer.time(), rpm_d, motor_read);
         
             syncro.stop();
         }    

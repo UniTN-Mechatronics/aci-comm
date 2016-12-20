@@ -52,7 +52,7 @@ namespace
     *   variable.
     */
     int *_bus_port          = NULL;
-    int *_reads_update_val  = NULL; // TODO the upd freq is 1000/_reads_update_val 
+    int _reads_update_val   = 1; // TODO the upd freq is 1000/_reads_update_val 
     int _version_callback   = 0;
     int _reads_callback     = 0;
     int _writes_callback    = 0;
@@ -87,7 +87,7 @@ acc::Engine<BUS>::start(int e_freq,
         // Open bus and set global variables pointers.
         _bus.open();
         _bus_port = &_bus._port_state;
-        *_reads_update_val = read_update;
+        _reads_update_val = read_update;
 
         aciInit();
 
@@ -293,7 +293,7 @@ c_api_reads_callback() {
     std::sort(pkc_idx.begin(), pkc_idx.end());
     pkc_idx.erase(std::unique(pkc_idx.begin(), pkc_idx.end()), pkc_idx.end());
     for (auto &i : pkc_idx) {
-        aciSetVarPacketTransmissionRate(i, *_reads_update_val);
+        aciSetVarPacketTransmissionRate(i, _reads_update_val);
         aciVarPacketUpdateTransmissionRates();
         aciSendVariablePacketConfiguration(i);
     }
