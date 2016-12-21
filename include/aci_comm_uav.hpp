@@ -123,9 +123,10 @@ namespace acc
         void _uav_init();
         void _add_write_ctrl();
         void _write_ctrl();
-    };
 
-};
+    }; // END CLASS UAV
+
+}; // END NAMESPACE
 
 
 #endif // __cplusplus
