@@ -29,9 +29,16 @@
 #include <string>
 #include <vector>
 
+/**
+ *  Please check this definition matches the engine rate on your remote
+ */
+#ifndef MAXIMUM_ENGINE_FREQ_DEVICE
+#define MAXIMUM_ENGINE_FREQ_DEVICE 1000
+#endif
+
 namespace acc
 {
-    // TO NOT CHANGE ORDER OF THIS ENUM!!! 
+    // TO NOT CHANGE ORDER OF THIS ENUM!!!
     enum class ACI_COMM_VAR
     {                               // UAV READ CLASSES IMPLEMENTATION
         UAV_status            = 0, // implemented, tested
@@ -86,7 +93,7 @@ namespace acc
         RC_channel_7               // implemented, tested
     };
 
-    // TO NOT CHANGE ORDER OF THIS ENUM!!! 
+    // TO NOT CHANGE ORDER OF THIS ENUM!!!
     enum class ACI_COMM_CMD
     {
         DIMC_motor_1                 = 0, // implemented, tested
@@ -110,11 +117,11 @@ namespace acc
     };
 
     class DroneVarCmdToString
-    {               
+    {
     public:
         static std::string
         string_for_var_at_index(int index) {
-            static std::vector<std::string>  _var_index_to_string = 
+            static std::vector<std::string>  _var_index_to_string =
             {
                 "UAV_status",
                 "flight_time",
@@ -173,26 +180,26 @@ namespace acc
 
         static std::string
         string_for_cmd_at_index(int index) {
-            static std::vector<std::string>  _cmd_index_to_string = 
+            static std::vector<std::string>  _cmd_index_to_string =
             {
-                "DIMC_motor_1",                
-                "DIMC_motor_2",                 
-                "DIMC_motor_3",                 
-                "DIMC_motor_4",                 
-                "DIMC_motor_5",                 
-                "DIMC_motor_6",                 
-                "DMC_pitch",                    
-                "DMC_roll",                     
-                "DMC_yaw",                      
-                "DMC_thrust",                   
-                "CTRL_pitch",                   
-                "CTRL_roll",                    
-                "CTRL_yaw",                     
-                "CTRL_thrust",                  
-                "CTRL_ctrl",                    
-                "ctrl_mode",                    
-                "ctrl_enabled",                 
-                "disable_motor_onoff_by_stick" 
+                "DIMC_motor_1",
+                "DIMC_motor_2",
+                "DIMC_motor_3",
+                "DIMC_motor_4",
+                "DIMC_motor_5",
+                "DIMC_motor_6",
+                "DMC_pitch",
+                "DMC_roll",
+                "DMC_yaw",
+                "DMC_thrust",
+                "CTRL_pitch",
+                "CTRL_roll",
+                "CTRL_yaw",
+                "CTRL_thrust",
+                "CTRL_ctrl",
+                "ctrl_mode",
+                "ctrl_enabled",
+                "disable_motor_onoff_by_stick"
             };
             if (index < 0 || index > (_cmd_index_to_string.size() - 1)) return "KEY NOT EXIST";
             return _cmd_index_to_string[index];
@@ -201,7 +208,7 @@ namespace acc
 
     typedef acc::ACI_COMM_VAR Var;
     typedef acc::ACI_COMM_CMD Cmd;
-    
+
     enum class CTRL_MODE
     {
         DIMC = 0,

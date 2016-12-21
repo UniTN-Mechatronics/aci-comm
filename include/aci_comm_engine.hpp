@@ -37,6 +37,10 @@
 #include <atomic>
 #include <assert.h>
 #include <mutex>
+// Sync
+#include <ctime>
+#include <ratio>
+#include <chrono>
 
 #include "aci_comm_engine_bus.hpp"
 #include "aci_comm_engine_commons.hpp"
@@ -156,9 +160,9 @@ namespace acc
         *   operation is done or
         *   *_max_wait_time_seconds* is reached.
         */
-        void start(int e_freq      = 1000, 
+        void start(int e_freq      = 1000,
                    int e_heartbeat = 10,
-                   int th_sleep_us = 1000, 
+                   int th_sleep_us = 1000,
                    int read_update = 1);
 
         /**
@@ -233,6 +237,13 @@ namespace acc
         */
         MapVarItem _map_var;
         MapCmdItem _map_cmd;
+
+        /**
+         *  Synchronization of threads
+         *  _engine_time is the device thread time in microseconds
+         */
+        double _remote_time_usec;
+
 
         void _set_engine_conf();
         void _launch_aci_thread(int time_sleep);

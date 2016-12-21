@@ -27,7 +27,7 @@
 
 /*
 *   C API Callbacks
-*   They must be global, in order to be 
+*   They must be global, in order to be
 *   set in the API-C.
 */
 static void c_api_transmit_callback(void*, unsigned short);
@@ -52,7 +52,7 @@ namespace
     *   variable.
     */
     int *_bus_port          = NULL;
-    int _reads_update_val   = 1; // TODO the upd freq is 1000/_reads_update_val 
+    int _reads_update_val   = 1; // TODO the upd freq is 1000/_reads_update_val
     int _version_callback   = 0;
     int _reads_callback     = 0;
     int _writes_callback    = 0;
@@ -71,9 +71,9 @@ namespace
 *
 */
 template<class BUS> void
-acc::Engine<BUS>::start(int e_freq, 
+acc::Engine<BUS>::start(int e_freq,
                         int e_heartbeat,
-                        int th_sleep_us, 
+                        int th_sleep_us,
                         int read_update) {
     if (_aci_thread_run)
         throw std::runtime_error("Engine is already started!");
@@ -99,6 +99,11 @@ acc::Engine<BUS>::start(int e_freq,
         aciSetParamListUpdateFinishedCallback(&c_api_params_callback); // Params
 
         // Set engine and start thread.
+        if (!(e_freq < 1 || e_freq > MAXIMUM_ENGINE_FREQ_DEVICE)) {
+          throw std::runtime_error("Remote engine freq out of bound");
+        }
+        _remote_time_usec = 1E6/static_cast<double>(e_freq);
+
         aciSetEngineRate(e_freq, e_heartbeat);
         _launch_aci_thread(th_sleep_us);
 
@@ -139,10 +144,17 @@ acc::Engine<BUS>::_launch_aci_thread(int time_sleep) {
 template<class BUS> void
 acc::Engine<BUS>::_aci_thread_runner(int time_sleep) {
     while (_aci_thread_run) {
-        _aci_thread_runner_func(); 
-        usleep(time_sleep);  
+        using namespace std::chrono;
+
+        high_resolution_clock::time_point t_i = high_resolution_clock::now();
+
+        _aci_thread_runner_func();
+
+        high_resolution_clock::time_point t_f = high_resolution_clock::now();
+        duration<double, microseconds> dT = duration_cast<duration<double>>(t_i - t_f);
+        while(dT < _remote_time_usec) { ; }
     }
-    _aci_thread_runner_func();  
+    _aci_thread_runner_func();
     usleep(time_sleep);
 }
 
@@ -218,7 +230,7 @@ acc::Engine<BUS>::write(acc::Cmd key_write, int value_write) {
     throw std::runtime_error("WRITE: This entry write key not exist: " + std::to_string(value) );
 }
 
-template<class BUS> void 
+template<class BUS> void
 acc::Engine<BUS>::_wait_on_version_callback(Timer &timer) {
     aciCheckVerConf();
     while(!_version_callback) {
@@ -229,7 +241,7 @@ acc::Engine<BUS>::_wait_on_version_callback(Timer &timer) {
     }
 }
 
-template<class BUS> void 
+template<class BUS> void
 acc::Engine<BUS>::_wait_on_read_callback(Timer &timer) {
     if (!_requested_vars.empty()) {
         aciGetDeviceVariablesList();
@@ -242,7 +254,7 @@ acc::Engine<BUS>::_wait_on_read_callback(Timer &timer) {
     }
 }
 
-template<class BUS> void 
+template<class BUS> void
 acc::Engine<BUS>::_wait_on_write_callback(Timer &timer) {
     if (!_requested_cmds.empty()) {
         aciGetDeviceCommandsList();
