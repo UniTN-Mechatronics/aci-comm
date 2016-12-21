@@ -143,19 +143,25 @@ acc::Engine<BUS>::_launch_aci_thread(int time_sleep) {
 
 template<class BUS> void
 acc::Engine<BUS>::_aci_thread_runner(int time_sleep) {
+    using namespace std::chrono;
+
+    high_resolution_clock::time_point t_f = high_resolution_clock::now();
+    high_resolution_clock::time_point t_i = high_resolution_clock::now();
+    auto dT = duration_cast<microseconds>(t_i - t_f);
+
+    // acc::Semaphore sem(1);
     while (_aci_thread_run) {
-        using namespace std::chrono;
-
-        high_resolution_clock::time_point t_i = high_resolution_clock::now();
-
+      // wait
+      // sem.wait();
         _aci_thread_runner_func();
-
-        high_resolution_clock::time_point t_f = high_resolution_clock::now();
-        duration<double, microseconds> dT = duration_cast<duration<double>>(t_i - t_f);
-        while(dT < _remote_time_usec) { ; }
+        do {
+          t_f = high_resolution_clock::now();
+          dT = duration_cast<microseconds>(t_i - t_f);
+        } while (dT.count() < _remote_time_usec);
+      // sem.signal()
     }
     _aci_thread_runner_func();
-    usleep(time_sleep);
+    usleep(std::ceil(_remote_time_usec));
 }
 
 template<class BUS> void
